@@ -3,7 +3,7 @@
 # if not false, it will be taken
 # can change who take it (here @flare), will take to it's max transport capacity
 
-# at 200 (max container is 300)
+# limite at 200 (max container is 300)
 
 set store container1
 ubind @flare
@@ -25,7 +25,6 @@ set spore false
 set mélangeExplo false
 set pyratite false
 
-
 set maxQuantity 200
 
 # switch on/off:
@@ -37,8 +36,6 @@ sensor storeX store @x
 sensor storeY store @y
 sensor payload @unit @totalItems
 
-
-
 # is transporting something ?
 jump -1 equal payload 0
 # drop:
@@ -46,11 +43,7 @@ ucontrol approach storeX storeY 5 0 0
 ucontrol itemDrop store 100 0 0 0
 end
 
-# continue:
-ulocate building core false @copper corex corey found core
-
-ucontrol approach corex corey 5 corey 0
-
+# variable pour faire un for
 read count cell1 0
 
 # jump to next jump till the end
@@ -59,67 +52,82 @@ read count cell1 0
 jump -1 notEqual count 0
 set needIt cuivre
 set ressource @copper
+jump -1 always true true
 
 jump -1 notEqual count 1
 set needIt plomb
 set ressource @lead
+jump -1 always true true
 
 jump -1 notEqual count 2
 set needIt verreTremp
 set ressource @metaglass
+jump -1 always true true
 
 jump -1 notEqual count 3
 set needIt graphite
 set ressource @graphite
+jump -1 always true true
 
 jump -1 notEqual count 4
 set needIt sable
 set ressource @sand
+jump -1 always true true
 
 jump -1 notEqual count 5
 set needIt charbon
 set ressource @coal
+jump -1 always true true
 
 jump -1 notEqual count 6
 set needIt titane
 set ressource @titanium
+jump -1 always true true
 
 jump -1 notEqual count 7
 set needIt thorium
 set ressource @thorium
+jump -1 always true true
 
 jump -1 notEqual count 8
 set needIt ferraille
 set ressource @scrap
+jump -1 always true true
 
 jump -1 notEqual count 9
 set needIt silicium
 set ressource @silicon
+jump -1 always true true
 
 jump -1 notEqual count 10
 set needIt plastanium
 set ressource @plastanium
+jump -1 always true true
 
 jump -1 notEqual count 11
 set needIt tissuPhasé
 set ressource @phase-fabric
+jump -1 always true true
 
 jump -1 notEqual count 12
 set needIt alliageSup
 set ressource @surge-alloy
+jump -1 always true true
 
 jump -1 notEqual count 13
 set needIt spore
 set ressource @spore-pod
+jump -1 always true true
 
 jump -1 notEqual count 14
 set needIt mélangeExplo
 set ressource @blast-compound
+jump -1 always true true
 
 jump -1 notEqual count 15
 set needIt pyratite
 set ressource @pyratite
-
+jump -1 always true true
 
 # inc count
 op add count count 1
@@ -144,24 +152,7 @@ jump -1 lessThanEq stored maxQuantity
 end
 
 # allons en chercher !
+# position du core (la base) et s'y dirigé
+ulocate building core false @copper corex corey found core
+ucontrol approach corex corey 5 corey 0
 ucontrol itemTake core ressource 100 0 0
-
-
-# to add:
-
-# jump true
-jump -1 always true true
-
-
-# on en a besoin ?
-jump -1 notEqual needIt false
-
-# inc count
-op add count count 1
-# reset count to 0 ?
-
-jump -1 count lessThanEq count 15
-set count 0
-
-write count cell1 0
-end
