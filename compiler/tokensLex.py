@@ -69,7 +69,7 @@ reserved = {
 
     # asm reserved
     'end': 'EndProg',
-    'op': 'AsmOpération'
+    'op': 'AsmOperation'
 }
 tokens += list(reserved.values())
 tokens += ['Variable']  # words by default
@@ -97,11 +97,22 @@ def t_Word(t):
 startReservedSpecial = boa(list(reservedSpecial.keys())).map(lambda w: w[0])
 
 
+tokens += ['Commentaires']
+
+
+# must be defined before SpecialWord, fuction exécute before const
+def t_Commentaires(t):
+    r'\/\/.*'
+    return t
+
+
+# catch everything else that function on trop don't catch
 def t_SpecialWord(t):
     r'\S+'  # \S Matches anything other than a space, tab or newline
     if t.value[0] in startReservedSpecial:
         t.type = reservedSpecial[t.value]  # Check for reserved words
         return t
+    print('SpecialWord not match: {}'.format(t))
 
 
 # A string containing ignored characters (spaces and tabs)
@@ -125,8 +136,8 @@ lexer = lex.lex()
 def test():
     # Test it out
     data = '''
-    <
-    if true jump
+    // lulz // yo
+    if true jump // lo
         yé
             4 >= 12
 
