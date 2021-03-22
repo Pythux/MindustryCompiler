@@ -18,9 +18,10 @@ tokens = (
     'LPAREN',
     'RPAREN',
 
-    'Indent',
     'Word',
+    'RefJump',
     'Number',
+    'Indent',
     )
 
 # Regular expression rules for simple tokens
@@ -30,7 +31,6 @@ t_Multiply = r'\*'
 t_Divide = r'/'
 t_LPAREN = r'\('
 t_RPAREN = r'\)'
-
 t_Word = r'[a-zA-Z_]\S*'
 # \S Matches anything other than a space, tab or newline.
 
@@ -48,6 +48,11 @@ def t_Indent(t):
     t.lexer.lineno += 1  # inc line number to track lines
     return t
 
+
+def t_RefJump(t):
+    r'[#]Ref:[ ][a-zA-Z_]\S*'
+    t.value = t.value.split(' ')[-1]
+    return t
 
 # # Define a rule so we can track line numbers
 # def t_newline(t):
@@ -77,6 +82,8 @@ data = '''
 if true jump
     yé
         yo
+
+#Ref: yoél
 iftruejump
 '''
 
