@@ -45,6 +45,7 @@ def t_Number(t):
 def t_Indent(t):
     r'\n(\t|[ ]{4})*'
     t.value = len(t.value[1:].replace(' '*4, '\t'))
+    t.lexer.lineno += 1  # inc line number to track lines
     return t
 
 
@@ -61,8 +62,6 @@ t_ignore = ''
 # Error handling rule
 def t_error(t):
     if t.value[0] == ' ':
-        t.lexer.skip(1)
-    elif t.value[0] == '\n':
         t.lexer.skip(1)
     else:
         print("Illegal character '%s'" % t.value[0])
