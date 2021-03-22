@@ -54,11 +54,6 @@ def t_RefJump(t):
     t.value = t.value.split(' ')[-1]
     return t
 
-# # Define a rule so we can track line numbers
-# def t_newline(t):
-#     r'\n+'
-#     t.lexer.lineno += len(t.value)
-
 
 # A string containing ignored characters (spaces and tabs)
 t_ignore = ''
@@ -77,19 +72,23 @@ def t_error(t):
 lexer = lex.lex()
 
 
-# Test it out
-data = '''
-if true jump
-    yé
-        yo
+def test():
+    # Test it out
+    data = '''
+    if true jump
+        yé
+            yo
 
-#Ref: yoél
-iftruejump
-'''
+    #Ref: yoél
+    iftruejump
+    '''
 
-# Give the lexer some input
-lexer.input(data)
+    # Give the lexer some input
+    lexer.input(data)
+
+    for tok in lexer:
+        print(tok)
 
 
-for tok in lexer:
-    print(tok)
+if __name__ == '__main__':
+    test()
