@@ -11,10 +11,10 @@ from ply import lex
 
 # List of token names.   This is always required
 tokens = (
-    'PLUS',
-    'MINUS',
-    'TIMES',
-    'DIVIDE',
+    'Plus',
+    'Minus',
+    'Multiply',
+    'Divide',
     'LPAREN',
     'RPAREN',
 
@@ -24,10 +24,10 @@ tokens = (
     )
 
 # Regular expression rules for simple tokens
-t_PLUS = r'\+'
-t_MINUS = r'-'
-t_TIMES = r'\*'
-t_DIVIDE = r'/'
+t_Plus = r'\+'
+t_Minus = r'-'
+t_Multiply = r'\*'
+t_Divide = r'/'
 t_LPAREN = r'\('
 t_RPAREN = r'\)'
 
