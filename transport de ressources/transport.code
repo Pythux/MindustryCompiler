@@ -55,8 +55,6 @@ set maxQuantity 200
 sensor storeX store @x
 sensor storeY store @y
 
-# position du core
-ulocate building core false @copper corex corey found core
 
 # store ressourceId choices for fast iter over it
 
@@ -241,8 +239,7 @@ set ressource @blast-compound
 jump -1 notEqual ressourceId 16
 set ressource @pyratite
 
-# debug, see process speed:
-print "ending"
+print ressource
 printflush message1
 
 # on en a assez ?
@@ -252,6 +249,8 @@ jump -1 lessThanEq stored maxQuantity
 jump -1 always true true
 
 # allons en chercher !
+# position du core
+ulocate building core false @copper corex corey found core
 # ce dirige au core (la base)
 ucontrol approach corex corey 5 corey 0
 ucontrol itemTake core ressource 100 0 0
