@@ -26,6 +26,25 @@ set spore false
 set mélangeExplo false
 set pyratite false
 
+# ressource -> ressourceId
+
+# cuivre 1
+# plomb 2
+# verreTremp 3
+# graphite 4
+# sable 5
+# charbon 6
+# titane 7
+# thorium 8
+# ferraille 9
+# silicium 10
+# plastanium 11
+# tissuPhasé 12
+# alliageSup 13
+# spore 14
+# mélangeExplo 15
+# pyratite 16
+
 # which bots to use ?
 
 #### later: set bot-flare true
@@ -36,11 +55,23 @@ set maxQuantity 200
 sensor storeX store @x
 sensor storeY store @y
 
+# position du core
+ulocate building core false @copper corex corey found core
+
 # store ressourceId choices for fast iter over it
 
+set cleanedMem false
 # memory start array of true (id of true till 0 found)
 set index 0
 set ressourceId 1
+
+jump -1 notEqual cleanedMem true
+set cleanedMem true
+set tmp 0
+jump -1 equal tmp 60
+write 0 cell1 tmp
+op add tmp tmp 1
+jump -1 always true true
 
 # ref: START_INIT_RESSOURCE
 
@@ -138,7 +169,7 @@ jump -1 always true true
 # check memory at index
 read ressourceId cell1 index
 
-jump -1 ressourceId notEqual 0
+jump -1 notEqual ressourceId 0
 # retour au début de l'array qu'on va itéré
 set index 0
 jump -1 always true true
@@ -218,11 +249,10 @@ printflush message1
 sensor stored store ressource
 jump -1 lessThanEq stored maxQuantity
 # to LOOP_START
-jump always true true
+jump -1 always true true
 
 # allons en chercher !
-# position du core (la base) et s'y dirigé
-ulocate building core false @copper corex corey found core
+# ce dirige au core (la base)
 ucontrol approach corex corey 5 corey 0
 ucontrol itemTake core ressource 100 0 0
 
@@ -230,5 +260,8 @@ ucontrol itemTake core ressource 100 0 0
 print "ending"
 printflush message1
 
+# inc index une fois un bot envoyé avec succès
+op add index index 1
+
 # to LOOP_START
-jump always true true
+jump -1 always true true
