@@ -1,7 +1,6 @@
 set store container1
-ubind @flare
 set cuivre false
-set plomb true
+set plomb false
 set verreTremp false
 set graphite false
 set sable false
@@ -16,132 +15,119 @@ set alliageSup false
 set spore false
 set mélangeExplo false
 set pyratite false
-jump 21 notEqual count 0
-set needIt cuivre
-jump 59 always count 14
-jump 24 notEqual count 1
-set needIt plomb
-jump 51 always count 14
-jump 27 notEqual count 2
-set needIt verreTremp
-jump 52 always count 14
-jump 30 notEqual count 3
-set needIt graphite
-jump 53 always count 14
-jump 33 notEqual count 4
-set needIt sable
-jump 54 always count 14
-jump 36 notEqual count 5
-set needIt charbon
-jump 55 always count 14
-jump 39 notEqual count 6
-set needIt titane
-jump 56 always count 14
-jump 42 notEqual count 7
-set needIt thorium
-jump 57 always count 14
-jump 45 notEqual count 8
-set needIt ferraille
-jump 58 always count 14
-jump 48 notEqual count 9
-set needIt silicium
-jump 56 always count 14
-jump 51 notEqual count 10
-set needIt plastanium
-jump 57 always count 14
-jump 54 notEqual count 11
-set needIt tissuPhasé-fabric
-jump 58 always count 14
-jump 57 notEqual count 12
-set needIt alliageSup-alloy
-jump 59 always count 14
-jump 60 notEqual count 13
-set needIt spore-pod
-jump 65 always count 14
-jump 63 notEqual count 14
-set needIt mélangeExplo-compound
-jump 65 always count 14
-jump 65 notEqual count 15
-set needIt pyratite
-jump 73 notEqual needIt false
-op add count count 1
-print count
-printflush message1
-jump 71 lessThanEq count 15
-set count 0
-write count cell1 0
-end
 set maxQuantity 200
-sensor isActive switch1 @enabled
-jump 77 equal isActive true
-end
 sensor storeX store @x
 sensor storeY store @y
+ulocate building core false @copper corex corey found core
+set index 0
+set ressourceId 1
+set toAdd false
+jump 27 notEqual cuivre true
+jump 27 notEqual ressourceId 1
+set toAdd true
+jump 30 notEqual plomb true
+jump 30 notEqual ressourceId 2
+set toAdd true
+jump 33 notEqual verreTremp true
+jump 33 notEqual ressourceId 3
+set toAdd true
+jump 36 notEqual graphite true
+jump 36 notEqual ressourceId 4
+set toAdd true
+jump 39 notEqual sable true
+jump 39 notEqual ressourceId 5
+set toAdd true
+jump 42 notEqual charbon true
+jump 42 notEqual ressourceId 6
+set toAdd true
+jump 45 notEqual titane true
+jump 45 notEqual ressourceId 7
+set toAdd true
+jump 48 notEqual thorium true
+jump 48 notEqual ressourceId 8
+set toAdd true
+jump 51 notEqual ferraille true
+jump 51 notEqual ressourceId 9
+set toAdd true
+jump 54 notEqual silicium true
+jump 54 notEqual ressourceId 10
+set toAdd true
+jump 57 notEqual plastanium true
+jump 57 notEqual ressourceId 11
+set toAdd true
+jump 60 notEqual tissuPhasé true
+jump 60 notEqual ressourceId 12
+set toAdd true
+jump 63 notEqual alliageSup true
+jump 63 notEqual ressourceId 13
+set toAdd true
+jump 66 notEqual spore true
+jump 66 notEqual ressourceId 14
+set toAdd true
+jump 69 notEqual mélangeExplo true
+jump 69 notEqual ressourceId 15
+set toAdd true
+jump 72 notEqual pyratite true
+jump 72 notEqual ressourceId 16
+set toAdd true
+jump 75 notEqual toAdd true
+write ressourceId cell1 index
+op add index index 1
+op add ressourceId ressourceId 1
+jump 23 lessThanEq ressourceId 16
+sensor isActive switch1 @enabled
+jump 80 equal isActive true
+jump 77 always true true
+read ressourceId cell1 index
+jump 84 notEqual ressourceId 0
+set index 0
+jump 80 always true true
+ubind @flare
 sensor payload @unit @totalItems
-jump 84 equal payload 0
+jump 89 equal payload 0
 ucontrol approach storeX storeY 5 0 0
 ucontrol itemDrop store 100 0 0 0
-end
-ulocate building core false @copper corex corey found core
-ucontrol approach corex corey 5 corey 0
-read count cell1 0
-jump 90 notEqual count 0
-set needIt cuivre
+jump 77 always true true
+jump 92 notEqual ressourceId 1
 set ressource @copper
-jump 93 notEqual count 1
-set needIt plomb
+jump 94 notEqual ressourceId 2
 set ressource @lead
-jump 96 notEqual count 2
-set needIt verreTremp
+jump 96 notEqual ressourceId 3
 set ressource @metaglass
-jump 99 notEqual count 3
-set needIt graphite
+jump 98 notEqual ressourceId 4
 set ressource @graphite
-jump 102 notEqual count 4
-set needIt sable
+jump 100 notEqual ressourceId 5
 set ressource @sand
-jump 105 notEqual count 5
-set needIt charbon
+jump 102 notEqual ressourceId 6
 set ressource @coal
-jump 108 notEqual count 6
-set needIt titane
+jump 104 notEqual ressourceId 7
 set ressource @titanium
-jump 111 notEqual count 7
-set needIt thorium
+jump 106 notEqual ressourceId 8
 set ressource @thorium
-jump 114 notEqual count 8
-set needIt ferraille
+jump 108 notEqual ressourceId 9
 set ressource @scrap
-jump 117 notEqual count 9
-set needIt silicium
+jump 110 notEqual ressourceId 10
 set ressource @silicon
-jump 120 notEqual count 10
-set needIt plastanium
+jump 112 notEqual ressourceId 11
 set ressource @plastanium
-jump 123 notEqual count 11
-set needIt tissuPhasé
+jump 114 notEqual ressourceId 12
 set ressource @phase-fabric
-jump 126 notEqual count 12
-set needIt alliageSup
+jump 116 notEqual ressourceId 13
 set ressource @surge-alloy
-jump 129 notEqual count 13
-set needIt spore
+jump 118 notEqual ressourceId 14
 set ressource @spore-pod
-jump 132 notEqual count 14
-set needIt mélangeExplo
+jump 120 notEqual ressourceId 15
 set ressource @blast-compound
-jump 135 notEqual count 15
-set needIt pyratite
+jump 122 notEqual ressourceId 16
 set ressource @pyratite
-op add count count 1
-jump 138 lessThanEq count 15
-set count 0
-write count cell1 0
-print count
+print " ending"
 printflush message1
-jump 143 notEqual needIt false
-end
 sensor stored store ressource
-jump 146 lessThanEq stored maxQuantity
-end
+jump 127 lessThanEq stored maxQuantity
+jump 131 always true true
+ucontrol approach corex corey 5 corey 0
 ucontrol itemTake core ressource 100 0 0
+print "ending"
+printflush message1
+op add index index 1
+jump 77 always true true
