@@ -97,13 +97,10 @@ def t_Word(t):
 startReservedSpecial = boa(list(reservedSpecial.keys())).map(lambda w: w[0])
 
 
-tokens += ['Commentaires']
-
-
 # must be defined before SpecialWord, fuction exécute before const
 def t_Commentaires(t):
     r'\/\/.*'
-    return t
+    # no return, token discarded
 
 
 # catch everything else that function on trop don't catch
@@ -132,6 +129,9 @@ tokens = list(set(tokens))
 # Build the lexer
 lexer = lex.lex()
 
+# debugging:
+# lexer = lex.lex(debug=True)
+
 
 def test():
     # Test it out
@@ -154,3 +154,9 @@ def test():
 
 if __name__ == '__main__':
     test()
+
+
+def main():
+    # main function which will either tokenize input read from standard input
+    # or from a file specified on the command line
+    lex.runmain()
