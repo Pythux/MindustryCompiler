@@ -11,46 +11,62 @@ from ply import lex
 
 # List of token names.   This is always required
 tokens = (
-    'NUMBER',
     'PLUS',
     'MINUS',
     'TIMES',
     'DIVIDE',
     'LPAREN',
     'RPAREN',
+
+    'Indent',
+    'Word',
+    'Number',
     )
 
-
 # Regular expression rules for simple tokens
-t_PLUS    = r'\+'  # noqa
-t_MINUS   = r'-'   # noqa
-t_TIMES   = r'\*'  # noqa
-t_DIVIDE  = r'/'   # noqa
-t_LPAREN  = r'\('  # noqa
-t_RPAREN  = r'\)'  # noqa
+t_PLUS = r'\+'
+t_MINUS = r'-'
+t_TIMES = r'\*'
+t_DIVIDE = r'/'
+t_LPAREN = r'\('
+t_RPAREN = r'\)'
+
+t_Word = r'[a-zA-Z_]\S*'
+# \S Matches anything other than a space, tab or newline.
 
 
 # A regular expression rule with some action code
-def t_NUMBER(t):
+def t_Number(t):
     r'\d+'
     t.value = int(t.value)
     return t
 
 
-# Define a rule so we can track line numbers
-def t_newline(t):
-    r'\n+'
-    t.lexer.lineno += len(t.value)
+def t_Indent(t):
+    r'\n(\t|[ ]{4})*'
+    t.value = len(t.value[1:].replace(' '*4, '\t'))
+    return t
+
+
+# # Define a rule so we can track line numbers
+# def t_newline(t):
+#     r'\n+'
+#     t.lexer.lineno += len(t.value)
 
 
 # A string containing ignored characters (spaces and tabs)
-t_ignore = ' \t'
+t_ignore = ''
 
 
 # Error handling rule
 def t_error(t):
-    print("Illegal character '%s'" % t.value[0])
-    t.lexer.skip(1)
+    if t.value[0] == ' ':
+        t.lexer.skip(1)
+    elif t.value[0] == '\n':
+        t.lexer.skip(1)
+    else:
+        print("Illegal character '%s'" % t.value[0])
+        t.lexer.skip(1)
 
 
 # Build the lexer
@@ -59,8 +75,10 @@ lexer = lex.lex()
 
 # Test it out
 data = '''
-3 + 4 * 10
-+ -20 *2
+if true jump
+    yé
+        yo
+iftruejump
 '''
 
 # Give the lexer some input
