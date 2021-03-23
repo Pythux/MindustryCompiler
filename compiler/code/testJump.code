@@ -1,11 +1,10 @@
 
 
 // hey
+print "hi"
 
 #Ref: START
 
-print "yo"
+print "world" // instruction right after ref, will point here
 
-jump START always
-
-// salut
+jump START always // jump to #Ref: START, wich will be the ⸄print "world"⸅ statement
