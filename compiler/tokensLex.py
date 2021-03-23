@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 # ------------------------------------------------------------
-# tokenizer
+# tokenizer with Lex
 # ------------------------------------------------------------
 
 # import ply.lex as lex
@@ -22,6 +22,7 @@ tokens = [
 ]
 
 # Regular expression rules for simple tokens
+# will be check last (after functions)
 t_Plus = r'\+'
 t_Minus = r'-'
 t_Multiply = r'\*'
