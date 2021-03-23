@@ -16,7 +16,7 @@ def runInteractive(args):
     else:
         # give final compiled result in interactive
         # on interactive whait for "END" statement to process it
-        NotImplemented
+        raise Exception('not implemented')
 
 
 def run(args):
@@ -31,7 +31,7 @@ def run(args):
     else:
         # give final compiled result in interactive
         # on interactive whait for "END" statement to process it
-        NotImplemented
+        raise Exception('not implemented')
 
 
 def main():
@@ -70,6 +70,8 @@ def main():
             NotImplemented
         else:
             print(result)
+
+    # parser.print_help()
 
 
 if __name__ == '__main__':
