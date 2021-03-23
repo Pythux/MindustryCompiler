@@ -7,8 +7,16 @@
 # import ply.lex as lex
 
 from ply import lex
+from ply.lex import Lexer
 
 from boa import boa
+
+
+class LexToken:
+    lexer: Lexer
+    lineno: int  # will be updated by lexer
+    type: str  # Token name
+    value: str  # matched content, can be changed to anything
 
 
 # List of token names.   This is always required
@@ -23,12 +31,12 @@ tokens = [
 
 # Regular expression rules for simple tokens
 # will be check last (after functions)
-t_Plus = r'\+'
-t_Minus = r'-'
-t_Multiply = r'\*'
-t_Divide = r'/'
-t_LPAREN = r'\('
-t_RPAREN = r'\)'
+# t_Plus = r'\+'
+# t_Minus = r'-'
+# t_Multiply = r'\*'
+# t_Divide = r'/'
+# t_LPAREN = r'\('
+# t_RPAREN = r'\)'
 
 
 # add functions:
@@ -102,6 +110,22 @@ startReservedSpecial = boa(list(reservedSpecial.keys())).map(lambda w: w[0])
 def t_Commentaires(t):
     r'\/\/.*'
     # no return, token discarded
+
+
+operation = {
+    '+': 'Plus',
+    '-': 'Minus',
+    '*': 'Multiply',
+    '/': 'Divide',
+    '(': 'LeftParentheses',
+    ')': 'RightParentheses',
+}
+
+
+def t_Operation(t: LexToken):
+    r'[\+\-\*](\d|\s{1})'  # op and number or whitespace char
+    breakpoint()
+    # t.
 
 
 # catch everything else that function on trop don't catch
