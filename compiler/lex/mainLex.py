@@ -158,8 +158,6 @@ def getLexer():
     lexer = lex.lex()
     return lexer
 
-
-lexer = getLexer()
 # debugging:
 # lexer = lex.lex(debug=True)
 
@@ -184,8 +182,27 @@ def test():
         print(tok)
 
 
-if __name__ == '__main__':
-    test()
+def runLex(fileContent: str):
+    lexer = getLexer()
+    lexer.input(fileContent)
+    for tok in lexer:
+        print(tok)
+
+
+def runInteractiveLex():
+    lexer = getLexer()
+
+    while True:
+        try:
+            s = input('Lex >> ')
+        except EOFError:
+            break
+        if not s:
+            continue
+        lexer.input(s)
+        for tok in lexer:
+            print(tok)
+
 
 
 def main():

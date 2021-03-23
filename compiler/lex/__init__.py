@@ -1,2 +1,2 @@
 
-from .mainLex import tokens  # noqa
+from .mainLex import runInteractiveLex, runLex, tokens  # noqa

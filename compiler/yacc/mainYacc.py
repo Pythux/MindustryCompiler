@@ -93,12 +93,17 @@ def buildParser():
     return parser
 
 
+# read file given
+def runYacc(fileName):
+    pass
+
+
 def runInteractiveYacc():
     # parser = yacc.yacc(write_tables=False)
     parser = yacc.yacc()
     while True:
         try:
-            s = input('calc > ')
+            s = input('Yacc >> ')
         except EOFError:
             break
         if not s:
