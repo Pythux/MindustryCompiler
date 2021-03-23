@@ -2,14 +2,14 @@
 import logging
 import argparse
 
-from compiler.tokensLex import tokens, main as mainLex
-from compiler.parseYacc import runYacc
+# from compiler.tokenize import tokens  # noqa
+from compiler.yacc import runInteractiveYacc
 
 
 def main():
     logging.basicConfig(level=logging.DEBUG)
     doc = """
-        compile code to ASM Mindusty
+        compile code to ASM Mindusty (named Mindustry Logic)
     """
     parser = argparse.ArgumentParser(
         description=doc, formatter_class=argparse.RawTextHelpFormatter)

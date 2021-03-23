@@ -128,7 +128,11 @@ def t_error(t):
 
 tokens = list(set(tokens))
 # Build the lexer
-lexer = lex.lex()
+
+
+def getLexer():
+    lexer = lex.lex()
+    return lexer
 
 # debugging:
 # lexer = lex.lex(debug=True)
@@ -146,6 +150,7 @@ def test():
     iftruejump
     '''
 
+    lexer = getLexer()
     # Give the lexer some input
     lexer.input(data)
 

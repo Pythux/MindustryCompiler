@@ -5,7 +5,7 @@
 from ply import yacc
 
 # Get the token map from the lexer.  This is required.
-from .tokensLex import tokens  # noqa
+from compiler.tokenize import tokens  # noqa
 
 
 # Dealing With Ambiguous Grammars
@@ -88,15 +88,19 @@ def p_error(p):
 
 
 # Build the parser
-parser = yacc.yacc()
+def buildParser():
+    parser = yacc.yacc()
+    return parser
 
 
-while True:
-    try:
-        s = input('calc > ')
-    except EOFError:
-        break
-    if not s:
-        continue
-    result = parser.parse(s)
-    print(result)
+def runInteractiveYacc():
+    parser = yacc.yacc(write_tables=False)
+    while True:
+        try:
+            s = input('calc > ')
+        except EOFError:
+            break
+        if not s:
+            continue
+        result = parser.parse(s)
+        print(result)
