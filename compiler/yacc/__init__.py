@@ -1,2 +1,2 @@
 
-from .main import runInteractiveYacc  # noqa
+from .mainYacc import runInteractiveYacc  # noqa

@@ -5,7 +5,7 @@
 from ply import yacc
 
 # Get the token map from the lexer.  This is required.
-from compiler.tokenize import tokens  # noqa
+from compiler.lex import tokens  # noqa
 
 
 # Dealing With Ambiguous Grammars
@@ -94,7 +94,8 @@ def buildParser():
 
 
 def runInteractiveYacc():
-    parser = yacc.yacc(write_tables=False)
+    # parser = yacc.yacc(write_tables=False)
+    parser = yacc.yacc()
     while True:
         try:
             s = input('calc > ')

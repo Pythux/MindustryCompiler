@@ -134,6 +134,8 @@ def getLexer():
     lexer = lex.lex()
     return lexer
 
+
+lexer = getLexer()
 # debugging:
 # lexer = lex.lex(debug=True)
 
