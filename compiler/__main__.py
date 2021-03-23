@@ -14,14 +14,13 @@ def main():
     parser = argparse.ArgumentParser(
         description=doc, formatter_class=argparse.RawTextHelpFormatter)
 
-    parser.add_argument(
-        "--lex",
-        help='show tokenised code',
-        )
+    parser.add_argument('file', type=str, help='input file name', nargs='?')
+
+    parser.add_argument("--lex", help='show tokenised code')
 
     args = parser.parse_args()
-    if hasattr(args, 'func'):
-        args.func(args)
+    if args.file is not None:
+        runInteractiveYacc()
     else:
         parser.print_help()
 
