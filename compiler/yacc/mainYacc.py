@@ -3,6 +3,7 @@
 # Yacc
 
 from ply import yacc
+from ply.yacc import YaccProduction
 
 # Get the token map from the lexer.  This is required.
 from compiler.lex import tokens  # noqa
@@ -37,49 +38,24 @@ expression : expression PLUS expression
 #         p[0] = p[1] - p[3]
 
 
-def p_expression_plus(p):
-    '''expression : expression Plus expression
+# def p_expression_plus(p):
+#     '''expression : expression Plus expression
 
-    '''
-    #   ^            ^        ^    ^
-    #  p[0]         p[1]     p[2] p[3]
+#     '''
+#     #   ^            ^        ^    ^
+#     #  p[0]         p[1]     p[2] p[3]
 
-    p[0] = p[1] + p[3]
-
-
-def p_expression_minus(p):
-    'expression : expression Minus term'
-    p[0] = p[1] - p[3]
+#     p[0] = p[1] + p[3]
 
 
-def p_expression_term(p):
-    'expression : term'
-    p[0] = p[1]
+def p_jump(p: YaccProduction):
+    '''jump : Jump Variable condition Indent'''
+    breakpoint()
 
 
-def p_term_multiply(p):
-    'term : term Multiply factor'
-    p[0] = p[1] * p[3]
-
-
-def p_term_div(p):
-    'term : term Divide factor'
-    p[0] = p[1] / p[3]
-
-
-def p_term_factor(p):
-    'term : factor'
-    p[0] = p[1]
-
-
-def p_factor_num(p):
-    'factor : Number'
-    p[0] = p[1]
-
-
-def p_factor_expr(p):
-    'factor : LPAREN expression RPAREN'
-    p[0] = p[2]
+def p_condition(p):
+    '''condition : True'''
+    p[0] = True
 
 
 # Error rule for syntax errors
@@ -94,19 +70,21 @@ def buildParser():
 
 
 # read file given
-def runYacc(fileName):
+def runYacc(fileContent: str):
     pass
 
 
 def runInteractiveYacc():
-    # parser = yacc.yacc(write_tables=False)
     parser = yacc.yacc()
+    content = ''
     while True:
         try:
             s = input('Yacc >> ')
         except EOFError:
             break
-        if not s:
+        if s:
+            content += s + '\n'
             continue
-        result = parser.parse(s)
+        result = parser.parse(content)
         print(result)
+        content = ''

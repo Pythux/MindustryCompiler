@@ -75,6 +75,8 @@ reserved = {
     'return': 'FunReturn',
 
     'not': 'NotEqual',
+    'true': 'True',
+    'false': 'False',
 
     # asm reserved
     'end': 'EndProg',
@@ -112,20 +114,20 @@ def t_Commentaires(t):
     # no return, token discarded
 
 
-operation = {
-    '+': 'Plus',
-    '-': 'Minus',
-    '*': 'Multiply',
-    '/': 'Divide',
-    '(': 'LeftParentheses',
-    ')': 'RightParentheses',
-}
+# operation = {
+#     '+': 'Plus',
+#     '-': 'Minus',
+#     '*': 'Multiply',
+#     '/': 'Divide',
+#     '(': 'LeftParentheses',
+#     ')': 'RightParentheses',
+# }
 
 
-def t_Operation(t: LexToken):
-    r'[\+\-\*](\d|\s{1})'  # op and number or whitespace char
-    breakpoint()
-    # t.
+# def t_Operation(t: LexToken):
+#     r'[\+\-\*](\d|\s{1}|[\(])'  # op, number, '(' or whitespace char
+#     breakpoint()
+#     # return t
 
 
 # catch everything else that function on trop don't catch
@@ -154,9 +156,7 @@ tokens = list(set(tokens))
 # Build the lexer
 
 
-def getLexer():
-    lexer = lex.lex()
-    return lexer
+lexer = lex.lex()
 
 # debugging:
 # lexer = lex.lex(debug=True)
@@ -173,36 +173,31 @@ def test():
     #Ref: yoél
     iftruejump
     '''
-
-    lexer = getLexer()
     # Give the lexer some input
     lexer.input(data)
-
     for tok in lexer:
         print(tok)
 
 
 def runLex(fileContent: str):
-    lexer = getLexer()
-    lexer.input(fileContent)
-    for tok in lexer:
-        print(tok)
+    pass
 
 
 def runInteractiveLex():
-    lexer = getLexer()
-
+    content = ''
     while True:
         try:
             s = input('Lex >> ')
         except EOFError:
             break
-        if not s:
+        if s != '':
+            content += s + '\n'
             continue
-        lexer.input(s)
+
+        lexer.input(content)
         for tok in lexer:
             print(tok)
-
+        content = ''
 
 
 def main():
