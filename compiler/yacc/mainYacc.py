@@ -58,6 +58,18 @@ def p_condition(p):
     p[0] = True
 
 
+def p_asmLine(p: YaccProduction):
+    '''asmLine : (asmFollowInstru)+ Indent
+    '''
+
+
+def p_asmFollowInstru(p: YaccProduction):
+    '''asmFollowInstru : Variable
+                       | Number
+                       | ArobasedInfo
+    '''
+
+
 # Error rule for syntax errors
 def p_error(p):
     print("Syntax error in input!")

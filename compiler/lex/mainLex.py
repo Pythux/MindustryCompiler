@@ -105,6 +105,14 @@ def t_Word(t):
     return t
 
 
+tokens += ['ArobasedInfo']
+
+
+def t_ArobasedInfo(t):
+    r'@\w+'
+    return t
+
+
 startReservedSpecial = boa(list(reservedSpecial.keys())).map(lambda w: w[0])
 
 

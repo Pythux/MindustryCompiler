@@ -46,18 +46,25 @@ def main():
 
     parser.add_argument('file', type=str, help='input file name', nargs='?')
 
-    parser.add_argument('--lex', help='show tokenised code',
-                        action='store_const', const=True)
-    parser.add_argument('--yacc', help='run Interactive Yacc',
-                        action='store_const', const=True)
-    parser.add_argument('--ctrlC', help='copie compiled ASM to clipboard (Ctrl-C), juste what you need',
-                        action='store_const', const=True)
+    parser.add_argument('--lex', help='end at tokenisation',
+                        action='store_true')
+    parser.add_argument('--yacc', help='end at parsing',
+                        action='store_true')
+    parser.add_argument('--ctrlC', help='copie resulted ASM to clipboard (Ctrl-C), just what you need',
+                        action='store_true')
+    parser.add_argument('-i', '--interactive', help='run interactive mode',
+                        action='store_true')
 
     args = parser.parse_args()
     if args.lex and args.yacc:  # not true together
         print("can't use option --lex and --yacc together")
         return
-    isInteractive = args.file is None
+    isInteractive = args.interactive
+    if not isInteractive and not args.file:
+        parser.print_help()
+        if args.lex or args.yacc:
+            print("\ncan't run without file name or interactive option")
+        return
     toClipboard = args.ctrlC is not None
     if isInteractive and toClipboard:
         return print("can't copy to clipbord interactive, must specifie file name to compile it")
@@ -70,8 +77,6 @@ def main():
             NotImplemented
         else:
             print(result)
-
-    # parser.print_help()
 
 
 if __name__ == '__main__':
