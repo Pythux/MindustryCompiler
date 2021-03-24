@@ -52,7 +52,7 @@ def t_Indent(t):
 
 
 def t_RefJump(t):
-    r'[#]Ref:[ ][a-zA-Z_]\S*'
+    r'[#][Rr]ef[:]?[ ][a-zA-Z_]\S*'
     t.value = t.value.split(' ')[-1]
     return t
 
@@ -67,10 +67,6 @@ reserved = {
     'not': 'NotEqual',
     'true': 'True',
     'false': 'False',
-
-    # asm reserved
-    'end': 'EndProg',
-    'op': 'AsmOperation'
 }
 tokens += list(reserved.values())
 tokens += ['Variable']  # not reserved words
@@ -107,6 +103,7 @@ def t_Comments(t):
 #     '(': 'LeftParentheses',
 #     ')': 'RightParentheses',
 # }
+# tokens += list(operation.values())
 
 
 # def t_Operation(t: LexToken):

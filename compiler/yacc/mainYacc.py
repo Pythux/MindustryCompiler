@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 
 # Yacc
 
@@ -11,10 +10,10 @@ from compiler.lex import tokens  # noqa
 
 
 # Dealing With Ambiguous Grammars
-precedence = (
-    ('left', 'Plus', 'Minus'),  # left associative because must choose one
-    ('left', 'Multiply', 'Divide'),
-)
+# precedence = (
+#     ('left', 'Plus', 'Minus'),  # left associative because must choose one
+#     ('left', 'Multiply', 'Divide'),
+# )
 # will give:
 # Plus      : level = 1,  assoc = 'left'
 # Minus     : level = 1,  assoc = 'left'
@@ -27,17 +26,8 @@ expression : expression Plus expression
            | expression Multiply expression
            | expression Divide expression
            | LeftParentheses expression RightParentheses
-           | NUMBER
+           | Number
 '''
-
-# def p_expression(p):
-#     '''expression : expression PLUS expression
-#                   | expression MINUS expression'''
-#     if p[2] == '+':
-#         p[0] = p[1] + p[3]
-#     elif p[2] == '-':
-#         p[0] = p[1] - p[3]
-
 
 # def p_expression_plus(p):
 #     '''expression : expression Plus expression
@@ -54,16 +44,24 @@ lineNumber = 0
 
 def p_lines_one(p: YaccProduction):
     '''lines : line'''
-    p[0] = [p[1]]
-    global lineNumber
-    lineNumber += 1
+    line = p[1]
+    if line is None:
+        p[0] = []
+    else:
+        p[0] = [p[1]]
+        global lineNumber
+        lineNumber += 1
 
 
 def p_lines_many(p: YaccProduction):
     '''lines : lines line'''
-    p[0] = p[1] + p[2]
-    global lineNumber
-    lineNumber += 1
+    line = p[2]
+    if line is None:
+        p[0] = p[1]
+    else:
+        p[0] = p[1] + [p[2]]
+        global lineNumber
+        lineNumber += 1
 
 
 def p_line(p: YaccProduction):
@@ -75,7 +73,6 @@ def p_line(p: YaccProduction):
 
 def p_lines_empty(p: YaccProduction):
     '''line : noLine'''
-    p[0] = ''
 
 
 refDict = {}
@@ -84,7 +81,7 @@ refDict = {}
 def p_ref(p: YaccProduction):
     '''noLine : RefJump Indent'''
     ref = p[1]
-    if refDict[ref] is not None:
+    if ref in refDict:
         raise Exception('ref {} already declared'.format(ref))
     refDict[ref] = lineNumber
 
@@ -95,23 +92,31 @@ class Jump:
         self.singleCondition = toAsmSingleCondition(condition)
 
     def toLine(self, refDict):
+        if self.ref not in refDict:
+            raise Exception("ref {} not exist, refDict: {}".format(self.ref, refDict))
         return 'jump {ref} {condition}'.format(
             ref=refDict[self.ref], condition=self.singleCondition)
 
 
 def toAsmSingleCondition(singleCondition):
+    if isinstance(singleCondition, AsmCondition):
+        return singleCondition
     return singleCondition
 
 
 def p_jump(p: YaccProduction):
-    '''jump : Jump Variable condition Indent'''
+    '''jump : Jump Variable condition Indent
+            | Jump Variable asmCondition Indent
+    '''
     jump = Jump(p[2], p[3])
     p[0] = jump
 
 
 def p_condition(p):
-    '''condition : True'''
-    p[0] = True
+    '''condition : True
+                 | False
+    '''
+    p[0] = p[1]
 
 
 class AsmCondition:
@@ -140,6 +145,7 @@ class AsmInstr:
         return self.string
 
 
+# catch all ASM as it, no processing them
 def p_asmLine(p: YaccProduction):
     '''asmInstr : asmFollowInstructions Indent'''
     p[0] = AsmInstr(p[1])
@@ -176,12 +182,28 @@ def buildParser():
 
 
 # read file given
-def runYacc(fileContent: str):
-    pass
-
-
-def runInteractiveYacc():
+def runYacc(content: str):
     parser = yacc.yacc()
+    lines = parser.parse(content)
+    stringCode = changeRefToLineNumber(lines)
+    return stringCode
+
+
+# we only have at this moment AsmInstr or Jump Objects in lines
+def changeRefToLineNumber(li: List[any]):
+    lines = []
+    for el in li:
+        if isinstance(el, AsmInstr):
+            lines.append(el.toLine())
+        elif isinstance(el, Jump):
+            lines.append(el.toLine(refDict))
+        else:
+            raise Exception('wtf')
+    return '\n'.join(lines)
+
+
+# python -m pdb -c continue compiler/__main__.py -i --yacc
+def runInteractiveYacc():
     content = ''
     while True:
         try:
@@ -191,19 +213,13 @@ def runInteractiveYacc():
         if s:
             content += s + '\n'
             continue
-        result = parser.parse(content)
-        stringCode = toLinesOfCode(result)
-        print(stringCode)
+        if content == '':
+            continue
+        print(runYacc(content))
         content = ''
+        cleanData()
 
 
-def toLinesOfCode(li: List[any]):
-    lines = []
-    for el in li:
-        if isinstance(el, AsmInstr):
-            lines.append(el.toLine())
-        if isinstance(el, Jump):
-            lines.append(el.toLine(refDict))
-        else:
-            raise Exception('wtf')
-    return '\n'.join(lines)
+def cleanData():
+    global refDict
+    refDict = {}

@@ -15,7 +15,6 @@ def runInteractive(args):
         return
     else:
         # give final compiled result in interactive
-        # on interactive whait for "END" statement to process it
         raise Exception('not implemented')
 
 
