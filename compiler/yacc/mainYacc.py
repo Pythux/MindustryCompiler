@@ -2,6 +2,7 @@
 
 # Yacc
 
+from typing import List
 from ply import yacc
 from ply.yacc import YaccProduction
 
@@ -53,7 +54,7 @@ lineNumber = 0
 
 def p_lines_one(p: YaccProduction):
     '''lines : line'''
-    p[0] = p[1]
+    p[0] = [p[1]]
     global lineNumber
     lineNumber += 1
 
@@ -67,7 +68,7 @@ def p_lines_many(p: YaccProduction):
 
 def p_line(p: YaccProduction):
     '''line : jump
-            | asmLine
+            | asmInstr
     '''
     p[0] = p[1]
 
@@ -88,12 +89,24 @@ def p_ref(p: YaccProduction):
     refDict[ref] = lineNumber
 
 
-jumpList = []
+class Jump:
+    def __init__(self, ref, condition) -> None:
+        self.ref = ref
+        self.singleCondition = toAsmSingleCondition(condition)
+
+    def toLine(self, refDict):
+        return 'jump {ref} {condition}'.format(
+            ref=refDict[self.ref], condition=self.singleCondition)
+
+
+def toAsmSingleCondition(singleCondition):
+    return singleCondition
 
 
 def p_jump(p: YaccProduction):
     '''jump : Jump Variable condition Indent'''
-    p[0] = p[1] + ' ' + p[2] + ' ' + str(p[3])
+    jump = Jump(p[2], p[3])
+    p[0] = jump
 
 
 def p_condition(p):
@@ -101,20 +114,28 @@ def p_condition(p):
     p[0] = True
 
 
+class AsmInstr:
+    def __init__(self, string) -> None:
+        self.string = string
+
+    def toLine(self):
+        return self.string
+
+
 def p_asmLine(p: YaccProduction):
-    '''asmLine : asmFollowInstructions Indent'''
-    p[0] = p[1] + '\n' + (' '*4 * p[2])
+    '''asmInstr : asmFollowInstructions Indent'''
+    p[0] = AsmInstr(p[1])
 
 
 def p_asmFollowInstructions_one(p: YaccProduction):
     '''asmFollowInstructions : asmFollowInstru'''
-    p[0] = p[1]
+    p[0] = str(p[1])
 
 
 def p_asmFollowInstructions_many(p: YaccProduction):
     '''asmFollowInstructions : asmFollowInstructions asmFollowInstru
     '''
-    p[0] = str(p[1]) + ' ' + str(p[2])
+    p[0] = p[1] + ' ' + str(p[2])
 
 
 def p_asmFollowInstru(p: YaccProduction):
@@ -153,5 +174,18 @@ def runInteractiveYacc():
             content += s + '\n'
             continue
         result = parser.parse(content)
-        print(result)
+        stringCode = toLinesOfCode(result)
+        print(stringCode)
         content = ''
+
+
+def toLinesOfCode(li: List[any]):
+    lines = []
+    for el in li:
+        if isinstance(el, AsmInstr):
+            lines.append(el.toLine())
+        if isinstance(el, Jump):
+            lines.append(el.toLine(refDict)
+        else:
+            raise Exception('wtf')
+    return '\n'.join(lines)
