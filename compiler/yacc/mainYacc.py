@@ -105,8 +105,8 @@ def toAsmSingleCondition(singleCondition):
 
 
 def p_jump(p: YaccProduction):
-    '''jump : Jump Variable condition Indent
-            | Jump Variable asmCondition Indent
+    '''jump : Jump ID condition Indent
+            | Jump ID asmCondition Indent
     '''
     jump = Jump(p[2], p[3])
     p[0] = jump
@@ -125,12 +125,12 @@ class AsmCondition:
 
 
 def p_asmCondition(p):
-    '''asmCondition : Variable info info'''
-    p[0] = AsmCondition(p[1], p[2], p[3])
+    '''asmCondition : ID info info'''
+    p[0] = p[1] + ' ' + str(p[2]) + ' ' + str(p[3])
 
 
 def p_info(p):
-    '''info : Variable
+    '''info : ID
             | Number
             | ArobasedInfo
     '''
@@ -163,7 +163,7 @@ def p_asmFollowInstructions_many(p: YaccProduction):
 
 
 def p_asmFollowInstru(p: YaccProduction):
-    '''asmFollowInstru : Variable
+    '''asmFollowInstru : ID
                        | Number
                        | ArobasedInfo
     '''

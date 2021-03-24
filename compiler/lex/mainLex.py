@@ -69,14 +69,14 @@ reserved = {
     'false': 'False',
 }
 tokens += list(reserved.values())
-tokens += ['Variable']  # not reserved words
+tokens += ['ID']  # not reserved words
 
 
 # function starting with t_ will be run for tokens even if not in tokens list
 def t_Word(t):
     r'[a-zA-Z_]\S*'  # \S Matches anything other than a space, tab or newline.
     # print(t.type) == 'Word'
-    t.type = reserved.get(t.value, 'Variable')  # Check for reserved words
+    t.type = reserved.get(t.value, 'ID')  # Check for reserved words
     return t
 
 
