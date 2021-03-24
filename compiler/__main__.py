@@ -65,16 +65,16 @@ def main():
         if args.lex or args.yacc:
             print("\ncan't run without file name or interactive option")
         return
-    toClipboard = args.ctrlC is not None
+    toClipboard = args.ctrlC
     if isInteractive and toClipboard:
-        return print("can't copy to clipbord interactive, must specifie file name to compile it")
+        return print("can't copy to clipbord interactive, must specifie file name")
 
     if isInteractive:
         runInteractive(args)
     else:
         result = run(args)
         if toClipboard:
-            NotImplemented
+            raise Exception('NotImplemented')
         else:
             print(result)
 

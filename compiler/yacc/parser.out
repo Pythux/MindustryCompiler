@@ -18,20 +18,31 @@ Unused terminals:
     Minus
     Multiply
     NotEqual
-    Number
     Plus
     RPAREN
-    RefJump
     StrictEqual
 
 Grammar
 
-Rule 0     S' -> jump
-Rule 1     jump -> Jump Variable condition Indent
-Rule 2     condition -> True
+Rule 0     S' -> lines
+Rule 1     lines -> line
+Rule 2     lines -> lines line
+Rule 3     line -> jump
+Rule 4     line -> asmLine
+Rule 5     line -> noLine
+Rule 6     noLine -> RefJump Indent
+Rule 7     jump -> Jump Variable condition Indent
+Rule 8     condition -> True
+Rule 9     asmLine -> asmFollowInstructions Indent
+Rule 10    asmFollowInstructions -> asmFollowInstru
+Rule 11    asmFollowInstructions -> asmFollowInstructions asmFollowInstru
+Rule 12    asmFollowInstru -> Variable
+Rule 13    asmFollowInstru -> Number
+Rule 14    asmFollowInstru -> ArobasedInfo
 
 Terminals, with rules where they appear
 
+ArobasedInfo         : 14
 AsmOperation         : 
 Divide               : 
 EndProg              : 
@@ -42,78 +53,290 @@ Function             :
 GreaterThan          : 
 GreaterThanOrEqual   : 
 If                   : 
-Indent               : 1
-Jump                 : 1
+Indent               : 6 7 9
+Jump                 : 7
 LPAREN               : 
 LowerThan            : 
 LowerThanOrEqual     : 
 Minus                : 
 Multiply             : 
 NotEqual             : 
-Number               : 
+Number               : 13
 Plus                 : 
 RPAREN               : 
-RefJump              : 
+RefJump              : 6
 StrictEqual          : 
-True                 : 2
-Variable             : 1
+True                 : 8
+Variable             : 7 12
 error                : 
 
 Nonterminals, with rules where they appear
 
-condition            : 1
-jump                 : 0
+asmFollowInstru      : 10 11
+asmFollowInstructions : 9 11
+asmLine              : 4
+condition            : 7
+jump                 : 3
+line                 : 1 2
+lines                : 2 0
+noLine               : 5
 
 Parsing method: LALR
 
 state 0
 
-    (0) S' -> . jump
-    (1) jump -> . Jump Variable condition Indent
+    (0) S' -> . lines
+    (1) lines -> . line
+    (2) lines -> . lines line
+    (3) line -> . jump
+    (4) line -> . asmLine
+    (5) line -> . noLine
+    (7) jump -> . Jump Variable condition Indent
+    (9) asmLine -> . asmFollowInstructions Indent
+    (6) noLine -> . RefJump Indent
+    (10) asmFollowInstructions -> . asmFollowInstru
+    (11) asmFollowInstructions -> . asmFollowInstructions asmFollowInstru
+    (12) asmFollowInstru -> . Variable
+    (13) asmFollowInstru -> . Number
+    (14) asmFollowInstru -> . ArobasedInfo
 
-    Jump            shift and go to state 2
+    Jump            shift and go to state 6
+    RefJump         shift and go to state 9
+    Variable        shift and go to state 7
+    Number          shift and go to state 11
+    ArobasedInfo    shift and go to state 12
 
-    jump                           shift and go to state 1
+    lines                          shift and go to state 1
+    line                           shift and go to state 2
+    jump                           shift and go to state 3
+    asmLine                        shift and go to state 4
+    noLine                         shift and go to state 5
+    asmFollowInstructions          shift and go to state 8
+    asmFollowInstru                shift and go to state 10
 
 state 1
 
-    (0) S' -> jump .
+    (0) S' -> lines .
+    (2) lines -> lines . line
+    (3) line -> . jump
+    (4) line -> . asmLine
+    (5) line -> . noLine
+    (7) jump -> . Jump Variable condition Indent
+    (9) asmLine -> . asmFollowInstructions Indent
+    (6) noLine -> . RefJump Indent
+    (10) asmFollowInstructions -> . asmFollowInstru
+    (11) asmFollowInstructions -> . asmFollowInstructions asmFollowInstru
+    (12) asmFollowInstru -> . Variable
+    (13) asmFollowInstru -> . Number
+    (14) asmFollowInstru -> . ArobasedInfo
 
+    Jump            shift and go to state 6
+    RefJump         shift and go to state 9
+    Variable        shift and go to state 7
+    Number          shift and go to state 11
+    ArobasedInfo    shift and go to state 12
 
+    line                           shift and go to state 13
+    jump                           shift and go to state 3
+    asmLine                        shift and go to state 4
+    noLine                         shift and go to state 5
+    asmFollowInstructions          shift and go to state 8
+    asmFollowInstru                shift and go to state 10
 
 state 2
 
-    (1) jump -> Jump . Variable condition Indent
+    (1) lines -> line .
 
-    Variable        shift and go to state 3
+    Jump            reduce using rule 1 (lines -> line .)
+    RefJump         reduce using rule 1 (lines -> line .)
+    Variable        reduce using rule 1 (lines -> line .)
+    Number          reduce using rule 1 (lines -> line .)
+    ArobasedInfo    reduce using rule 1 (lines -> line .)
+    $end            reduce using rule 1 (lines -> line .)
 
 
 state 3
 
-    (1) jump -> Jump Variable . condition Indent
-    (2) condition -> . True
+    (3) line -> jump .
 
-    True            shift and go to state 5
+    Jump            reduce using rule 3 (line -> jump .)
+    RefJump         reduce using rule 3 (line -> jump .)
+    Variable        reduce using rule 3 (line -> jump .)
+    Number          reduce using rule 3 (line -> jump .)
+    ArobasedInfo    reduce using rule 3 (line -> jump .)
+    $end            reduce using rule 3 (line -> jump .)
 
-    condition                      shift and go to state 4
 
 state 4
 
-    (1) jump -> Jump Variable condition . Indent
+    (4) line -> asmLine .
 
-    Indent          shift and go to state 6
+    Jump            reduce using rule 4 (line -> asmLine .)
+    RefJump         reduce using rule 4 (line -> asmLine .)
+    Variable        reduce using rule 4 (line -> asmLine .)
+    Number          reduce using rule 4 (line -> asmLine .)
+    ArobasedInfo    reduce using rule 4 (line -> asmLine .)
+    $end            reduce using rule 4 (line -> asmLine .)
 
 
 state 5
 
-    (2) condition -> True .
+    (5) line -> noLine .
 
-    Indent          reduce using rule 2 (condition -> True .)
+    Jump            reduce using rule 5 (line -> noLine .)
+    RefJump         reduce using rule 5 (line -> noLine .)
+    Variable        reduce using rule 5 (line -> noLine .)
+    Number          reduce using rule 5 (line -> noLine .)
+    ArobasedInfo    reduce using rule 5 (line -> noLine .)
+    $end            reduce using rule 5 (line -> noLine .)
 
 
 state 6
 
-    (1) jump -> Jump Variable condition Indent .
+    (7) jump -> Jump . Variable condition Indent
 
-    $end            reduce using rule 1 (jump -> Jump Variable condition Indent .)
+    Variable        shift and go to state 14
+
+
+state 7
+
+    (12) asmFollowInstru -> Variable .
+
+    Indent          reduce using rule 12 (asmFollowInstru -> Variable .)
+    Variable        reduce using rule 12 (asmFollowInstru -> Variable .)
+    Number          reduce using rule 12 (asmFollowInstru -> Variable .)
+    ArobasedInfo    reduce using rule 12 (asmFollowInstru -> Variable .)
+
+
+state 8
+
+    (9) asmLine -> asmFollowInstructions . Indent
+    (11) asmFollowInstructions -> asmFollowInstructions . asmFollowInstru
+    (12) asmFollowInstru -> . Variable
+    (13) asmFollowInstru -> . Number
+    (14) asmFollowInstru -> . ArobasedInfo
+
+    Indent          shift and go to state 15
+    Variable        shift and go to state 7
+    Number          shift and go to state 11
+    ArobasedInfo    shift and go to state 12
+
+    asmFollowInstru                shift and go to state 16
+
+state 9
+
+    (6) noLine -> RefJump . Indent
+
+    Indent          shift and go to state 17
+
+
+state 10
+
+    (10) asmFollowInstructions -> asmFollowInstru .
+
+    Indent          reduce using rule 10 (asmFollowInstructions -> asmFollowInstru .)
+    Variable        reduce using rule 10 (asmFollowInstructions -> asmFollowInstru .)
+    Number          reduce using rule 10 (asmFollowInstructions -> asmFollowInstru .)
+    ArobasedInfo    reduce using rule 10 (asmFollowInstructions -> asmFollowInstru .)
+
+
+state 11
+
+    (13) asmFollowInstru -> Number .
+
+    Indent          reduce using rule 13 (asmFollowInstru -> Number .)
+    Variable        reduce using rule 13 (asmFollowInstru -> Number .)
+    Number          reduce using rule 13 (asmFollowInstru -> Number .)
+    ArobasedInfo    reduce using rule 13 (asmFollowInstru -> Number .)
+
+
+state 12
+
+    (14) asmFollowInstru -> ArobasedInfo .
+
+    Indent          reduce using rule 14 (asmFollowInstru -> ArobasedInfo .)
+    Variable        reduce using rule 14 (asmFollowInstru -> ArobasedInfo .)
+    Number          reduce using rule 14 (asmFollowInstru -> ArobasedInfo .)
+    ArobasedInfo    reduce using rule 14 (asmFollowInstru -> ArobasedInfo .)
+
+
+state 13
+
+    (2) lines -> lines line .
+
+    Jump            reduce using rule 2 (lines -> lines line .)
+    RefJump         reduce using rule 2 (lines -> lines line .)
+    Variable        reduce using rule 2 (lines -> lines line .)
+    Number          reduce using rule 2 (lines -> lines line .)
+    ArobasedInfo    reduce using rule 2 (lines -> lines line .)
+    $end            reduce using rule 2 (lines -> lines line .)
+
+
+state 14
+
+    (7) jump -> Jump Variable . condition Indent
+    (8) condition -> . True
+
+    True            shift and go to state 19
+
+    condition                      shift and go to state 18
+
+state 15
+
+    (9) asmLine -> asmFollowInstructions Indent .
+
+    Jump            reduce using rule 9 (asmLine -> asmFollowInstructions Indent .)
+    RefJump         reduce using rule 9 (asmLine -> asmFollowInstructions Indent .)
+    Variable        reduce using rule 9 (asmLine -> asmFollowInstructions Indent .)
+    Number          reduce using rule 9 (asmLine -> asmFollowInstructions Indent .)
+    ArobasedInfo    reduce using rule 9 (asmLine -> asmFollowInstructions Indent .)
+    $end            reduce using rule 9 (asmLine -> asmFollowInstructions Indent .)
+
+
+state 16
+
+    (11) asmFollowInstructions -> asmFollowInstructions asmFollowInstru .
+
+    Indent          reduce using rule 11 (asmFollowInstructions -> asmFollowInstructions asmFollowInstru .)
+    Variable        reduce using rule 11 (asmFollowInstructions -> asmFollowInstructions asmFollowInstru .)
+    Number          reduce using rule 11 (asmFollowInstructions -> asmFollowInstructions asmFollowInstru .)
+    ArobasedInfo    reduce using rule 11 (asmFollowInstructions -> asmFollowInstructions asmFollowInstru .)
+
+
+state 17
+
+    (6) noLine -> RefJump Indent .
+
+    Jump            reduce using rule 6 (noLine -> RefJump Indent .)
+    RefJump         reduce using rule 6 (noLine -> RefJump Indent .)
+    Variable        reduce using rule 6 (noLine -> RefJump Indent .)
+    Number          reduce using rule 6 (noLine -> RefJump Indent .)
+    ArobasedInfo    reduce using rule 6 (noLine -> RefJump Indent .)
+    $end            reduce using rule 6 (noLine -> RefJump Indent .)
+
+
+state 18
+
+    (7) jump -> Jump Variable condition . Indent
+
+    Indent          shift and go to state 20
+
+
+state 19
+
+    (8) condition -> True .
+
+    Indent          reduce using rule 8 (condition -> True .)
+
+
+state 20
+
+    (7) jump -> Jump Variable condition Indent .
+
+    Jump            reduce using rule 7 (jump -> Jump Variable condition Indent .)
+    RefJump         reduce using rule 7 (jump -> Jump Variable condition Indent .)
+    Variable        reduce using rule 7 (jump -> Jump Variable condition Indent .)
+    Number          reduce using rule 7 (jump -> Jump Variable condition Indent .)
+    ArobasedInfo    reduce using rule 7 (jump -> Jump Variable condition Indent .)
+    $end            reduce using rule 7 (jump -> Jump Variable condition Indent .)
 

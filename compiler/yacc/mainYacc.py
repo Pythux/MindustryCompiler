@@ -21,11 +21,11 @@ precedence = (
 # Divide    : level = 2,  assoc = 'left'
 
 '''
-expression : expression PLUS expression
-           | expression MINUS expression
-           | expression TIMES expression
-           | expression DIVIDE expression
-           | LPAREN expression RPAREN
+expression : expression Plus expression
+           | expression Minus expression
+           | expression Multiply expression
+           | expression Divide expression
+           | LeftParentheses expression RightParentheses
            | NUMBER
 '''
 
@@ -48,9 +48,35 @@ expression : expression PLUS expression
 #     p[0] = p[1] + p[3]
 
 
+def p_lines_one(p: YaccProduction):
+    '''lines : line'''
+    p[0] = p[1]
+
+
+def p_lines_many(p: YaccProduction):
+    '''lines : lines line'''
+    p[0] = p[1] + p[2]
+
+
+def p_line(p: YaccProduction):
+    '''line : jump
+            | asmLine
+    '''
+    p[0] = p[1]
+
+
+def p_lines_empty(p: YaccProduction):
+    '''line : noLine'''
+    p[0] = ''
+
+
+def p_ref(p: YaccProduction):
+    '''noLine : RefJump Indent'''
+
+
 def p_jump(p: YaccProduction):
     '''jump : Jump Variable condition Indent'''
-    breakpoint()
+    p[0] = p[1] + ' ' + p[2] + ' ' + str(p[3])
 
 
 def p_condition(p):
@@ -59,8 +85,19 @@ def p_condition(p):
 
 
 def p_asmLine(p: YaccProduction):
-    '''asmLine : (asmFollowInstru)+ Indent
+    '''asmLine : asmFollowInstructions Indent'''
+    p[0] = p[1] + '\n' + (' '*4 * p[2])
+
+
+def p_asmFollowInstructions_one(p: YaccProduction):
+    '''asmFollowInstructions : asmFollowInstru'''
+    p[0] = p[1]
+
+
+def p_asmFollowInstructions_many(p: YaccProduction):
+    '''asmFollowInstructions : asmFollowInstructions asmFollowInstru
     '''
+    p[0] = str(p[1]) + ' ' + str(p[2])
 
 
 def p_asmFollowInstru(p: YaccProduction):
@@ -68,6 +105,7 @@ def p_asmFollowInstru(p: YaccProduction):
                        | Number
                        | ArobasedInfo
     '''
+    p[0] = p[1]
 
 
 # Error rule for syntax errors
