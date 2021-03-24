@@ -21,25 +21,15 @@ class LexToken:
 
 # List of token names.   This is always required
 tokens = [
-    'Plus',
-    'Minus',
-    'Multiply',
-    'Divide',
-    'LPAREN',
-    'RPAREN',
+    # 'Plus',
 ]
 
 # Regular expression rules for simple tokens
 # will be check last (after functions)
 # t_Plus = r'\+'
-# t_Minus = r'-'
-# t_Multiply = r'\*'
-# t_Divide = r'/'
-# t_LPAREN = r'\('
-# t_RPAREN = r'\)'
 
 
-# add functions:
+# add functions that turn to tokens
 tokens += [
     'Number',
     'Indent',
@@ -83,18 +73,7 @@ reserved = {
     'op': 'AsmOperation'
 }
 tokens += list(reserved.values())
-tokens += ['Variable']  # words by default
-
-reservedSpecial = {
-    '==': 'Equal',
-    '===': 'StrictEqual',
-    '!=': 'NotEqual',
-    '>': 'GreaterThan',
-    '>=': 'GreaterThanOrEqual',
-    '<': 'LowerThan',
-    '<=': 'LowerThanOrEqual',
-}
-tokens += (reservedSpecial.values())
+tokens += ['Variable']  # not reserved words
 
 
 # function starting with t_ will be run for tokens even if not in tokens list
@@ -113,11 +92,9 @@ def t_ArobasedInfo(t):
     return t
 
 
-startReservedSpecial = boa(list(reservedSpecial.keys())).map(lambda w: w[0])
-
-
-# must be defined before SpecialWord, fuction exécute before const
-def t_Commentaires(t):
+# must be defined before SpecialWord
+# discards comments line (aka: //)
+def t_Comments(t):
     r'\/\/.*'
     # no return, token discarded
 
@@ -136,6 +113,19 @@ def t_Commentaires(t):
 #     r'[\+\-\*](\d|\s{1}|[\(])'  # op, number, '(' or whitespace char
 #     breakpoint()
 #     # return t
+
+
+reservedSpecial = {
+    '==': 'Equal',
+    '===': 'StrictEqual',
+    '!=': 'NotEqual',
+    '>': 'GreaterThan',
+    '>=': 'GreaterThanOrEqual',
+    '<': 'LowerThan',
+    '<=': 'LowerThanOrEqual',
+}
+tokens += (reservedSpecial.values())
+startReservedSpecial = boa(list(reservedSpecial.keys())).map(lambda w: w[0])
 
 
 # catch everything else that function on trop don't catch
@@ -170,25 +160,10 @@ lexer = lex.lex()
 # lexer = lex.lex(debug=True)
 
 
-def test():
-    # Test it out
-    data = '''
-    // lulz // yo
-    if true jump // lo
-        yé
-            4 >= 12
-
-    #Ref: yoél
-    iftruejump
-    '''
-    # Give the lexer some input
-    lexer.input(data)
+def runLex(content):
+    lexer.input(content)
     for tok in lexer:
         print(tok)
-
-
-def runLex(fileContent: str):
-    pass
 
 
 def runInteractiveLex():
@@ -202,13 +177,5 @@ def runInteractiveLex():
             content += s + '\n'
             continue
 
-        lexer.input(content)
-        for tok in lexer:
-            print(tok)
+        runLex(content)
         content = ''
-
-
-def main():
-    # main function which will either tokenize input read from standard input
-    # or from a file specified on the command line
-    lex.runmain()

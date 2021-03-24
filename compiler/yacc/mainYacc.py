@@ -114,6 +114,24 @@ def p_condition(p):
     p[0] = True
 
 
+class AsmCondition:
+    def __init__(self, operation, infoA, infoB) -> None:
+        self.string = operation + ' ' + str(infoA) + ' ' + str(infoB)
+
+
+def p_asmCondition(p):
+    '''asmCondition : Variable info info'''
+    p[0] = AsmCondition(p[1], p[2], p[3])
+
+
+def p_info(p):
+    '''info : Variable
+            | Number
+            | ArobasedInfo
+    '''
+    p[0] = p[1]
+
+
 class AsmInstr:
     def __init__(self, string) -> None:
         self.string = string
@@ -185,7 +203,7 @@ def toLinesOfCode(li: List[any]):
         if isinstance(el, AsmInstr):
             lines.append(el.toLine())
         if isinstance(el, Jump):
-            lines.append(el.toLine(refDict)
+            lines.append(el.toLine(refDict))
         else:
             raise Exception('wtf')
     return '\n'.join(lines)
