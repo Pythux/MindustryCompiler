@@ -48,14 +48,21 @@ expression : expression Plus expression
 #     p[0] = p[1] + p[3]
 
 
+lineNumber = 0
+
+
 def p_lines_one(p: YaccProduction):
     '''lines : line'''
     p[0] = p[1]
+    global lineNumber
+    lineNumber += 1
 
 
 def p_lines_many(p: YaccProduction):
     '''lines : lines line'''
     p[0] = p[1] + p[2]
+    global lineNumber
+    lineNumber += 1
 
 
 def p_line(p: YaccProduction):
@@ -70,8 +77,18 @@ def p_lines_empty(p: YaccProduction):
     p[0] = ''
 
 
+refDict = {}
+
+
 def p_ref(p: YaccProduction):
     '''noLine : RefJump Indent'''
+    ref = p[1]
+    if refDict[ref] is not None:
+        raise Exception('ref {} already declared'.format(ref))
+    refDict[ref] = lineNumber
+
+
+jumpList = []
 
 
 def p_jump(p: YaccProduction):
