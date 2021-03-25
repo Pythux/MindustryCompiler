@@ -2,8 +2,7 @@
 
 compiler that transforme to mindustry asm code
 
-
-## Installation:
+## Installation
 
 ### need python
 
@@ -37,7 +36,7 @@ run it with:
 
 `> mindc --interactive`
 
-```
+```plain
 > #ref start
 > set result 1
 > #ref loopAdd
