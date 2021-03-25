@@ -1,7 +1,7 @@
 
 # Yacc
 
-from typing import List
+from typing import List, T
 from ply import yacc
 from ply.yacc import YaccProduction
 
@@ -87,36 +87,35 @@ def p_jump(p: YaccProduction):
     p[0] = jump
 
 
-def p_jump_always(p):
+def p_jump_always(p: YaccProduction):
     '''jump : Jump ID Indent'''
     p[0] = Jump(p[2])
 
 
-def p_asmCondition(p):
+def p_asmCondition(p: YaccProduction):
     '''asmCondition : ID info info'''
     p[0] = p[1] + ' ' + str(p[2]) + ' ' + str(p[3])
 
 
-def p_info(p):
+def p_info(p: YaccProduction):
     '''info : ID
             | Number
+            | String
             | ArobasedInfo
     '''
     p[0] = p[1]
 
 
-class AsmInstr:
-    def __init__(self, string) -> None:
-        self.string = string
-
-    def toLine(self):
-        return self.string
+# to keep the "valide ASM will pass"
+def p_jump_asmNoRef(p: YaccProduction):
+    '''asmInstr : Jump Number asmCondition Indent'''
+    p[0] = p[1] + ' ' + str(p[2]) + ' ' + p[3]
 
 
 # catch all ASM as it, no processing them
 def p_asmLine(p: YaccProduction):
     '''asmInstr : asmValideInstructions Indent'''
-    p[0] = AsmInstr(p[1])
+    p[0] = p[1]
 
 
 def p_asmFollowInstructions_one(p: YaccProduction):
@@ -127,15 +126,6 @@ def p_asmFollowInstructions_one(p: YaccProduction):
 def p_asmFollowInstructions_many(p: YaccProduction):
     '''asmValideInstructions : asmValideInstructions value'''
     p[0] = p[1] + ' ' + str(p[2])
-
-
-def p_asmFollowInstru(p: YaccProduction):
-    '''value : ID
-             | Number
-             | String
-             | ArobasedInfo
-    '''
-    p[0] = p[1]
 
 
 # Error rule for syntax errors
@@ -160,11 +150,11 @@ def runYacc(content: str):
     return stringCode
 
 
-# we only have at this moment AsmInstr or Jump Objects in lines
-def changeRefToLineNumber(li: List[any]):
+# we only have at this moment string or Jump Objects in lines
+def changeRefToLineNumber(li: List[T]):
     lines = []
     for el in li:
-        if isinstance(el, AsmInstr):
+        if isinstance(el, str):
             lines.append(el.toLine())
         elif isinstance(el, Jump):
             lines.append(el.toLine(refDict))

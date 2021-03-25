@@ -37,8 +37,9 @@ tokens += [
 ]
 
 
+# catch numbers like 0, 1, -2, -26.465
 def t_Number(t):
-    r'\d+[.]?\d*'
+    r'[-]?\d+[.]?\d*'
     return t
 
 

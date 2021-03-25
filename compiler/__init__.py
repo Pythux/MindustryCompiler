@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-__title__ = 'Mindustry-ASM'
-__version__ = '0.1'
+__title__ = 'MindustryCompiler'
+__version__ = '1.0'
 __author__ = 'Pythux'
 
 # Version synonym

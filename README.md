@@ -1,46 +1,85 @@
-# Mindustry-ASM
 
-compiler that transforme to mindustry asm code
+# MindustryCompiler
 
-## Installation
+[![Latest Version](https://img.shields.io/pypi/v/PyBoa.svg)](https://pypi.python.org/pypi/MindustryCompiler/)
 
-### need python
+compile to mindustry asm code,
 
-install python here
+the language is a subset of mindustry asm code [named Mindustry Logic](https://github.com/MindustryGame/wiki/blob/master/docs/logic/0-introduction.md)
 
-#### pip
+## features
 
-have `pip` ? pip install ...
+- all mindustry code are valide as it
 
-run it with `> mindc` command
+- jump to a reference:
 
-#### whitout pip
+    ```plain
+    set val 0
+    #ref addition
+    add val 1 1
+    jump addition notEqual val 4
+    print val
+    printflush message1
+    ```
+    [more](./doc/reference.md)
 
-dowload this project
-
-run it with:
-
- `> python compiler/__main__.py`
+- ... soon
 
 ## current usage
 
-### compile a file
+- compile a file :
 
-`> mindc fileName`
+    ```sh
+    > mindc fileName
+    ```
 
-### get the result in clipboard to just past it in mindustry
+- get the result in clipboard to just past it in mindustry :
 
-`> mindc --ctrlC fileName`
+    ```sh
+    > mindc --ctrlC fileName`
+    ```
 
-### run interactive to play with it
+- run interactive to play with it :
 
-`> mindc --interactive`
+    ```sh
+    > mindc --interactive`
+    ```
 
-```plain
-> #ref start
-> set result 1
-> #ref loopAdd
-> add result 1 1
-> jump start equal result 4
-> jump loopAdd
-```
+## Installation
+
+### you need python to run this software
+
+- check that you have it
+
+    type in your shell/terminal :
+
+    ```sh
+    python3 --version
+    ```
+
+    must give you something like: `Python 3._._`
+
+- if you don't have it, install it :
+
+    you could dowload python from [here](https://www.python.org/downloads/release)
+
+### install mindustry compiler
+
+- with python package manager:
+
+    ```sh
+    python3 -m pip install ___
+    ```
+
+    to run it, type:
+
+    ```sh
+    mindc
+    ```
+
+- or download this git and run `__main__.py` file
+    to run it:
+
+    ```sh
+    python3 compiler/__main__.py
+    ```
