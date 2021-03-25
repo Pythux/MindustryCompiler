@@ -27,58 +27,19 @@ tokens = [
 # t_Plus = r'\+'
 
 
-# add functions that turn to tokens
+# add tokens from functions
 tokens += [
     'Number',
+    'ArobasedInfo',
+    'String',
     'Indent',
     'RefJump',
 ]
 
 
-# A regular expression rule with some action code
 def t_Number(t):
     r'\d+[.]?\d*'
-    t.value = t.value
     return t
-
-
-def t_Indent(t):
-    r'\n(\t|[ ]{4})*'
-    t.value = len(t.value[1:].replace(' '*4, '\t'))
-    t.lexer.lineno += 1  # inc line number to track lines
-    return t
-
-
-def t_RefJump(t):
-    r'[#][Rr]ef[:]?[ ]\S*'
-    t.value = t.value.split(' ')[-1]
-    return t
-
-
-reserved = {
-    # new ones (or witch change)
-    'if': 'If',
-    'jump': 'Jump',
-    'def': 'Function',
-    'return': 'FunReturn',
-
-    'not': 'NotEqual',
-    'true': 'True',
-    'false': 'False',
-}
-tokens += list(reserved.values())
-tokens += ['ID']  # not reserved words
-
-
-# function starting with t_ will be run for tokens even if not in tokens list
-def t_Word(t):
-    r'[a-zA-Z_]\S*'  # \S Matches anything other than a space, tab or newline.
-    # print(t.type) == 'Word'
-    t.type = reserved.get(t.value, 'ID')  # Check for reserved words
-    return t
-
-
-tokens += ['ArobasedInfo']
 
 
 def t_ArobasedInfo(t):
@@ -86,8 +47,50 @@ def t_ArobasedInfo(t):
     return t
 
 
-# must be defined before SpecialWord
+def t_stringDoubleQuote(t: LexToken):
+    r'".*"'
+    t.type = 'String'
+    return t
+
+
+def t_stringSimpleQuote(t: LexToken):
+    r"'.*'"
+    t.type = 'String'
+    return t
+
+
+# count indentation, 4 saces or 1 tab = 1 lvl of indent
+def t_Indent(t: LexToken):
+    r'\n(\t|[ ]{4})*'
+    t.value = len(t.value[1:].replace(' '*4, '\t'))
+    t.lexer.lineno += 1  # inc line number to track lines
+    return t
+
+
+# match: '#ref st', '#Ref st', '#ref: st', '#Ref: st', '#ref é4sét$sr'
+def t_RefJump(t: LexToken):
+    r'[#][Rr]ef[:]?[ ]\S*'
+    t.value = t.value.split(' ')[-1]
+    return t
+
+
+# reserved keyword
+reserved = {
+    'jump': 'Jump',
+}
+tokens += list(reserved.values())
+tokens += ['ID']  # not reserved words
+
+
+# function starting with t_ will be run for tokens even if not in tokens list
+def t_Word(t: LexToken):
+    r'[a-zA-Z_]\S*'  # \S Matches anything other than a space, tab or newline.
+    t.type = reserved.get(t.value, 'ID')  # Check for reserved words
+    return t
+
+
 # discards comments line (aka: '//')
+# must be defined before SpecialWord to catch it
 def t_CommentsSlashSlash(t):
     r'\/\/.*'
     # no return, token discarded
@@ -99,83 +102,36 @@ def t_CommentsHashSpace(t):
     # no return, token discarded
 
 
-tokens += ['String']
-
-
-def t_stringDoubleQuote(t):
-    r'".*"'
-    t.value = 'String'
-    return t
-
-
-def t_stringSimpleQuote(t):
-    r"'.*'"
-    t.value = 'String'
-    return t
-
-
-# operation = {
-#     '+': 'Plus',
-#     '-': 'Minus',
-#     '*': 'Multiply',
-#     '/': 'Divide',
-#     '(': 'LeftParentheses',
-#     ')': 'RightParentheses',
-# }
-# tokens += list(operation.values())
-
-
-# def t_Operation(t: LexToken):
-#     r'[\+\-\*](\d|\s{1}|[\(])'  # op, number, '(' or whitespace char
-#     breakpoint()
-#     # return t
-
-
-reservedSpecial = {
-    '==': 'Equal',
-    '===': 'StrictEqual',
-    '!=': 'NotEqual',
-    '>': 'GreaterThan',
-    '>=': 'GreaterThanOrEqual',
-    '<': 'LowerThan',
-    '<=': 'LowerThanOrEqual',
-}
-tokens += (reservedSpecial.values())
-startReservedSpecial = map(lambda w: w[0], list(reservedSpecial.keys()))
-
-
 # catch everything else that function on trop don't catch
-def t_SpecialWord(t):
+def t_SpecialWord(t: LexToken):
     r'\S+'  # \S Matches anything other than a space, tab or newline
-    if t.value[0] in startReservedSpecial:
-        t.type = reservedSpecial[t.value]  # Check for reserved words
-        return t
 
     if t.value[0] == '#':
-        return None  # comments that as of kind: "#" not directly followed by space
+        return None  # comments "#"
 
-    raise Exception('SpecialWord not match: {}'.format(t))
+    print('SpecialWord not match: {}'.format(t))
+    print("line: {}".format(t.lineno))
+    raise SystemExit()
 
 
-# A string containing ignored characters (spaces and tabs)
-t_ignore = ''
+# A string containing ignored characters, could be (spaces and tabs)
+t_ignore = '\r'
 
 
 # Error handling rule
-def t_error(t):
+def t_error(t: LexToken):
     if t.value[0] == ' ':
         t.lexer.skip(1)
     else:
         print("Illegal character '%s'" % t.value[0])
-        t.lexer.skip(1)
+        print("line: {}".format(t.lineno))
+        raise SystemExit()
 
 
+# make a list of unique tokens
 tokens = list(set(tokens))
 # Build the lexer
-
-
 lexer = lex.lex()
-
 # debugging:
 # lexer = lex.lex(debug=True)
 

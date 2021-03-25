@@ -33,11 +33,6 @@ def run(args):
         raise Exception('not implemented')
 
 
-if __name__ == '__main__':
-    print("yolo")
-    # main()
-
-
 def main():
     logging.basicConfig(level=logging.DEBUG)
     doc = """
@@ -56,8 +51,11 @@ def main():
                         action='store_true')
     parser.add_argument('--ctrlC', help='copie resulted ASM to clipboard (Ctrl-C), just what you need',
                         action='store_true')
-    parser.add_argument('-i', '--interactive', help='run interactive mode',
+    parser.add_argument('-i', '--interactive', '--repl', help='run interactive mode',
                         action='store_true')
+
+    # for faster debugging:
+    # python -m pdb -c continue compiler/__main__.py -i
 
     args = parser.parse_args()
     if args.lex and args.yacc:  # not true together
@@ -81,3 +79,7 @@ def main():
             raise Exception('NotImplemented')
         else:
             print(result)
+
+
+if __name__ == '__main__':
+    main()

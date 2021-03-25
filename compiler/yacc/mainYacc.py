@@ -7,41 +7,13 @@ from ply.yacc import YaccProduction
 
 # Get the token map from the lexer.  This is required.
 from compiler.lex import tokens  # noqa
-
-
-# Dealing With Ambiguous Grammars
-# precedence = (
-#     ('left', 'Plus', 'Minus'),  # left associative because must choose one
-#     ('left', 'Multiply', 'Divide'),
-# )
-# will give:
-# Plus      : level = 1,  assoc = 'left'
-# Minus     : level = 1,  assoc = 'left'
-# Multiply  : level = 2,  assoc = 'left'
-# Divide    : level = 2,  assoc = 'left'
-
-'''
-expression : expression Plus expression
-           | expression Minus expression
-           | expression Multiply expression
-           | expression Divide expression
-           | LeftParentheses expression RightParentheses
-           | Number
-'''
-
-# def p_expression_plus(p):
-#     '''expression : expression Plus expression
-
-#     '''
-#     #   ^            ^        ^    ^
-#     #  p[0]         p[1]     p[2] p[3]
-
-#     p[0] = p[1] + p[3]
+from compiler.lex.mainLex import LexToken
 
 
 lineNumber = 0
 
 
+# trac lineNumber to #ref it
 def p_lines_one(p: YaccProduction):
     '''lines : line'''
     line = p[1]
@@ -53,6 +25,7 @@ def p_lines_one(p: YaccProduction):
         lineNumber += 1
 
 
+# add a line to lines
 def p_lines_many(p: YaccProduction):
     '''lines : lines line'''
     line = p[2]
@@ -64,6 +37,7 @@ def p_lines_many(p: YaccProduction):
         lineNumber += 1
 
 
+# a line is ether a jump instruction or an asmInstr
 def p_line(p: YaccProduction):
     '''line : jump
             | asmInstr
@@ -71,13 +45,21 @@ def p_line(p: YaccProduction):
     p[0] = p[1]
 
 
+# no p[0] =, we don't bubble it, just dircarded
 def p_lines_empty(p: YaccProduction):
     '''line : noLine'''
 
 
+# will be used to store: ref -> code line
 refDict = {}
 
 
+# discard empty lines
+def p_noLine(p):
+    '''noLine : Indent'''
+
+
+# handle a ref instruction, we store info in refDict and discard information
 def p_ref(p: YaccProduction):
     '''noLine : RefJump Indent'''
     ref = p[1]
@@ -89,7 +71,7 @@ def p_ref(p: YaccProduction):
 class Jump:
     def __init__(self, ref, condition=None) -> None:
         self.ref = ref
-        self.singleCondition = toAsmSingleCondition(condition)
+        self.asmCondition = condition
 
     def toLine(self, refDict):
         if self.ref not in refDict:
@@ -98,36 +80,16 @@ class Jump:
             ref=refDict[self.ref], condition=self.singleCondition)
 
 
-def toAsmSingleCondition(singleCondition):
-    if isinstance(singleCondition, AsmCondition):
-        return singleCondition
-    if singleCondition is None:
-        return 'always true true'
-    return singleCondition
-
-
 def p_jump(p: YaccProduction):
-    '''jump : Jump ID condition Indent
-            | Jump ID asmCondition Indent
+    '''jump : Jump ID asmCondition Indent
     '''
     jump = Jump(p[2], p[3])
     p[0] = jump
 
 
-def p_jump_noCondition(p):
+def p_jump_always(p):
     '''jump : Jump ID Indent'''
     p[0] = Jump(p[2])
-
-
-def p_condition(p):
-    '''condition : True
-    '''
-    p[0] = p[1]
-
-
-class AsmCondition:
-    def __init__(self, operation, infoA, infoB) -> None:
-        self.string = operation + ' ' + str(infoA) + ' ' + str(infoB)
 
 
 def p_asmCondition(p):
@@ -153,18 +115,17 @@ class AsmInstr:
 
 # catch all ASM as it, no processing them
 def p_asmLine(p: YaccProduction):
-    '''asmInstr : asmFollowInstructions Indent'''
+    '''asmInstr : asmValideInstructions Indent'''
     p[0] = AsmInstr(p[1])
 
 
 def p_asmFollowInstructions_one(p: YaccProduction):
-    '''asmFollowInstructions : value'''
+    '''asmValideInstructions : value'''
     p[0] = str(p[1])
 
 
 def p_asmFollowInstructions_many(p: YaccProduction):
-    '''asmFollowInstructions : asmFollowInstructions value
-    '''
+    '''asmValideInstructions : asmValideInstructions value'''
     p[0] = p[1] + ' ' + str(p[2])
 
 
@@ -178,8 +139,11 @@ def p_asmFollowInstru(p: YaccProduction):
 
 
 # Error rule for syntax errors
-def p_error(p):
+def p_error(t: LexToken):
     print("Syntax error in input!")
+    print("at line: {}, wasn't expecting: {}".format(t.lineno, t.type))
+    print("for more information, it's value is: {}".format(t.value))
+    raise SystemExit()
 
 
 # Build the parser
@@ -209,7 +173,6 @@ def changeRefToLineNumber(li: List[any]):
     return '\n'.join(lines)
 
 
-# python -m pdb -c continue compiler/__main__.py -i --yacc
 def runInteractiveYacc():
     content = ''
     while True:
