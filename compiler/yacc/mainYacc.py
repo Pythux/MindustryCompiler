@@ -177,9 +177,3 @@ def runInteractiveYacc():
             continue
         print(runYacc(content))
         content = ''
-        # cleanData()
-
-
-def cleanData():
-    global refDict
-    refDict = {}
