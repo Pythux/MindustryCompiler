@@ -15,7 +15,7 @@ def runInteractive(args):
         return
     else:
         # give final compiled result in interactive
-        raise Exception('not implemented')
+        runInteractiveYacc()
 
 
 def run(args):
@@ -31,6 +31,11 @@ def run(args):
         # give final compiled result in interactive
         # on interactive whait for "END" statement to process it
         raise Exception('not implemented')
+
+
+if __name__ == '__main__':
+    print("yolo")
+    # main()
 
 
 def main():
@@ -76,7 +81,3 @@ def main():
             raise Exception('NotImplemented')
         else:
             print(result)
-
-
-if __name__ == '__main__':
-    main()

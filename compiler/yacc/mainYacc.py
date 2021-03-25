@@ -87,7 +87,7 @@ def p_ref(p: YaccProduction):
 
 
 class Jump:
-    def __init__(self, ref, condition) -> None:
+    def __init__(self, ref, condition=None) -> None:
         self.ref = ref
         self.singleCondition = toAsmSingleCondition(condition)
 
@@ -101,6 +101,8 @@ class Jump:
 def toAsmSingleCondition(singleCondition):
     if isinstance(singleCondition, AsmCondition):
         return singleCondition
+    if singleCondition is None:
+        return 'always true true'
     return singleCondition
 
 
@@ -112,9 +114,13 @@ def p_jump(p: YaccProduction):
     p[0] = jump
 
 
+def p_jump_noCondition(p):
+    '''jump : Jump ID Indent'''
+    p[0] = Jump(p[2])
+
+
 def p_condition(p):
     '''condition : True
-                 | False
     '''
     p[0] = p[1]
 
@@ -152,20 +158,21 @@ def p_asmLine(p: YaccProduction):
 
 
 def p_asmFollowInstructions_one(p: YaccProduction):
-    '''asmFollowInstructions : asmFollowInstru'''
+    '''asmFollowInstructions : value'''
     p[0] = str(p[1])
 
 
 def p_asmFollowInstructions_many(p: YaccProduction):
-    '''asmFollowInstructions : asmFollowInstructions asmFollowInstru
+    '''asmFollowInstructions : asmFollowInstructions value
     '''
     p[0] = p[1] + ' ' + str(p[2])
 
 
 def p_asmFollowInstru(p: YaccProduction):
-    '''asmFollowInstru : ID
-                       | Number
-                       | ArobasedInfo
+    '''value : ID
+             | Number
+             | String
+             | ArobasedInfo
     '''
     p[0] = p[1]
 
@@ -207,7 +214,7 @@ def runInteractiveYacc():
     content = ''
     while True:
         try:
-            s = input('Yacc >> ')
+            s = input('>> ')
         except EOFError:
             break
         if s:
@@ -217,7 +224,7 @@ def runInteractiveYacc():
             continue
         print(runYacc(content))
         content = ''
-        cleanData()
+        # cleanData()
 
 
 def cleanData():

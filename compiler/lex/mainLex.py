@@ -9,8 +9,6 @@
 from ply import lex
 from ply.lex import Lexer
 
-from boa import boa
-
 
 class LexToken:
     lexer: Lexer
@@ -39,8 +37,8 @@ tokens += [
 
 # A regular expression rule with some action code
 def t_Number(t):
-    r'\d+'
-    t.value = int(t.value)
+    r'\d+[.]?\d*'
+    t.value = t.value
     return t
 
 
@@ -52,7 +50,7 @@ def t_Indent(t):
 
 
 def t_RefJump(t):
-    r'[#][Rr]ef[:]?[ ][a-zA-Z_]\S*'
+    r'[#][Rr]ef[:]?[ ]\S*'
     t.value = t.value.split(' ')[-1]
     return t
 
@@ -89,10 +87,31 @@ def t_ArobasedInfo(t):
 
 
 # must be defined before SpecialWord
-# discards comments line (aka: //)
-def t_Comments(t):
+# discards comments line (aka: '//')
+def t_CommentsSlashSlash(t):
     r'\/\/.*'
     # no return, token discarded
+
+
+# discards comments line (aka: '# ')
+def t_CommentsHashSpace(t):
+    r'[#][ ].*'
+    # no return, token discarded
+
+
+tokens += ['String']
+
+
+def t_stringDoubleQuote(t):
+    r'".*"'
+    t.value = 'String'
+    return t
+
+
+def t_stringSimpleQuote(t):
+    r"'.*'"
+    t.value = 'String'
+    return t
 
 
 # operation = {
@@ -122,7 +141,7 @@ reservedSpecial = {
     '<=': 'LowerThanOrEqual',
 }
 tokens += (reservedSpecial.values())
-startReservedSpecial = boa(list(reservedSpecial.keys())).map(lambda w: w[0])
+startReservedSpecial = map(lambda w: w[0], list(reservedSpecial.keys()))
 
 
 # catch everything else that function on trop don't catch
@@ -131,7 +150,11 @@ def t_SpecialWord(t):
     if t.value[0] in startReservedSpecial:
         t.type = reservedSpecial[t.value]  # Check for reserved words
         return t
-    print('SpecialWord not match: {}'.format(t))
+
+    if t.value[0] == '#':
+        return None  # comments that as of kind: "#" not directly followed by space
+
+    raise Exception('SpecialWord not match: {}'.format(t))
 
 
 # A string containing ignored characters (spaces and tabs)

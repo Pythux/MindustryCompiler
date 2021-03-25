@@ -8,7 +8,7 @@ from helper_setup import read_readme, activate_cmd_build, activate_cmd_publish
 
 description = 'compile code to ASM Mindusty, jump instruction can use ref instead of line number'
 url = "https://github.com/Pythux/Mindustry-ASM"
-install_requires = ['PyBoa']
+install_requires = []
 classifiers = [
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
@@ -16,6 +16,12 @@ classifiers = [
     "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
 ]
 license = 'GNU3',
+
+entry_points = {
+    'console_scripts': [
+        'mindc = compiler.__main__:main'
+    ]
+}
 
 #################################################################
 
@@ -36,6 +42,7 @@ setup(
     install_requires=install_requires,  # external packages as dependencies,
     python_requires='>=3.6',
     license=license,
+    entry_points=entry_points,
 )
 
 # install in dev mode:
