@@ -92,5 +92,5 @@ def clean_dirs():
 def print_git_tag_info():
     __init__ = import_module(find_packages()[0])
     print('\nYou probably want to also tag the version now:')
-    print("  git tag -a v{0} -m 'release {0}'".format(__init__.__version__))
+    print("  git tag -a v{0}".format(__init__.__version__))  # -m 'release {0}' to add tag message
     print('  git push --tags')
