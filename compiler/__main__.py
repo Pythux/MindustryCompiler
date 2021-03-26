@@ -29,8 +29,7 @@ def run(args):
         return runYacc(fileContent)
     else:
         # give final compiled result in interactive
-        # on interactive whait for "END" statement to process it
-        raise Exception('not implemented')
+        return runYacc(fileContent)
 
 
 def main():
@@ -76,7 +75,8 @@ def main():
     else:
         result = run(args)
         if toClipboard:
-            raise Exception('NotImplemented')
+            import pyperclip
+            pyperclip.copy(result)
         else:
             print(result)
 

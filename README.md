@@ -49,16 +49,22 @@ the language is a subset of mindustry asm code [named Mindustry Logic](https://g
     > mindc fileName
     ```
 
+    exemple, in this folder:
+
+    ```sh
+    > mindc tests/identicalCode/3-comments.code
+    ```
+
 - get the result in clipboard to just past it in mindustry :
 
     ```sh
-    > mindc --ctrlC fileName`
+    > mindc --ctrlC tests/identicalCode/3-comments.code
     ```
 
 - run interactive to play with it :
 
     ```sh
-    > mindc --interactive`
+    > mindc --interactive
     ```
 
 ## Installation
