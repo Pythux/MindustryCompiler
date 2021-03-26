@@ -19,7 +19,7 @@ def getAsm(fileNameNoExtention):
 
 
 def getContent(fileName):
-    filePath = PurePath(os.path.dirname(__file__), 'codeTest', fileName)
+    filePath = PurePath(os.path.dirname(__file__), 'identicalCode', fileName)
     with open(filePath, 'r') as fd:
         return fd.read()
 
