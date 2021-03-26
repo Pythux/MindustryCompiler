@@ -1,8 +1,8 @@
 sensor in node1 @powerNetIn
 sensor out node1 @powerNetOut
-print "power: "
 op sub net in out
 op floor net net out
+print "power: "
 print net
 printflush message1
 jump 11 greaterThanEq net 1200

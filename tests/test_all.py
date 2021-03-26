@@ -40,3 +40,8 @@ def codeEqual(fileNameNoExtention):
 
 def test_jump():
     assert runYacc(getCode('2 - ref jump')) == getCode('1 - subset')
+
+
+def test_comments():
+    assert runYacc(getCode('3 - comments')) == runYacc(getCode('2 - ref jump'))
+    assert runYacc(getCode('3 - comments')) == getCode('1 - subset')
