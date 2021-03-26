@@ -48,6 +48,7 @@ def wheel():
 
 def publish():
     wheel()
+    comfirme_version()
     upload_wheel()
     clean_dirs()
     print_git_tag_info()
@@ -92,5 +93,5 @@ def clean_dirs():
 def print_git_tag_info():
     __init__ = import_module(find_packages()[0])
     print('\nYou probably want to also tag the version now:')
-    print("  git tag -a v{0}".format(__init__.__version__))  # -m 'release {0}' to add tag message
+    print("  git tag -a v{0} -m ''".format(__init__.__version__))  # -m 'release {0}' to add tag message
     print('  git push --tags')
