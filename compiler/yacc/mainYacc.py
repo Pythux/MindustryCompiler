@@ -69,27 +69,31 @@ def p_ref(p: YaccProduction):
 
 
 class Jump:
-    def __init__(self, ref, condition=None) -> None:
+    def __init__(self, line, ref, condition) -> None:
+        self.line = line
         self.ref = ref
         self.asmCondition = condition
 
     def toLine(self, refDict):
         if self.ref not in refDict:
-            raise Exception("ref {} not exist, refDict: {}".format(self.ref, refDict))
+            print("for jump at line: {}".format(self.line))
+            print("ref {} not exist, existing ref: {}".format(self.ref, refDict))
+            raise SystemExit()
         return 'jump {ref} {condition}'.format(
-            ref=refDict[self.ref], condition=self.singleCondition)
+            ref=refDict[self.ref], condition=self.asmCondition)
 
 
 def p_jump(p: YaccProduction):
     '''jump : Jump ID asmCondition Indent
     '''
-    jump = Jump(p[2], p[3])
+    # get for error message line of jump instruction
+    jump = Jump(p.lineno(1), p[2], p[3])
     p[0] = jump
 
 
 def p_jump_always(p: YaccProduction):
     '''jump : Jump ID Indent'''
-    p[0] = Jump(p[2])
+    p[0] = Jump(p.lineno(1), p[2], 'always true true')
 
 
 def p_asmCondition(p: YaccProduction):
@@ -119,12 +123,12 @@ def p_asmLine(p: YaccProduction):
 
 
 def p_asmFollowInstructions_one(p: YaccProduction):
-    '''asmValideInstructions : value'''
+    '''asmValideInstructions : info'''
     p[0] = str(p[1])
 
 
 def p_asmFollowInstructions_many(p: YaccProduction):
-    '''asmValideInstructions : asmValideInstructions value'''
+    '''asmValideInstructions : asmValideInstructions info'''
     p[0] = p[1] + ' ' + str(p[2])
 
 
@@ -155,12 +159,12 @@ def changeRefToLineNumber(li: List[T]):
     lines = []
     for el in li:
         if isinstance(el, str):
-            lines.append(el.toLine())
+            lines.append(el)
         elif isinstance(el, Jump):
             lines.append(el.toLine(refDict))
         else:
             raise Exception('wtf')
-    return '\n'.join(lines)
+    return '\n'.join(lines) + '\n'
 
 
 def runInteractiveYacc():
