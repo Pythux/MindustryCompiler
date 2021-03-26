@@ -56,12 +56,12 @@ refDict = {}
 
 # discard empty lines
 def p_noLine(p):
-    '''noLine : Indent'''
+    '''noLine : EndLine'''
 
 
 # handle a ref instruction, we store info in refDict and discard information
 def p_ref(p: YaccProduction):
-    '''noLine : RefJump Indent'''
+    '''noLine : RefJump EndLine'''
     ref = p[1]
     if ref in refDict:
         raise Exception('ref {} already declared'.format(ref))
@@ -84,7 +84,7 @@ class Jump:
 
 
 def p_jump(p: YaccProduction):
-    '''jump : Jump ID asmCondition Indent
+    '''jump : Jump ID asmCondition EndLine
     '''
     # get for error message line of jump instruction
     jump = Jump(p.lineno(1), p[2], p[3])
@@ -92,7 +92,7 @@ def p_jump(p: YaccProduction):
 
 
 def p_jump_always(p: YaccProduction):
-    '''jump : Jump ID Indent'''
+    '''jump : Jump ID EndLine'''
     p[0] = Jump(p.lineno(1), p[2], 'always true true')
 
 
@@ -112,13 +112,13 @@ def p_info(p: YaccProduction):
 
 # to keep the "valide ASM will pass"
 def p_jump_asmNoRef(p: YaccProduction):
-    '''asmInstr : Jump Number asmCondition Indent'''
+    '''asmInstr : Jump Number asmCondition EndLine'''
     p[0] = p[1] + ' ' + str(p[2]) + ' ' + p[3]
 
 
 # catch all ASM as it, no processing them
 def p_asmLine(p: YaccProduction):
-    '''asmInstr : asmValideInstructions Indent'''
+    '''asmInstr : asmValideInstructions EndLine'''
     p[0] = p[1]
 
 

@@ -32,7 +32,7 @@ tokens += [
     'Number',
     'ArobasedInfo',
     'String',
-    'Indent',
+    'EndLine',
     'RefJump',
 ]
 
@@ -61,9 +61,8 @@ def t_stringSimpleQuote(t: LexToken):
 
 
 # count indentation, 4 saces or 1 tab = 1 lvl of indent
-def t_Indent(t: LexToken):
-    r'\n(\t|[ ]{4})*'
-    t.value = len(t.value[1:].replace(' '*4, '\t'))
+def t_EndLine(t: LexToken):
+    r'\n'
     t.lexer.lineno += 1  # inc line number to track lines
     return t
 
