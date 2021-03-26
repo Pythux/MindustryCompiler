@@ -14,17 +14,40 @@ the language is a subset of mindustry asm code [named Mindustry Logic](https://g
 - jump to a reference:
 
     ```plain
-    set val 0
-    #ref addition
-    add val 1 1
-    jump addition notEqual val 4
-    print val
-    printflush message1
+    ...
+    jump bottom always true true  <--- jump to #ref bottom
+    ...
+    #ref bottom  <--- set ref anywhere
+    ...
     ```
 
-    [more](./doc/reference.md)
+- comments:
 
-- ... soon
+    ```plain
+    // this is a comment
+
+    #ref loop // another comment after some blank lines
+    ```
+
+- improve jump conition:
+
+    ```plain
+    jump loop  // <--- jump loop always true true
+    jump inf 2 < 4  // <--- jump inf lowerThan 2 4
+
+    // ==, === >, >=, <, <=, ---> equal, , , greaterThanEq, ,
+    // not, !=, notEqual
+    ```
+
+- if condition:
+
+- else, else if:
+
+- multiple condition:
+
+- function:
+
+- ... more soon
 
 ## current usage
 
