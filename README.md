@@ -29,15 +29,9 @@ the language is a subset of mindustry asm code [named Mindustry Logic](https://g
     #ref loop // another comment after some blank lines
     ```
 
+## comming soon
+
 - improve jump conition:
-
-    ```plain
-    jump loop  // <--- jump loop always true true
-    jump inf 2 < 4  // <--- jump inf lowerThan 2 4
-
-    // ==, === >, >=, <, <=, ---> equal, , , greaterThanEq, ,
-    // not, !=, notEqual
-    ```
 
 - if condition:
 
@@ -46,8 +40,6 @@ the language is a subset of mindustry asm code [named Mindustry Logic](https://g
 - multiple condition:
 
 - function:
-
-- ... more soon
 
 ## current usage
 
