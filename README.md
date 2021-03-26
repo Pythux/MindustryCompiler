@@ -1,15 +1,16 @@
 
 # MindustryCompiler
 
-[![Latest Version](https://img.shields.io/pypi/v/PyBoa.svg)](https://pypi.python.org/pypi/MindustryCompiler/)
+a langage that compile to mindustry asm code,
 
-compile to mindustry asm code,
+What's mindustry asm ? Here is a nice starting guide with in game screenshots:
+[How To Use Procesors in 6.0](https://steamcommunity.com/sharedfiles/filedetails/?id=2268059244)
 
-the language is a subset of mindustry asm code [named Mindustry Logic](https://github.com/MindustryGame/wiki/blob/master/docs/logic/0-introduction.md)
+The language created here is a subset of what I call mindustry asm code [named Mindustry Logic by it's creator](https://github.com/MindustryGame/wiki/blob/master/docs/logic/0-introduction.md)
 
 ## features
 
-- all mindustry code are valide as it
+- all mindustry asm code are valide as it
 
 - jump to a reference:
 
