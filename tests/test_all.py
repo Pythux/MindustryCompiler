@@ -30,7 +30,7 @@ def codeTestEq(fileNameNoExtention):
 
 
 def test_subset():
-    content = getContent('1 - subset.code')
+    content = getContent('1-subset.code')
     assert content == runYacc(content)
 
 
@@ -39,9 +39,9 @@ def codeEqual(fileNameNoExtention):
 
 
 def test_jump():
-    assert runYacc(getCode('2 - ref jump')) == getCode('1 - subset')
+    assert runYacc(getCode('2-refJump')) == getCode('1-subset')
 
 
 def test_comments():
-    assert runYacc(getCode('3 - comments')) == runYacc(getCode('2 - ref jump'))
-    assert runYacc(getCode('3 - comments')) == getCode('1 - subset')
+    assert runYacc(getCode('3-comments')) == runYacc(getCode('2-refJump'))
+    assert runYacc(getCode('3-comments')) == getCode('1-subset')
