@@ -1,0 +1,36 @@
+//
+// a code to fix to a screen and a message box
+//
+// it will give a color depending of electicity net production
+//
+//
+//
+
+sensor in node1 @powerNetIn
+sensor out node1 @powerNetOut
+print "power status: "
+op sub net in out
+jump greenColor greaterThanEq net 1000  // geen if +1k/s
+jump redColor lessThan net 200  // yellow if only +200/s, lower will be red
+draw clear 1000 1000 0 0 0 0
+drawflush display1
+print "[yellow]"
+jump EndprintNet always x false
+#ref greenColor
+draw clear 0 1000 0 255 0 0
+drawflush display1
+print "[green]"
+jump EndprintNet always x false
+#ref redColor
+draw clear 1000 0 0 0 0 0
+drawflush display1
+print "[red]"
+#ref EndprintNet
+print net
+printflush message1
+
+// wait a short time to avoid disturbing blink colors change
+set wait 0
+#ref waiting
+op add wait wait 1
+jump waiting lessThanEq wait 200

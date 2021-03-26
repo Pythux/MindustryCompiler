@@ -147,11 +147,19 @@ def buildParser():
 
 
 # read file given
-def runYacc(content: str):
+def runYacc(content: str, keepData=False):
     parser = yacc.yacc()
     lines = parser.parse(content)
     stringCode = changeRefToLineNumber(lines)
+    if not keepData:
+        clearData()
     return stringCode
+
+
+def clearData():
+    global lineNumber, refDict
+    lineNumber = 0
+    refDict = {}
 
 
 # we only have at this moment string or Jump Objects in lines
@@ -179,5 +187,5 @@ def runInteractiveYacc():
             continue
         if content == '':
             continue
-        print(runYacc(content))
+        print(runYacc(content, keepData=True))
         content = ''
