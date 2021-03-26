@@ -30,7 +30,7 @@ The language created here is a subset of what I call mindustry asm code [named M
     #ref loop // another comment after some blank lines
     ```
 
-## comming soon
+## coming soon
 
 - improve jump conition:
 
