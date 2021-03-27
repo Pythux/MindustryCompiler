@@ -6,7 +6,8 @@ from helper_setup import read_readme, activate_cmd_build, activate_cmd_publish
 #################################################################
 
 
-description = 'compile code to ASM Mindusty, jump instruction can use ref instead of line number'
+description = \
+    'language that compile to Mindusty ASM, jump instruction can use references instead of line number, and more ...'
 url = "https://github.com/Pythux/MindustryCompiler"
 install_requires = []
 classifiers = [
