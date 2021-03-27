@@ -30,8 +30,6 @@ The language created here is a subset of what I call mindustry asm code [named M
     #ref loop // another comment after some blank lines
     ```
 
-## coming soon
-
 - improve jump conition:
 
     ```plain
@@ -41,6 +39,8 @@ The language created here is a subset of what I call mindustry asm code [named M
     // ==, === >, >=, <, <=, ---> equal, , , greaterThanEq, ,
     // not, !=, notEqual
     ```
+
+## coming soon
 
 - if condition:
 
