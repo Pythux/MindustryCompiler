@@ -34,7 +34,22 @@ The language created here is a subset of what I call mindustry asm code [named M
 
 - improve jump conition:
 
+    ```plain
+    jump loop  // <--- jump loop always true true
+    jump inf 2 < 4  // <--- jump inf lowerThan 2 4
+
+    // ==, === >, >=, <, <=, ---> equal, , , greaterThanEq, ,
+    // not, !=, notEqual
+    ```
+
 - if condition:
+
+    ```plain
+    if 2 < 4
+        print "2 < 4"
+        ...
+    ...
+    ```
 
 - else, else if:
 
