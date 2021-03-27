@@ -30,17 +30,16 @@ The language created here is a subset of what I call mindustry asm code [named M
     #ref loop // another comment after some blank lines
     ```
 
-## coming soon
-
 - improve jump conition:
 
     ```plain
     jump loop  // <--- jump loop always true true
     jump inf 2 < 4  // <--- jump inf lowerThan 2 4
 
-    // ==, === >, >=, <, <=, ---> equal, , , greaterThanEq, ,
-    // not, !=, notEqual
+    // ==, !=, >, >=, <, <=, ---> equal, notEqual, greaterThan, ...
     ```
+
+## coming soon
 
 - if condition:
 

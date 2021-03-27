@@ -83,12 +83,16 @@ class Jump:
             ref=refDict[self.ref], condition=self.asmCondition)
 
 
-def p_jump(p: YaccProduction):
-    '''jump : Jump ID asmCondition EndLine
-    '''
+def p_jump_asmCondition(p: YaccProduction):
+    '''jump : Jump ID asmCondition EndLine'''
     # get for error message line of jump instruction
     jump = Jump(p.lineno(1), p[2], p[3])
     p[0] = jump
+
+
+def p_comparison(p: YaccProduction):
+    '''asmCondition : info Comparison info'''
+    p[0] = p[2][0] + ' ' + str(p[1]) + ' ' + str(p[3])
 
 
 def p_jump_always(p: YaccProduction):

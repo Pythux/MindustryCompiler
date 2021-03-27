@@ -102,12 +102,29 @@ def t_CommentsHashSpace(t):
     # no return, token discarded
 
 
+comparison = {
+    '==': ['equal', 'notEqual'],
+    # '===': ['StrictEqual', 'strictEqual'],
+    '!=': ['notEqual', 'equal'],
+    '>': ['greaterThan', 'lessThanEq'],
+    '>=': ['greaterThanEq', 'lessThan'],
+    '<': ['lessThan', 'greaterThanEq'],
+    '<=': ['lessThanEq', 'greaterThan'],
+}
+tokens += ['Comparison']
+
+
 # catch everything else that function on trop don't catch
 def t_SpecialWord(t: LexToken):
     r'\S+'  # \S Matches anything other than a space, tab or newline
 
     if t.value[0] == '#':
         return None  # comments "#"
+
+    if t.value in comparison:
+        t.type = 'Comparison'
+        t.value = comparison[t.value]
+        return t
 
     print('SpecialWord not match: {}'.format(t))
     print("line: {}".format(t.lineno))
