@@ -77,6 +77,7 @@ def t_RefJump(t: LexToken):
 # reserved keyword
 reserved = {
     'jump': 'Jump',
+    'if': 'If',
 }
 tokens += list(reserved.values())
 tokens += ['ID']  # not reserved words
@@ -104,7 +105,7 @@ def t_CommentsHashSpace(t):
 
 comparison = {
     '==': ['equal', 'notEqual'],
-    # '===': ['StrictEqual', 'strictEqual'],
+    # '===': ['strictEqual', ????],
     '!=': ['notEqual', 'equal'],
     '>': ['greaterThan', 'lessThanEq'],
     '>=': ['greaterThanEq', 'lessThan'],

@@ -1,0 +1,10 @@
+compiled result: line 12
+
+if a < b
+    print "a is lower"
+
+if b < a
+    print "b is lower"
+
+if a == b
+    print "a is equal to b"
