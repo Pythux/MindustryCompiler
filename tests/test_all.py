@@ -21,4 +21,3 @@ def test_identicalCode():
     for file in files:
         filePath = PurePath(folderPath, file)
         assert runYacc(getContent(filePath)) == asm
-        breakpoint()
