@@ -64,16 +64,21 @@ def getGeneratedContent():
         c.append('import {}'.format(p_import))
 
     c.append('')
-    c.append(decoratorFunction)
-    c.append('')
+    # c.append(decoratorFunction)
+    # c.append('')
 
     funList = list(context.p_fun.values())
-    funList.reverse()
+    # funList.reverse()
     for p_fun in funList:
         fun_name = p_fun.__name__
+        fun_doc = p_fun.__doc__
         fun_module = p_fun.__module__
-        c.append('@linkP({fun_module}.{fun_name})'.format(fun_module=fun_module, fun_name=fun_name))
-        c.append('def p_{fun_name}(p): pass'.format(fun_name=fun_name))
+        # c.append('@linkP({fun_module}.{fun_name})'.format(fun_module=fun_module, fun_name=fun_name))
+        # c.append('def p_{fun_name}(p): pass'.format(fun_name=fun_name))
+        c.append('def p_{fun_name}(p):'.format(fun_name=fun_name))
+        c.append("    '''{fun_doc}'''".format(fun_doc=fun_doc))
+        c.append('    {fun_module}.{fun_name}(p)'.format(fun_module=fun_module, fun_name=fun_name))
+        c.append('')
 
     c.append('\n')
     c.append('parser = yacc.yacc()')
