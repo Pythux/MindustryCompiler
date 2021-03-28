@@ -8,6 +8,7 @@ from .generateYacc import generateYaccFunctions
 from . import grammar  # noqa
 
 from .grammar.jump import Jump
+from .grammar.context import context
 
 
 # generate module .p_functionYacc
@@ -19,9 +20,11 @@ from .p_functionYacc import parser  # noqa
 
 
 # run parser on content
-def runYacc(content: str):
+def runYacc(content: str, clearContext=False):
     lines = parser.parse(content)
     stringCode = changeRefToLineNumber(lines)
+    if clearContext:
+        context.clear()
     return stringCode
 
 

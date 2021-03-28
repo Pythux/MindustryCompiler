@@ -42,3 +42,9 @@ def line(p: YaccProduction):
 @grammar
 def lines_empty(p: YaccProduction):
     '''line : noLine'''
+
+
+# discard empty lines
+@grammar
+def noLine(p):
+    '''noLine : EndLine'''

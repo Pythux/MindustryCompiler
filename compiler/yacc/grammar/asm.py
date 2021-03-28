@@ -1,6 +1,5 @@
 
-
-from ._start import grammar, YaccProduction, LexToken
+from ._start import grammar, YaccProduction
 
 
 # catch all ASM as it, no processing them
@@ -22,10 +21,6 @@ def asmFollowInstructions_many(p: YaccProduction):
     p[0] = p[1] + ' ' + str(p[2])
 
 
-# discard empty lines
-@grammar
-def noLine(p):
-    '''noLine : EndLine'''
 
 
 @grammar
@@ -36,15 +31,3 @@ def info(p: YaccProduction):
             | ArobasedInfo
     '''
     p[0] = p[1]
-
-
-# Error rule for syntax errors
-@grammar
-def error(t: LexToken):
-    print("Syntax error in input!")
-    print("at line: {}, wasn't expecting: {}".format(t.lineno, t.type))
-    print("for more information, it's value is: {}".format(t.value))
-    raise SystemExit()
-
-
-# parser = yacc.yacc()

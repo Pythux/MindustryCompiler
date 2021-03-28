@@ -6,5 +6,9 @@ class Context:
     # will be used to store: ref -> code line
     refDict = {}
 
+    def clear(self):
+        self.AsmLineNumber = 0
+        self.refDict = {}
+
 
 context = Context()
