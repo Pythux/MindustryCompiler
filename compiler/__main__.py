@@ -3,7 +3,7 @@ import logging
 import argparse
 
 from compiler.lex import runInteractiveLex, runLex
-from compiler.yacc import runInteractiveYacc, runYacc
+from compiler.yacc.mainYacc import runInteractiveYacc, runYacc
 
 
 def runInteractive(args):

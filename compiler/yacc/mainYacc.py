@@ -10,19 +10,20 @@ from compiler.lex.mainLex import LexToken
 
 # from .yaccRules import parser
 
-from . import asmInstr  # import to execute grammar décorator
+# from . import asmInstr  # import to execute grammar décorator
 
 
 from .generateYacc import generateYaccFunctions
+
+from . import yaccRules
 
 
 generateYaccFunctions()
 
 
-# Build the parser
-def buildParser():
-    parser = yacc.yacc()
-    return parser
+from .p_functionYacc import parser
+from . import p_functionYacc as p
+# breakpoint()
 
 
 # read file given
