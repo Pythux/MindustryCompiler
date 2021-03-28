@@ -3,19 +3,15 @@ from compiler.yacc.grammar.jump import Jump
 from ._start import grammar, YaccProduction, context
 
 
-'''
-if a < b
-    print 'a<b'
-print 'yo'
-
-jump ifCond a < b
-jump endIf
-#ref ifCond
-print 'a<b'
-#ref endIf
-'''
-
-
+# if a < b
+#     print 'a < b'
+# print 'yo'
+#
+# jump ifCond a < b
+# jump endIf
+# #ref ifCond
+# print 'a < b'
+# #ref endIf
 @grammar
 def ifInstr(p: YaccProduction):
     '''lines : If asmCondition OpenCurlyBracket lines CloseCurlyBracket'''
