@@ -8,7 +8,15 @@ from compiler.lex import tokens, lexer  # noqa
 from compiler.lex.mainLex import LexToken
 
 
-from .yaccRules import parser
+# from .yaccRules import parser
+
+from . import asmInstr  # import to execute grammar décorator
+
+
+from .generateYacc import generateYaccFunctions
+
+
+generateYaccFunctions()
 
 
 # Build the parser

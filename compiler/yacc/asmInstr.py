@@ -1,7 +1,10 @@
 
 # from .yaccImport import YaccProduction
 
+from .generateYacc import grammar
 
+
+@grammar
 def p_asmLine(p):
     '''asmInstr : asmValideInstructions EndLine'''
     p[0] = p[1]
