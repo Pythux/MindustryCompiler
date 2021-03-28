@@ -1,16 +1,15 @@
 
-
 from typing import Callable
 from pathlib import PurePath
 import os
 
 
-class GenerateContext:
+class Context:
     p_fun = {}
     p_imports = {}
 
 
-context = GenerateContext()
+context = Context()
 
 
 # a decorator to get grammar function (ak: p_fun)
@@ -31,25 +30,10 @@ fileInfo = '''
 
 
 lexTokenImport = '''
-from typing import Callable
-
-
 from ply import yacc
+
 # Required to build parser
 from compiler.lex import tokens  # noqa
-'''
-
-
-decoratorFunction = '''
-def linkP(funToCall: Callable):
-    def deco(emptyFun):
-        def called(p):
-            funToCall(p)
-        called.__doc__ = funToCall.__doc__
-        called.__name__ = 'p_' + funToCall.__name__
-        return called
-        return funToCall  # does not work, why ?
-    return deco
 '''
 
 
@@ -63,22 +47,16 @@ def getGeneratedContent():
     for p_import in list(context.p_imports.keys()):
         c.append('import {}'.format(p_import))
 
-    c.append('')
-    # c.append(decoratorFunction)
-    # c.append('')
+    c.append('\n')
 
-    funList = list(context.p_fun.values())
-    # funList.reverse()
-    for p_fun in funList:
+    for p_fun in list(context.p_fun.values()):
         fun_name = p_fun.__name__
         fun_doc = p_fun.__doc__
         fun_module = p_fun.__module__
-        # c.append('@linkP({fun_module}.{fun_name})'.format(fun_module=fun_module, fun_name=fun_name))
-        # c.append('def p_{fun_name}(p): pass'.format(fun_name=fun_name))
         c.append('def p_{fun_name}(p):'.format(fun_name=fun_name))
         c.append("    '''{fun_doc}'''".format(fun_doc=fun_doc))
         c.append('    {fun_module}.{fun_name}(p)'.format(fun_module=fun_module, fun_name=fun_name))
-        c.append('')
+        c.append('\n')
 
     c.append('\n')
     c.append('parser = yacc.yacc()')
@@ -92,5 +70,11 @@ def getGeneratedContent():
 def generateYaccFunctions():
     generatedContent = getGeneratedContent()
     generatedFile = PurePath(os.path.dirname(__file__), 'p_functionYacc.py')
-    with open(generatedFile, 'w') as fd:
-        fd.write(generatedContent)
+    changed = False
+    with open(generatedFile, 'r') as fd:
+        changed = generatedContent != fd.read()
+
+    if changed:
+        print('grammar functions have changed, rewriting module p_functionYacc')
+        with open(generatedFile, 'w') as fd:
+            fd.write(generatedContent)

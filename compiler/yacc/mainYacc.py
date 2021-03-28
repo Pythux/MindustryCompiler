@@ -1,47 +1,29 @@
 
-from typing import Callable, List, T
-from .yaccImport import yacc, YaccProduction
-
-
-# Get the token map from the lexer.  This is required.
-from compiler.lex import tokens, lexer  # noqa
-from compiler.lex.mainLex import LexToken
-
-
-# from .yaccRules import parser
-
-# from . import asmInstr  # import to execute grammar décorator
+from typing import List, T
 
 
 from .generateYacc import generateYaccFunctions
 
-from . import yaccRules
+# import grammar
+from . import yaccRules  # noqa
 
 
+# generate module .p_functionYacc
 generateYaccFunctions()
 
 
-from .p_functionYacc import parser
-from . import p_functionYacc as p
-# breakpoint()
+# get parser for generated file
+from .p_functionYacc import parser  # noqa
 
 
-# read file given
-def runYacc(content: str, keepData=False):
+# run parser on content
+def runYacc(content: str):
     lines = parser.parse(content)
     stringCode = changeRefToLineNumber(lines)
-    if not keepData:
-        clearData()
     return stringCode
 
 
-def clearData():
-    global lineNumber, refDict
-    lineNumber = 0
-    refDict = {}
-
-
-# we only have at this moment string or Jump Objects in lines
+# we only have at this moment str or Jump Objects in lines
 def changeRefToLineNumber(li: List[T]):
     lines = []
     for el in li:
@@ -66,5 +48,5 @@ def runInteractiveYacc():
             continue
         if content == '':
             continue
-        print(runYacc(content, keepData=True))
+        print(runYacc(content))
         content = ''
