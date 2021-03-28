@@ -29,4 +29,3 @@ def ifInstr(p: YaccProduction):
     lines += p[4]
     context.addRef(refEndIf, lineDiff=lineDiff+len(p[4]))
     p[0] = lines
-    # breakpoint()
