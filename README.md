@@ -39,6 +39,8 @@ The language created here is a superset of what I call mindustry asm code [named
     // ==, !=, >, >=, <, <=, ---> equal, notEqual, greaterThan, ...
     ```
 
+You could check files [here](./tests/identicalCode) to see the difference from the same programme that compile to the same mindustry asm
+
 ## coming soon
 
 - if condition:
