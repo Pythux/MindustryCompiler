@@ -1,9 +1,7 @@
 
-# Yacc
+from typing import Callable, List, T
+from .yaccImport import yacc, YaccProduction
 
-from typing import List, T
-from ply import yacc
-from ply.yacc import YaccProduction
 
 # Get the token map from the lexer.  This is required.
 from compiler.lex import tokens  # noqa
@@ -54,11 +52,6 @@ def p_lines_empty(p: YaccProduction):
 refDict = {}
 
 
-# discard empty lines
-def p_noLine(p):
-    '''noLine : EndLine'''
-
-
 # handle a ref instruction, we store info in refDict and discard information
 def p_ref(p: YaccProduction):
     '''noLine : RefJump EndLine'''
@@ -105,15 +98,6 @@ def p_asmCondition(p: YaccProduction):
     p[0] = p[1] + ' ' + str(p[2]) + ' ' + str(p[3])
 
 
-def p_info(p: YaccProduction):
-    '''info : ID
-            | Number
-            | String
-            | ArobasedInfo
-    '''
-    p[0] = p[1]
-
-
 # to keep the "valide ASM will pass"
 def p_jump_asmNoRef(p: YaccProduction):
     '''asmInstr : Jump Number asmCondition EndLine'''
@@ -121,9 +105,43 @@ def p_jump_asmNoRef(p: YaccProduction):
 
 
 # catch all ASM as it, no processing them
-def p_asmLine(p: YaccProduction):
-    '''asmInstr : asmValideInstructions EndLine'''
-    p[0] = p[1]
+# def p_asmLine(p: YaccProduction):
+#     '''asmInstr : asmValideInstructions EndLine'''
+#     p[0] = p[1]
+
+
+from . import asmInstr
+
+
+def decoParams(funToCall: Callable):
+    def deco(emptyFun):
+        def called(p):
+            funToCall(p)
+        called.__doc__ = funToCall.__doc__
+        called.__name__ = funToCall.__name__
+        return called
+        return funToCall  # does not work, why ?
+    return deco
+
+
+@decoParams(asmInstr.p_asmLine)
+def p_asmLine(p):
+    pass
+
+
+# parser = yacc.yacc()
+
+
+# def p_asmLine(p):
+#     '''asmInstr : asmValideInstructions EndLine'''
+#     p[0] = p[1]
+
+
+# current_module = __import__(__name__)
+
+# current_module.p_yolo = asmInstr.p_asmLine
+# setattr(current_module, 'p_yolo', asmInstr.p_asmLine)
+
 
 
 def p_asmFollowInstructions_one(p: YaccProduction):
@@ -134,6 +152,21 @@ def p_asmFollowInstructions_one(p: YaccProduction):
 def p_asmFollowInstructions_many(p: YaccProduction):
     '''asmValideInstructions : asmValideInstructions info'''
     p[0] = p[1] + ' ' + str(p[2])
+
+
+
+# discard empty lines
+def p_noLine(p):
+    '''noLine : EndLine'''
+
+
+def p_info(p: YaccProduction):
+    '''info : ID
+            | Number
+            | String
+            | ArobasedInfo
+    '''
+    p[0] = p[1]
 
 
 # Error rule for syntax errors
@@ -172,7 +205,7 @@ def changeRefToLineNumber(li: List[T]):
     for el in li:
         if isinstance(el, str):
             lines.append(el)
-        elif isinstance(el, Jump):
+        elif isinstance(el, refJump.Jump):
             lines.append(el.toLine(refDict))
         else:
             raise Exception('wtf')

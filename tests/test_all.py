@@ -16,7 +16,7 @@ def getContent(filePath):
 def test_identicalCode():
     folderPath = PurePath(os.path.dirname(__file__), 'identicalCode')
     asm = getContent(PurePath(folderPath, '1-vanilla.code'))
-    files = os.listdir(folderPath)
+    files = filter(lambda file: file.split('.')[-1] == 'code', os.listdir(folderPath))
     files.sort()
     for file in files:
         filePath = PurePath(folderPath, file)
