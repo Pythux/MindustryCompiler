@@ -104,13 +104,13 @@ def t_CommentsHashSpace(t):
 
 
 comparison = {
-    '==': ['equal', 'notEqual'],
-    # '===': ['strictEqual', ????],
-    '!=': ['notEqual', 'equal'],
-    '>': ['greaterThan', 'lessThanEq'],
-    '>=': ['greaterThanEq', 'lessThan'],
-    '<': ['lessThan', 'greaterThanEq'],
-    '<=': ['lessThanEq', 'greaterThan'],
+    '==': 'equal',
+    '===': 'strictEqual',
+    '!=': 'notEqual',
+    '>': 'greaterThan',
+    '>=': 'greaterThanEq',
+    '<': 'lessThan',
+    '<=': 'lessThanEq',
 }
 tokens += ['Comparison']
 
@@ -120,7 +120,7 @@ def t_SpecialWord(t: LexToken):
     r'\S+'  # \S Matches anything other than a space, tab or newline
 
     if t.value[0] == '#':
-        return None  # comments "#"
+        return None  # unofficial comments "#"
 
     if t.value in comparison:
         t.type = 'Comparison'

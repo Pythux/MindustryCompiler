@@ -38,7 +38,7 @@ def jump_asmCondition(p: YaccProduction):
 @grammar
 def comparison(p: YaccProduction):
     '''asmCondition : info Comparison info'''
-    p[0] = p[2][0] + ' ' + str(p[1]) + ' ' + str(p[3])
+    p[0] = p[2] + ' ' + str(p[1]) + ' ' + str(p[3])
 
 
 @grammar
