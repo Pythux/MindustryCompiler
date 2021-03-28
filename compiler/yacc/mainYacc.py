@@ -7,6 +7,8 @@ from .generateYacc import generateYaccFunctions
 # import grammar
 from . import grammar  # noqa
 
+from .grammar.jump import Jump
+
 
 # generate module .p_functionYacc
 generateYaccFunctions()
@@ -29,8 +31,8 @@ def changeRefToLineNumber(li: List[T]):
     for el in li:
         if isinstance(el, str):
             lines.append(el)
-        elif isinstance(el, refJump.Jump):
-            lines.append(el.toLine(refDict))
+        elif isinstance(el, Jump):
+            lines.append(el.toLine())
         else:
             raise Exception('wtf')
     return '\n'.join(lines) + '\n'
