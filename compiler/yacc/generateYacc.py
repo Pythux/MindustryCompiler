@@ -58,7 +58,6 @@ def getGeneratedContent():
         c.append('    {fun_module}.{fun_name}(p)'.format(fun_module=fun_module, fun_name=fun_name))
         c.append('\n')
 
-    c.append('\n')
     c.append('parser = yacc.yacc()')
 
     strContent = '\n'.join(c) + '\n'
