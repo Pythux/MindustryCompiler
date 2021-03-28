@@ -7,16 +7,14 @@ from ._start import grammar, YaccProduction, context
 def ref(p: YaccProduction):
     '''noLine : RefJump EndLine'''
     ref = p[1]
-    if ref in context.refDict:
-        raise Exception('ref {} already declared'.format(ref))
-    context.refDict[ref] = context.AsmLineNumber
+    context.addRef(ref)
 
 
 class Jump:
-    def __init__(self, line, ref, condition) -> None:
+    def __init__(self, line, ref, condition=None) -> None:
         self.line = line
         self.ref = ref
-        self.asmCondition = condition
+        self.asmCondition = condition if condition is not None else 'always true true'
 
     def toLine(self):
         if self.ref not in context.refDict:
@@ -44,7 +42,7 @@ def comparison(p: YaccProduction):
 @grammar
 def jump_always(p: YaccProduction):
     '''jump : Jump ID EndLine'''
-    p[0] = Jump(p.lineno(1), p[2], 'always true true')
+    p[0] = Jump(p.lineno(1), p[2])
 
 
 # to keep the "valide ASM will pass"

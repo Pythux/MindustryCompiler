@@ -30,6 +30,7 @@ def runYacc(content: str, clearContext=False):
 
 # we only have at this moment str or Jump Objects in lines
 def changeRefToLineNumber(li: List[T]):
+    li.append('end')  # finish with end statement to #ref on last line
     lines = []
     for el in li:
         if isinstance(el, str):
@@ -38,6 +39,7 @@ def changeRefToLineNumber(li: List[T]):
             lines.append(el.toLine())
         else:
             raise Exception('wtf')
+
     return '\n'.join(lines) + '\n'
 
 

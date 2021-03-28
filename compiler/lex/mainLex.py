@@ -60,9 +60,33 @@ def t_stringSimpleQuote(t: LexToken):
     return t
 
 
+previousIndentationLvl = 0
+indentSpacing = None
+tokens += ['OpenCurlyBracket', 'CloseCurlyBracket']
+addCloseBracket = False
+
+
 # count indentation, 4 saces or 1 tab = 1 lvl of indent
 def t_EndLine(t: LexToken):
-    r'\n'
+    r'\n([ ]{4})*'
+    global previousIndentationLvl, indentSpacing, addCloseBracket
+    if addCloseBracket:
+        addCloseBracket = False
+        t.type = 'CloseCurlyBracket'
+        return t
+
+    if indentSpacing is None:
+        spaces = len(t.value[1:])
+        if spaces > 0:
+            indentSpacing = spaces
+    indent = len(t.value[1:].replace(' '*indentSpacing, '\t'))
+    if indent > previousIndentationLvl:
+        t.type = 'OpenCurlyBracket'
+    elif indent < previousIndentationLvl:
+        t.type = 'EndLine'
+        addCloseBracket = True
+        t.lexer.lexpos -= len(t.value)
+    previousIndentationLvl = indent
     t.lexer.lineno += 1  # inc line number to track lines
     return t
 
