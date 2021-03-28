@@ -5,7 +5,7 @@ from typing import List, T
 from .generateYacc import generateYaccFunctions
 
 # import grammar
-from . import yaccRules  # noqa
+from . import grammar  # noqa
 
 
 # generate module .p_functionYacc

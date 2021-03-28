@@ -1,72 +1,20 @@
 
-from typing import Callable, List, T
-from .yaccImport import yacc, YaccProduction
-
+from ply.yacc import YaccProduction
 from compiler.lex.mainLex import LexToken
 
-# Required to build parser
-# from compiler.lex import tokens  # noqa
+from compiler.yacc.generateYacc import grammar
+
+from ._start import context
 
 
-from .generateYacc import grammar
-
-
-lineNumber = 0
-
-
-# trac lineNumber to #ref it
-@grammar
-def lines_one(p: YaccProduction):
-    '''lines : line'''
-    line = p[1]
-    if line is None:
-        p[0] = []
-    else:
-        p[0] = [p[1]]
-        global lineNumber
-        lineNumber += 1
-
-
-# add a line to lines
-@grammar
-def lines_many(p: YaccProduction):
-    '''lines : lines line'''
-    line = p[2]
-    if line is None:
-        p[0] = p[1]
-    else:
-        p[0] = p[1] + [p[2]]
-        global lineNumber
-        lineNumber += 1
-
-
-# a line is ether a jump instruction or an asmInstr
-@grammar
-def line(p: YaccProduction):
-    '''line : jump
-            | asmInstr
-    '''
-    p[0] = p[1]
-
-
-# no p[0] =, we don't bubble it, just dircarded
-@grammar
-def lines_empty(p: YaccProduction):
-    '''line : noLine'''
-
-
-# will be used to store: ref -> code line
-refDict = {}
-
-
-# handle a ref instruction, we store info in refDict and discard information
+# handle a ref instruction, we store info in context.refDict and discard information
 @grammar
 def ref(p: YaccProduction):
     '''noLine : RefJump EndLine'''
     ref = p[1]
-    if ref in refDict:
+    if ref in context.refDict:
         raise Exception('ref {} already declared'.format(ref))
-    refDict[ref] = lineNumber
+    context.refDict[ref] = context.AsmLineNumber
 
 
 class Jump:
@@ -75,13 +23,13 @@ class Jump:
         self.ref = ref
         self.asmCondition = condition
 
-    def toLine(self, refDict):
-        if self.ref not in refDict:
+    def toLine(self):
+        if self.ref not in context.refDict:
             print("for jump at line: {}".format(self.line))
-            print("ref {} not exist, existing ref: {}".format(self.ref, refDict))
+            print("ref {} not exist, existing ref: {}".format(self.ref, context.refDict))
             raise SystemExit()
         return 'jump {ref} {condition}'.format(
-            ref=refDict[self.ref], condition=self.asmCondition)
+            ref=context.refDict[self.ref], condition=self.asmCondition)
 
 
 @grammar
