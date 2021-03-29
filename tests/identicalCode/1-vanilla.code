@@ -16,3 +16,4 @@ drawflush display1
 set wait 0
 op add wait wait 1
 jump 16 lessThanEq wait 200
+end
