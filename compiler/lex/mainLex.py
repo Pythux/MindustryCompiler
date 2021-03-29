@@ -68,7 +68,7 @@ addCloseBracket = False
 
 # count indentation, 4 saces or 1 tab = 1 lvl of indent
 def t_EndLine(t: LexToken):
-    r'\n([ ]{4})*'
+    r'\n[ ]*'
     global previousIndentationLvl, indentSpacing, addCloseBracket
     if addCloseBracket:
         addCloseBracket = False
@@ -79,7 +79,9 @@ def t_EndLine(t: LexToken):
         spaces = len(t.value[1:])
         if spaces > 0:
             indentSpacing = spaces
-    indent = len(t.value[1:].replace(' '*indentSpacing, '\t'))
+    indent = len(t.value[1:])
+    if indentSpacing:
+        indent = len(t.value[1:].replace(' '*indentSpacing, '\t'))
     if indent > previousIndentationLvl:
         t.type = 'OpenCurlyBracket'
     elif indent < previousIndentationLvl:
