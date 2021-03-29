@@ -1,5 +1,6 @@
 
 from typing import List, T
+from boa import boa
 
 
 from .generateYacc import generateYaccFunctions
@@ -7,7 +8,7 @@ from .generateYacc import generateYaccFunctions
 # import grammar
 from . import grammar  # noqa
 
-from .grammar.jump import Jump
+from .grammar.jump import Jump, Ref
 from .grammar.context import context
 
 
@@ -28,21 +29,26 @@ def runYacc(content: str, clearContext=False):
     return stringCode
 
 
-# we only have at this moment str or Jump Objects in lines
+# we only have at this moment str, Jump and Ref Objects in lines
 def changeRefToLineNumber(li: List[T]):
-    if li[-1] != 'end':
-        li.append('end')  # finish with end statement to #ref on last line
+    if isinstance(li[-1], Ref):
+        li.append('end')  # finish with end statement to #ref on it
 
-    lines = []
+    li = refToLinesNumber(li)  # change ref to lineNumb
+
+    # change jump ref to jump lineNumb
+    boa(li).map(lambda el: el.toLine() if isinstance(el, Jump) else el)
+    return '\n'.join(li) + '\n'
+
+
+def refToLinesNumber(li: List[T]):
+    result = []
     for el in li:
-        if isinstance(el, str):
-            lines.append(el)
-        elif isinstance(el, Jump):
-            lines.append(el.toLine())
+        if isinstance(el, Ref):
+            context.addRef(el, len(result))
         else:
-            raise Exception('wtf')
-
-    return '\n'.join(lines) + '\n'
+            result.append(el)
+    return result
 
 
 def runInteractiveYacc():

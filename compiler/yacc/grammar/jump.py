@@ -1,28 +1,15 @@
 
-from ._start import grammar, YaccProduction, context
+from ._start import grammar, YaccProduction
+
+from .contextAndClass import Jump, Ref
 
 
 # handle a ref instruction, we store info in context.refDict and discard information
 @grammar
 def ref(p: YaccProduction):
-    '''noLine : RefJump EndLine'''
+    '''line : RefJump EndLine'''
     ref = p[1]
-    context.addRef(ref)
-
-
-class Jump:
-    def __init__(self, line, ref, condition=None) -> None:
-        self.line = line
-        self.ref = ref
-        self.asmCondition = condition if condition is not None else 'always true true'
-
-    def toLine(self):
-        if self.ref not in context.refDict:
-            print("for jump at line: {}".format(self.line))
-            print("ref {} not exist, existing ref: {}".format(self.ref, context.refDict))
-            raise SystemExit()
-        return 'jump {ref} {condition}'.format(
-            ref=context.refDict[self.ref], condition=self.asmCondition)
+    p[0] = Ref(ref)
 
 
 @grammar

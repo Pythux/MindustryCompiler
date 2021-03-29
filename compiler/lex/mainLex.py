@@ -104,6 +104,7 @@ def t_RefJump(t: LexToken):
 reserved = {
     'jump': 'Jump',
     'if': 'If',
+    'else': 'Else',
 }
 tokens += list(reserved.values())
 tokens += ['ID']  # not reserved words
