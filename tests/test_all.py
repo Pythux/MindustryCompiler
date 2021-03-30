@@ -31,16 +31,16 @@ def test_codeResult():
         .filter(lambda file: file.split('.')[-1] == 'code')
         .sort()
         .map(lambda file: boa({'file': file}))
-        .map(lambda obj: obj.update({'filePath': PurePath(folderPath, obj.file)}))
-        .map(lambda obj: obj.update({'content': getContent(obj.filePath)}))
+        .map(lambda file: file.update({'filePath': PurePath(folderPath, file.file)}))
+        .map(lambda file: file.update({'content': getContent(file.filePath)}))
         .map(splitCodeASM)
         .map(checkCodeToASM))
 
 
-def splitCodeASM(obj):
-    code, asm = re.match(r'([\s|\S]*)\n+-{6}[-]+\n+([\s|\S]*)', obj.content).groups()
-    return obj.update({'code': code, 'asm': asm})
+def splitCodeASM(file):
+    code, asm = re.match(r'([\s|\S]*)\n+-{6}[-]+\n+([\s|\S]*)', file.content).groups()
+    return file.update({'code': code, 'asm': asm})
 
 
-def checkCodeToASM(obj):
-    assert runYacc(obj.code, clearContext=True) == obj.asm
+def checkCodeToASM(file):
+    assert runYacc(file.code, clearContext=True) == file.asm
