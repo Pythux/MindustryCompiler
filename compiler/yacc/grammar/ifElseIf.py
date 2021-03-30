@@ -20,6 +20,14 @@ def linesFromIfElse(p: YaccProduction):
 
 @grammar
 def linesFromIfElseElseIf(p: YaccProduction):
+    '''lines : ifBlock elifs'''
+    infoIf = p[1]
+    infoElif = p[2]
+    p[0] = genIfsLines(infoIf, infoElif, [])
+
+
+@grammar
+def linesFromIfElseElseIfElse(p: YaccProduction):
     '''lines : ifBlock elifs elseBlock'''
     infoIf = p[1]
     infoElif = p[2]
