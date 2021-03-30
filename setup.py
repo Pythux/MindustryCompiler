@@ -9,7 +9,7 @@ from helper_setup import read_readme, activate_cmd_build, activate_cmd_publish
 description = \
     'language that compile to Mindusty ASM, jump instruction can use references instead of line number, and more ...'
 url = "https://github.com/Pythux/MindustryCompiler"
-install_requires = []
+install_requires = ['PyBoa']
 classifiers = [
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",

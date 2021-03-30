@@ -6,7 +6,7 @@ a langage that compile to mindustry asm code,
 What's mindustry asm ? Here is a nice starting guide with in game screenshots:
 [How To Use Procesors in 6.0](https://steamcommunity.com/sharedfiles/filedetails/?id=2268059244)
 
-The language created here is a subset of what I call mindustry asm code [named Mindustry Logic by it's creator](https://github.com/MindustryGame/wiki/blob/master/docs/logic/0-introduction.md)
+The language created here is a superset of what I call mindustry asm code [named Mindustry Logic by it's creator](https://github.com/MindustryGame/wiki/blob/master/docs/logic/0-introduction.md)
 
 ## features
 
@@ -39,20 +39,22 @@ The language created here is a subset of what I call mindustry asm code [named M
     // ==, !=, >, >=, <, <=, ---> equal, notEqual, greaterThan, ...
     ```
 
-## coming soon
+You could check files [here](./tests/identicalCode) to see the difference from the same programme that compile to the same mindustry asm
 
-- if condition:
+- if else, else if condition:
 
     ```plain
     if 2 < 4
         print "2 < 4"
-        ...
-    ...
+    else if 2 == 1
+        print "2 == 1"
+    elif 2 === 2
+        print "2 === 2"
+    else
+        print "else"
     ```
 
-- else, else if:
-
-- multiple condition:
+## coming soon
 
 - function:
 
@@ -61,25 +63,25 @@ The language created here is a subset of what I call mindustry asm code [named M
 - compile a file :
 
     ```sh
-    > mindc fileName
+    mindc fileName
     ```
 
     exemple, in this folder:
 
     ```sh
-    > mindc tests/identicalCode/3-comments.code
+    mindc tests/identicalCode/4-improveJump.code
     ```
 
 - get the result in clipboard to just past it in mindustry :
 
     ```sh
-    > mindc --ctrlC tests/identicalCode/3-comments.code
+    mindc tests/identicalCode/4-improveJump.code --ctrlC
     ```
 
 - run interactive to play with it :
 
     ```sh
-    > mindc --interactive
+    mindc --interactive
     ```
 
 ## Installation
@@ -102,21 +104,12 @@ The language created here is a subset of what I call mindustry asm code [named M
 
 ### install mindustry compiler
 
-- with python package manager:
+```sh
+python3 -m pip install MindustryCompiler
+```
 
-    ```sh
-    python3 -m pip install ___
-    ```
+### run it
 
-    to run it, type:
-
-    ```sh
-    mindc
-    ```
-
-- or download this git and run `__main__.py` file
-    to run it:
-
-    ```sh
-    python3 compiler/__main__.py
-    ```
+```sh
+mindc
+```

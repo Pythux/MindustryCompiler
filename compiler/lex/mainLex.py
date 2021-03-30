@@ -60,9 +60,35 @@ def t_stringSimpleQuote(t: LexToken):
     return t
 
 
+previousIndentationLvl = 0
+indentSpacing = None
+tokens += ['OpenCurlyBracket', 'CloseCurlyBracket']
+addCloseBracket = False
+
+
 # count indentation, 4 saces or 1 tab = 1 lvl of indent
 def t_EndLine(t: LexToken):
-    r'\n'
+    r'\n[ ]*'
+    global previousIndentationLvl, indentSpacing, addCloseBracket
+    if addCloseBracket:
+        addCloseBracket = False
+        t.type = 'CloseCurlyBracket'
+        return t
+
+    if indentSpacing is None:
+        spaces = len(t.value[1:])
+        if spaces > 0:
+            indentSpacing = spaces
+    indent = len(t.value[1:])
+    if indentSpacing:
+        indent = len(t.value[1:].replace(' '*indentSpacing, '\t'))
+    if indent > previousIndentationLvl:
+        t.type = 'OpenCurlyBracket'
+    elif indent < previousIndentationLvl:
+        t.type = 'EndLine'
+        addCloseBracket = True
+        t.lexer.lexpos -= len(t.value)
+    previousIndentationLvl = indent
     t.lexer.lineno += 1  # inc line number to track lines
     return t
 
@@ -77,6 +103,9 @@ def t_RefJump(t: LexToken):
 # reserved keyword
 reserved = {
     'jump': 'Jump',
+    'if': 'If',
+    'else': 'Else',
+    'elif': 'ElseIf',
 }
 tokens += list(reserved.values())
 tokens += ['ID']  # not reserved words
@@ -103,13 +132,13 @@ def t_CommentsHashSpace(t):
 
 
 comparison = {
-    '==': ['equal', 'notEqual'],
-    # '===': ['StrictEqual', 'strictEqual'],
-    '!=': ['notEqual', 'equal'],
-    '>': ['greaterThan', 'lessThanEq'],
-    '>=': ['greaterThanEq', 'lessThan'],
-    '<': ['lessThan', 'greaterThanEq'],
-    '<=': ['lessThanEq', 'greaterThan'],
+    '==': 'equal',
+    '===': 'strictEqual',
+    '!=': 'notEqual',
+    '>': 'greaterThan',
+    '>=': 'greaterThanEq',
+    '<': 'lessThan',
+    '<=': 'lessThanEq',
 }
 tokens += ['Comparison']
 
@@ -119,7 +148,7 @@ def t_SpecialWord(t: LexToken):
     r'\S+'  # \S Matches anything other than a space, tab or newline
 
     if t.value[0] == '#':
-        return None  # comments "#"
+        return None  # unofficial comments "#"
 
     if t.value in comparison:
         t.type = 'Comparison'

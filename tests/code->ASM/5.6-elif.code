@@ -1,0 +1,24 @@
+if a == 1
+    print '1'
+elif a == 2
+    print '2'
+elif a == 3
+    print '3'
+else
+    print 'else'
+
+
+----------------------
+
+
+jump 9 equal a 1
+jump 5 equal a 2
+jump 7 equal a 3
+print 'else'
+jump 10 always true true
+print '2'
+jump 10 always true true
+print '3'
+jump 10 always true true
+print '1'
+end

@@ -1,0 +1,15 @@
+if a < b
+    print 'a < b'
+else
+    print 'a >= b'
+print 'yo'
+
+
+----------------------
+
+
+jump 3 lessThan a b
+print 'a >= b'
+jump 4 always true true
+print 'a < b'
+print 'yo'
