@@ -6,23 +6,16 @@ from ._start import grammar, YaccProduction, context
 @grammar
 def linesFromIf(p: YaccProduction):
     '''lines : ifBlock'''
-    info = p[1]
-    p[0] = [
-        info.ifCondition,
-        Jump(p.lineno, info.refEndIf),
-        *info.ifContent,
-        info.refEndIf]
+    infoIf = p[1]
+    p[0] = genIfsLines(infoIf, None, [])
 
 
 @grammar
 def linesFromIfElse(p: YaccProduction):
     '''lines : ifBlock elseBlock'''
-    info = p[1]
-    elseContent = p[2]
-    p[0] = [
-        info.ifCondition, *elseContent, Jump(p.lineno, info.refEndIf),
-        *info.ifContent,
-        info.refEndIf]
+    infoIf = p[1]
+    elseLines = p[2]
+    p[0] = genIfsLines(infoIf, None, elseLines)
 
 
 @grammar
@@ -31,16 +24,20 @@ def linesFromIfElseElseIf(p: YaccProduction):
     infoIf = p[1]
     infoElif = p[2]
     elseLines = p[3]
-    endJump = Jump('gen', infoIf.refEndIf)
-    result = [
+    p[0] = genIfsLines(infoIf, infoElif, elseLines)
+
+
+def genIfsLines(infoIf, infoElif, elseLines):
+    infoElif = infoElif if infoElif is not None else boa({'ifConditions': [], 'contents': []})
+    endJump = Jump('endJump', infoIf.refEndIf)
+    return [
         infoIf.ifCondition, *infoElif.ifConditions,
         *elseLines,
         endJump,
         *infoElif.contents.reduce(lambda lines, content: lines + [*content, endJump], []),
-        *infoIf.ifContent,
+        *infoIf.content,
         infoIf.refEndIf,
     ]
-    p[0] = result
 
 
 @grammar
@@ -49,7 +46,7 @@ def elifs_one(p: YaccProduction):
     infoIf = p[1]
     info = boa({})
     info.ifConditions = [infoIf.ifCondition]
-    info.contents = [infoIf.ifContent]
+    info.contents = [infoIf.content]
     p[0] = info
 
 
@@ -59,7 +56,7 @@ def elifs_many(p: YaccProduction):
     infoElif = p[1]
     infoIf = p[2]
     infoElif.ifConditions.append(infoIf.ifCondition)
-    infoElif.contents.append(infoIf.ifContent)
+    infoElif.contents.append(infoIf.content)
     p[0] = infoElif
 
 
@@ -83,5 +80,5 @@ def ifBlock(p: YaccProduction):
     refIf = context.genRef()
     info.ifCondition = Jump('jump of ifBlock: "{}"'.format(p[2]), refIf, p[2])
     info.refEndIf = context.genRef()
-    info.ifContent = [refIf, *p[4]]
+    info.content = [refIf, *p[4]]
     p[0] = info
