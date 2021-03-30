@@ -1,24 +1,32 @@
 from boa import boa
-from .contextAndClass import Jump, Ref
+from .contextAndClass import Jump
 from ._start import grammar, YaccProduction, context
 
 
 @grammar
+def linesFromIf(p: YaccProduction):
+    '''lines : ifBlock'''
+    info = p[1]
+    p[0] = [
+        info.ifCondition,
+        *info.ifContent, Jump(p.lineno, info.refEndIf),
+        info.refEndIf]
+
+
+@grammar
 def linesFromIfElse(p: YaccProduction):
-    '''lines : ifBlock
-             | ifElse'''
+    '''lines : ifElse'''
+    p[0] = p[1]
 
 
 @grammar
 def ifElse(p: YaccProduction):
     '''ifElse : ifBlock elseBlock'''
     info = p[1]
-    info.ifCondition
-    info.ifContent
     elseContent = p[2]
-    return [
-        info.ifCondition, *info.ifContent,
-        *elseContent, Jump(p.lineno, info.refEndIf),
+    p[0] = [
+        info.ifCondition, *elseContent, Jump(p.lineno, info.refEndIf),
+        *info.ifContent, Jump(p.lineno, info.refEndIf),
         info.refEndIf]
 
 
@@ -76,5 +84,5 @@ def ifBlock(p: YaccProduction):
     refIf = context.genRef()
     info.ifCondition = Jump(p.lineno, refIf, p[2])
     info.refEndIf = context.genRef()
-    info.ifContent = p[4].append(Jump(p.lineno, info.refEndIf))
+    info.ifContent = [refIf, *p[4]]
     p[0] = info

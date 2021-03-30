@@ -16,7 +16,7 @@ def ref(p: YaccProduction):
 def jump_asmCondition(p: YaccProduction):
     '''jump : Jump ID asmCondition EndLine'''
     # get for error message line of jump instruction
-    jump = Jump(p.lineno(1), p[2], p[3])
+    jump = Jump(p.lineno(1), Ref(p[2]), p[3])
     p[0] = jump
 
 
@@ -29,7 +29,7 @@ def comparison(p: YaccProduction):
 @grammar
 def jump_always(p: YaccProduction):
     '''jump : Jump ID EndLine'''
-    p[0] = Jump(p.lineno(1), p[2])
+    p[0] = Jump(p.lineno(1), Ref(p[2]))
 
 
 # to keep the "valide ASM will pass"

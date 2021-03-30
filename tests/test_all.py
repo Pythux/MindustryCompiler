@@ -2,6 +2,8 @@
 import os
 from compiler.yacc.mainYacc import runYacc
 from pathlib import PurePath
+from boa import boa
+import re
 
 
 # with pytest.raises(AnExcetion):
@@ -21,3 +23,25 @@ def test_identicalCode():
     for file in files:
         filePath = PurePath(folderPath, file)
         assert runYacc(getContent(filePath), clearContext=True) == asm
+
+
+def test_codeResult():
+    folderPath = PurePath(os.path.dirname(__file__), 'code->result')
+    boa(os.listdir(folderPath)) \
+        .filter(lambda file: file.split('.')[-1] == 'code') \
+        .sort() \
+        .map(lambda file: boa({'file': file})) \
+        .map(lambda obj: obj.update({'filePath': PurePath(folderPath, obj.file)})) \
+        .map(lambda obj: obj.update({'content': getContent(obj.filePath)})) \
+        .map(splitCodeASM) \
+        .map(checkCodeToASM)
+
+
+def splitCodeASM(obj):
+    code, asm = re.match(r'([\s|\S]*)\n\n-{6}[-]+\n\n([\s|\S]*)', obj.content).groups()
+    return obj.update({'code': code, 'asm': asm})
+
+
+def checkCodeToASM(obj):
+    breakpoint()
+    assert runYacc(obj.code, clearContext=True) == obj.asm

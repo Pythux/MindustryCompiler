@@ -8,8 +8,7 @@ from .generateYacc import generateYaccFunctions
 # import grammar
 from . import grammar  # noqa
 
-from .grammar.jump import Jump, Ref
-from .grammar.context import context
+from .grammar.contextAndClass import context, Jump, Ref
 
 
 # generate module .p_functionYacc
@@ -22,6 +21,8 @@ from .p_functionYacc import parser  # noqa
 
 # run parser on content
 def runYacc(content: str, clearContext=False):
+    if content[-1] != '\n':
+        content += '\n'
     lines = parser.parse(content)
     stringCode = changeRefToLineNumber(lines)
     if clearContext:
@@ -37,7 +38,7 @@ def changeRefToLineNumber(li: List[T]):
     li = refToLinesNumber(li)  # change ref to lineNumb
 
     # change jump ref to jump lineNumb
-    boa(li).map(lambda el: el.toLine() if isinstance(el, Jump) else el)
+    li = boa(li).map(lambda el: el.toLine() if isinstance(el, Jump) else el)
     return '\n'.join(li) + '\n'
 
 

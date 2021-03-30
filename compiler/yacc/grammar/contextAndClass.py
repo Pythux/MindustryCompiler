@@ -28,12 +28,12 @@ context = Context()
 
 
 class Ref:
-    def __init__(self, ref) -> None:
+    def __init__(self, ref: str) -> None:
         self.id = ref
 
 
 class Jump:
-    def __init__(self, line, ref, condition=None) -> None:
+    def __init__(self, line, ref: Ref, condition=None) -> None:
         self.line = line
         self.ref = ref
         self.asmCondition = condition if condition is not None else 'always true true'
