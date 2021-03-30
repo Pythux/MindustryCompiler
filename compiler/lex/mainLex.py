@@ -105,6 +105,7 @@ reserved = {
     'jump': 'Jump',
     'if': 'If',
     'else': 'Else',
+    'elif': 'ElseIf',
 }
 tokens += list(reserved.values())
 tokens += ['ID']  # not reserved words

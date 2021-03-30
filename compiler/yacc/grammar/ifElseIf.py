@@ -90,3 +90,14 @@ def ifBlock(p: YaccProduction):
     info.refEndIf = context.genRef()
     info.content = [refIf, *p[4]]
     p[0] = info
+
+
+@grammar
+def elifBlock(p: YaccProduction):
+    '''elseIfBlock : ElseIf asmCondition OpenCurlyBracket lines CloseCurlyBracket'''
+    info = boa({})
+    refIf = context.genRef()
+    info.ifCondition = Jump('jump of elseifBlock: "{}"'.format(p[2]), refIf, p[2])
+    info.refEndIf = context.genRef()
+    info.content = [refIf, *p[4]]
+    p[0] = info
