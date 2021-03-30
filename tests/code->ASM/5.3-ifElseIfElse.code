@@ -6,7 +6,9 @@ else
     print 'else'
 print 'end'
 
+
 ----------------------
+
 
 jump 6 equal a 1
 jump 4 equal a 2

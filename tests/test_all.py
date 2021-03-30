@@ -38,7 +38,7 @@ def test_codeResult():
 
 
 def splitCodeASM(obj):
-    code, asm = re.match(r'([\s|\S]*)\n\n-{6}[-]+\n\n([\s|\S]*)', obj.content).groups()
+    code, asm = re.match(r'([\s|\S]*)\n+-{6}[-]+\n+([\s|\S]*)', obj.content).groups()
     return obj.update({'code': code, 'asm': asm})
 
 
