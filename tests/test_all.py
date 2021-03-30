@@ -27,14 +27,14 @@ def test_identicalCode():
 
 def test_codeResult():
     folderPath = PurePath(os.path.dirname(__file__), 'code->ASM')
-    boa(os.listdir(folderPath)) \
-        .filter(lambda file: file.split('.')[-1] == 'code') \
-        .sort() \
-        .map(lambda file: boa({'file': file})) \
-        .map(lambda obj: obj.update({'filePath': PurePath(folderPath, obj.file)})) \
-        .map(lambda obj: obj.update({'content': getContent(obj.filePath)})) \
-        .map(splitCodeASM) \
-        .map(checkCodeToASM)
+    (boa(os.listdir(folderPath))
+        .filter(lambda file: file.split('.')[-1] == 'code')
+        .sort()
+        .map(lambda file: boa({'file': file}))
+        .map(lambda obj: obj.update({'filePath': PurePath(folderPath, obj.file)}))
+        .map(lambda obj: obj.update({'content': getContent(obj.filePath)}))
+        .map(splitCodeASM)
+        .map(checkCodeToASM))
 
 
 def splitCodeASM(obj):
