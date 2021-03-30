@@ -8,7 +8,6 @@ print 'yo'
 
 jump 3 lessThan a b
 print 'a >= b'
-jump 5 always true true
+jump 4 always true true
 print 'a < b'
-jump 5 always true true
 print 'yo'

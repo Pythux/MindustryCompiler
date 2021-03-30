@@ -26,7 +26,7 @@ def test_identicalCode():
 
 
 def test_codeResult():
-    folderPath = PurePath(os.path.dirname(__file__), 'code->result')
+    folderPath = PurePath(os.path.dirname(__file__), 'code->ASM')
     boa(os.listdir(folderPath)) \
         .filter(lambda file: file.split('.')[-1] == 'code') \
         .sort() \
@@ -43,5 +43,4 @@ def splitCodeASM(obj):
 
 
 def checkCodeToASM(obj):
-    breakpoint()
     assert runYacc(obj.code, clearContext=True) == obj.asm

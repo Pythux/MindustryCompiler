@@ -9,7 +9,8 @@ def linesFromIf(p: YaccProduction):
     info = p[1]
     p[0] = [
         info.ifCondition,
-        *info.ifContent, Jump(p.lineno, info.refEndIf),
+        Jump(p.lineno, info.refEndIf),
+        *info.ifContent,
         info.refEndIf]
 
 
@@ -26,7 +27,7 @@ def ifElse(p: YaccProduction):
     elseContent = p[2]
     p[0] = [
         info.ifCondition, *elseContent, Jump(p.lineno, info.refEndIf),
-        *info.ifContent, Jump(p.lineno, info.refEndIf),
+        *info.ifContent,
         info.refEndIf]
 
 
