@@ -31,6 +31,12 @@ class Ref:
     def __init__(self, ref: str) -> None:
         self.id = ref
 
+    def __str__(self) -> str:
+        return "<Ref: {}>".format(self.id)
+
+    def __repr__(self) -> str:
+        return self.__str__()
+
 
 class Jump:
     def __init__(self, line, ref: Ref, condition=None) -> None:
@@ -45,3 +51,9 @@ class Jump:
             raise SystemExit()
         return 'jump {ref} {condition}'.format(
             ref=context.refDict[self.ref.id], condition=self.asmCondition)
+
+    def __str__(self):
+        return '<Jump: {} {}>'.format(self.ref, self.asmCondition)
+
+    def __repr__(self) -> str:
+        return self.__str__()

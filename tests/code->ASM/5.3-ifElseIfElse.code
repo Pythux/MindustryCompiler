@@ -1,13 +1,18 @@
-if a < b
-    print 'a < b'
+if a == 1
+    print '1'
+else if a == 2
+    print '2'
 else
-    print 'a >= b'
-print 'yo'
+    print 'else'
+print 'end'
 
 ----------------------
 
-jump 3 lessThan a b
-print 'a >= b'
-jump 4 always true true
-print 'a < b'
-print 'yo'
+jump 6 equal a 1
+jump 4 equal a 2
+print 'else'
+jump 7 always true true
+print '2'
+jump 7 always true true
+print '1'
+print 'end'
