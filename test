@@ -1,4 +1,0 @@
-if a < b
-    print 'a < b'
-
-print 'yo'
