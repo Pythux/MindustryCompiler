@@ -1,18 +1,30 @@
 
 
+from boa import boa
+
+
 class Context:
-    # when read a Ref -> get ASM lineNumber
-    AsmLineNumber = 0
-
-    # will be used to store: ref -> code line
-    refDict = {}
-
     def __init__(self) -> None:
         self.clear()
 
     def clear(self):
+        # will be used to store: ref -> code line
         self.refDict = {}
         self.refCount = 0
+        self.ids = []
+        self.idCount = 0
+        self.inFunScope = False
+        self.funScope = boa({})
+        self.funs = {}
+
+    def clearFunScope(self):
+        self.inFunScope = False
+        self.funScope = boa({})
+
+    def registerFun(self, fun):
+        if fun.name in self.funs:
+            raise SystemExit("function {} already defined".format(fun.nam))
+        self.funs[fun.name] = fun
 
     def addRef(self, ref, index):
         if ref.id in self.refDict:
@@ -22,6 +34,13 @@ class Context:
     def genRef(self):
         self.refCount += 1
         return Ref(self.refCount)
+
+    def genId(self):
+        self.idCount += 1
+        newId = 'tmp{}'.format(self.idCount)
+        if newId not in self.ids:
+            return newId
+        return self.genId()
 
 
 context = Context()

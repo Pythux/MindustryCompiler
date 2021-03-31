@@ -24,7 +24,7 @@ def run(args):
         fileContent = fd.read()
 
     if args.lex:
-        return runLex(fileContent)
+        return '\n'.join(map(str, runLex(fileContent)))
     elif args.yacc:
         return runYacc(fileContent)
     else:
