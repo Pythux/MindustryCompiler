@@ -22,12 +22,15 @@ from .p_functionYacc import parser  # noqa
 
 
 # run parser on content
-def runYacc(content: str, clearContext=False):
+def runYacc(content: str, debug=False, clearContext=False):
     if content[-1] != '\n':
         content += '\n'
     checkExistingVars(content)
-    lines = parser.parse(content)
-    stringCode = changeRefToLineNumber(lines)
+    lines = parser.parse(content, debug=debug)
+    if len(lines) > 0:
+        stringCode = changeRefToLineNumber(lines)
+    else:
+        stringCode = ''
     if clearContext:
         context.clear()
     return stringCode
