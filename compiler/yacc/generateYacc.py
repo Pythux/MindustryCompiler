@@ -69,9 +69,10 @@ def getGeneratedContent():
 def generateYaccFunctions():
     generatedContent = getGeneratedContent()
     generatedFile = PurePath(os.path.dirname(__file__), 'p_functionYacc.py')
-    changed = False
-    with open(generatedFile, 'r') as fd:
-        changed = generatedContent != fd.read()
+    changed = True
+    if os.path.isfile(generatedFile):
+        with open(generatedFile, 'r') as fd:
+            changed = generatedContent != fd.read()
 
     if changed:
         print('grammar functions have changed, rewriting module p_functionYacc')
