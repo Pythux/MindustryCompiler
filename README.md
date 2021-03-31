@@ -36,7 +36,7 @@ The language created here is a superset of what I call mindustry asm code [named
     jump loop  // <--- jump loop always true true
     jump inf 2 < 4  // <--- jump inf lowerThan 2 4
 
-    // ==, !=, >, >=, <, <=, ---> equal, notEqual, greaterThan, ...
+    // ==, ===, !=, >, >=, <, <=, ---> equal, notEqual, greaterThan, ...
     ```
 
 You could check files [here](./tests/identicalCode) to see the difference from the same programme that compile to the same mindustry asm
