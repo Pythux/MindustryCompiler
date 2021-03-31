@@ -13,13 +13,15 @@ class Context:
         self.refCount = 0
         self.ids = []
         self.idCount = 0
-        self.inFunScope = False
-        self.funScope = boa({})
         self.funs = {}
+        self.clearFunScope()
 
     def clearFunScope(self):
         self.inFunScope = False
-        self.funScope = boa({})
+        self.funScope = boa({
+            'args': [],
+            'returns': boa({}),
+        })
 
     def registerFun(self, fun):
         if fun.name in self.funs:

@@ -1,7 +1,2 @@
-// function definition:
-def show()
-    print "yo"
 
-//
-// function call
-// show()
+show()

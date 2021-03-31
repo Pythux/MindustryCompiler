@@ -4,18 +4,17 @@ from ._start import grammar, YaccProduction, context
 
 @grammar
 def runFun(p: YaccProduction):
-    '''lines : ID OpenParenthesis arguments CloseParenthesis EndLine'''
+    '''lines : ID OpenParenthesis CloseParenthesis EndLine'''
     breakpoint()
 
 
 @grammar
 def defFun(p: YaccProduction):
     '''noLine : DefFun ID funScope OpenParenthesis arguments CloseParenthesis OpenCurlyBracket lines CloseCurlyBracket'''
-    breakpoint()
     fun = boa({})
     fun.name = p[2]
     fun.args = context.funScope.args
-    fun.returnArgs = context.funScope.returnArgs
+    fun.returns = context.funScope.returns
     fun.content = p[8]
 
     context.clearFunScope()
@@ -36,13 +35,12 @@ def args(p: YaccProduction):
     '''arguments : ID'''
     arg = p[1]
     arg.scopeId = context.genId()
-    context.funScope.args = [arg]
+    context.funScope.args.append(arg)
 
 
 @grammar
 def args_empty(p: YaccProduction):
     '''arguments : '''
-    context.funScope.args = []
 
 
 @grammar
