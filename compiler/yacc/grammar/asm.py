@@ -1,11 +1,19 @@
 
-from ._start import grammar, YaccProduction
+from ._start import grammar, YaccProduction, context
 
 
 # catch all ASM as it, no processing them
 @grammar
 def lineAsm(p: YaccProduction):
-    '''line : asmValideInstructions EndLine'''
+    '''line : ID asmValideInstructions EndLine'''
+    p[0] = p[1] + ' ' + p[2]
+
+
+@grammar
+def lineEnd(p: YaccProduction):
+    '''line : ID EndLine'''
+    if (p[1] != 'end'):
+        raise SystemExit('instruction "{}" is not "end" and alone'.format(p[1]))
     p[0] = p[1]
 
 
@@ -22,9 +30,13 @@ def asmFollowInstructions_many(p: YaccProduction):
 
 
 @grammar
+def info_id(p: YaccProduction):
+    '''info : ID'''
+    p[0] = p[1] if not context.fun.inFunScope else context.fun.scopeId(p[1])
+
+@grammar
 def info(p: YaccProduction):
-    '''info : ID
-            | Number
+    '''info : Number
             | String
             | ArobasedInfo
     '''

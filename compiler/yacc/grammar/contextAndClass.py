@@ -5,28 +5,25 @@ from boa import boa
 
 class Context:
     def __init__(self) -> None:
-        self.clear()
-
-    def clear(self):
         # will be used to store: ref -> code line
         self.refDict = {}
         self.refCount = 0
-        self.ids = []
-        self.idCount = 0
+        self.fun = Fun()
         self.funs = {}
-        self.clearFunScope()
 
-    def clearFunScope(self):
-        self.inFunScope = False
-        self.funScope = boa({
-            'args': [],
-            'returns': boa({}),
-        })
+    def clear(self):
+        self.refDict = {}
+        self.refCount = 0
+        self.fun = Fun()
+        self.funs = {}
 
-    def registerFun(self, fun):
-        if fun.name in self.funs:
-            raise SystemExit("function {} already defined".format(fun.nam))
-        self.funs[fun.name] = fun
+    def registerFun(self, name, content):
+        if name in self.funs:
+            raise SystemExit("function {} already defined".format(name))
+        self.funs[name] = boa({
+            'name': name, 'args': self.fun.args, 'content': content,
+            'returns': self.fun.returns, 'ids': self.fun.ids})
+        self.fun = Fun()  # clean context fun scope
 
     def addRef(self, ref, index):
         if ref.id in self.refDict:
@@ -36,6 +33,20 @@ class Context:
     def genRef(self):
         self.refCount += 1
         return Ref(self.refCount)
+
+
+class Fun:
+    def __init__(self) -> None:
+        self.inFunScope = False
+        self.idCount = 0
+        self.ids = {}
+        self.args = []
+        self.returns = {}
+
+    def scopeId(self, identifier):
+        if identifier not in self.ids:
+            self.ids[identifier] = self.genId()
+        return self.ids[identifier]
 
     def genId(self):
         self.idCount += 1

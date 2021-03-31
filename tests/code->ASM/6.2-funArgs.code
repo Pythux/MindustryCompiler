@@ -1,0 +1,14 @@
+// function definition
+def show(a)
+    print a
+
+
+// function call
+show(data)
+
+
+----------------------
+
+
+set tmp1 data
+print tmp1

@@ -49,13 +49,13 @@ def t_ArobasedInfo(t):
 
 
 def t_stringDoubleQuote(t: LexToken):
-    r'".*"'
+    r'"[^"]*"'
     t.type = 'String'
     return t
 
 
 def t_stringSimpleQuote(t: LexToken):
-    r"'.*'"
+    r"'[^']*'"
     t.type = 'String'
     return t
 
@@ -125,6 +125,14 @@ comparison = {
 tokens += ['Comparison']
 
 
+def t_Comparison(t: LexToken):
+    r'[=!<>]+'
+    if t.value in comparison:
+        t.type = 'Comparison'
+        t.value = comparison[t.value]
+        return t
+
+
 # reserved keyword
 reserved = {
     'jump': 'Jump',
@@ -140,14 +148,10 @@ tokens += ['ID']  # not reserved words
 
 # function starting with t_ will be run for tokens even if not in tokens list
 def t_Word(t: LexToken):
-    r'''[^ .,()'"*{}\n]+'''  # match words, including utf-8 characters
+    r'''[^ \n.,()*{}'"]+'''
+    # r'''[^ .,()'"*{}\n]+'''  # match words, including utf-8 characters
     if t.value[0] == '#':
         return None  # unofficial comments "#"
-
-    if t.value in comparison:
-        t.type = 'Comparison'
-        t.value = comparison[t.value]
-        return t
 
     t.type = reserved.get(t.value, 'ID')  # Check for reserved word, else ID
     return t
@@ -161,13 +165,13 @@ separator = {
 tokens += list(separator.values())
 
 
-def t_separator(t: LexToken):
-    '''[.,()'"*{}]'''
+def t_Separator(t: LexToken):
+    r'''[.,()*{}]'''
     t.type = separator[t.value]
     return t
 
 
-def t_space(t: LexToken):
+def t_Space(t: LexToken):
     '''[ ]'''
 
 

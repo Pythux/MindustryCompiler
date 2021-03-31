@@ -1,5 +1,4 @@
 
-from ply.lex import Lexer
 from compiler.lex.mainLex import runLex
 from typing import List, T
 from boa import boa
