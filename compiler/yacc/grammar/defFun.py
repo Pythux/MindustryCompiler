@@ -3,8 +3,8 @@ from ._start import grammar, YaccProduction, context
 
 
 @grammar
-def runFun(p: YaccProduction):
-    '''lines : ID OpenParenthesis CloseParenthesis EndLine'''
+def runFunc(p: YaccProduction):
+    '''lines : ID OpenParenthesis arguments CloseParenthesis'''
     breakpoint()
 
 

@@ -12,6 +12,13 @@ def ref(p: YaccProduction):
     p[0] = Ref(ref)
 
 
+# a line is ether a jump instruction or an asmInstr
+@grammar
+def lineJump(p: YaccProduction):
+    '''line : jump'''
+    p[0] = p[1]
+
+
 @grammar
 def jump_asmCondition(p: YaccProduction):
     '''jump : Jump ID asmCondition EndLine'''
@@ -35,7 +42,7 @@ def jump_always(p: YaccProduction):
 # to keep the "valide ASM will pass"
 @grammar
 def jump_asmNoRef(p: YaccProduction):
-    '''asmInstr : Jump Number asmCondition EndLine'''
+    '''line : Jump Number asmCondition EndLine'''
     p[0] = p[1] + ' ' + str(p[2]) + ' ' + p[3]
 
 

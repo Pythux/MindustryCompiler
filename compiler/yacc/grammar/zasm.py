@@ -4,8 +4,8 @@ from ._start import grammar, YaccProduction
 
 # catch all ASM as it, no processing them
 @grammar
-def asmLine(p: YaccProduction):
-    '''asmInstr : asmValideInstructions EndLine'''
+def lineAsm(p: YaccProduction):
+    '''line : asmValideInstructions EndLine'''
     p[0] = p[1]
 
 
@@ -19,8 +19,6 @@ def asmFollowInstructions_one(p: YaccProduction):
 def asmFollowInstructions_many(p: YaccProduction):
     '''asmValideInstructions : asmValideInstructions info'''
     p[0] = p[1] + ' ' + str(p[2])
-
-
 
 
 @grammar
