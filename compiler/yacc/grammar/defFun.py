@@ -5,7 +5,11 @@ from ._start import grammar, YaccProduction, context
 @grammar
 def runFunc(p: YaccProduction):
     '''lines : ID OpenParenthesis arguments CloseParenthesis'''
-    breakpoint()
+    funName = p[1]
+    if funName not in context.funs:
+        raise SystemExit("function '{}' does not exist at line {}".format(funName, p.lineno(1)))
+    fun = context.funs[funName]
+    p[0] = fun.content
 
 
 @grammar
