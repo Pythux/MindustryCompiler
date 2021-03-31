@@ -49,13 +49,13 @@ def t_ArobasedInfo(t):
 
 
 def t_stringDoubleQuote(t: LexToken):
-    r'".*"'
+    r'"[^"]*"'
     t.type = 'String'
     return t
 
 
 def t_stringSimpleQuote(t: LexToken):
-    r"'.*'"
+    r"'[^']*'"
     t.type = 'String'
     return t
 
@@ -95,26 +95,8 @@ def t_EndLine(t: LexToken):
 
 # match: '#ref st', '#Ref st', '#ref: st', '#Ref: st', '#ref é4sét$sr'
 def t_RefJump(t: LexToken):
-    r'[#][Rr]ef[:]?[ ]\S*'
+    r'[#][Rr]ef[:]?[ ][^0-9]\S*'
     t.value = t.value.split(' ')[-1]
-    return t
-
-
-# reserved keyword
-reserved = {
-    'jump': 'Jump',
-    'if': 'If',
-    'else': 'Else',
-    'elif': 'ElseIf',
-}
-tokens += list(reserved.values())
-tokens += ['ID']  # not reserved words
-
-
-# function starting with t_ will be run for tokens even if not in tokens list
-def t_Word(t: LexToken):
-    r'[a-zA-Z_]\S*'  # \S Matches anything other than a space, tab or newline.
-    t.type = reserved.get(t.value, 'ID')  # Check for reserved words
     return t
 
 
@@ -143,21 +125,54 @@ comparison = {
 tokens += ['Comparison']
 
 
-# catch everything else that function on trop don't catch
-def t_SpecialWord(t: LexToken):
-    r'\S+'  # \S Matches anything other than a space, tab or newline
-
-    if t.value[0] == '#':
-        return None  # unofficial comments "#"
-
+def t_Comparison(t: LexToken):
+    r'[=!<>]+'
     if t.value in comparison:
         t.type = 'Comparison'
         t.value = comparison[t.value]
         return t
 
-    print('SpecialWord not match: {}'.format(t))
-    print("line: {}".format(t.lineno))
-    raise SystemExit()
+
+# reserved keyword
+reserved = {
+    'jump': 'Jump',
+    'if': 'If',
+    'else': 'Else',
+    'elif': 'ElseIf',
+    'def': 'DefFun',
+    'return': 'Return',
+}
+tokens += list(reserved.values())
+tokens += ['ID']  # not reserved words
+
+
+# function starting with t_ will be run for tokens even if not in tokens list
+def t_Word(t: LexToken):
+    r'''[^ \n.,()*{}'"]+'''
+    # r'''[^ .,()'"*{}\n]+'''  # match words, including utf-8 characters
+    if t.value[0] == '#':
+        return None  # unofficial comments "#"
+
+    t.type = reserved.get(t.value, 'ID')  # Check for reserved word, else ID
+    return t
+
+
+separator = {
+    '(': 'OpenParenthesis',
+    ')': 'CloseParenthesis',
+    ',': 'Comma',
+}
+tokens += list(separator.values())
+
+
+def t_Separator(t: LexToken):
+    r'''[.,()*{}]'''
+    t.type = separator[t.value]
+    return t
+
+
+def t_Space(t: LexToken):
+    '''[ ]'''
 
 
 # A string containing ignored characters, could be (spaces and tabs)
@@ -184,8 +199,9 @@ lexer = lex.lex()
 
 def runLex(content):
     lexer.input(content)
-    for tok in lexer:
-        print(tok)
+    li = [tok for tok in lexer]
+    lexer.lineno = 1
+    return li
 
 
 def runInteractiveLex():
@@ -199,5 +215,5 @@ def runInteractiveLex():
             content += s + '\n'
             continue
 
-        runLex(content)
+        print(runLex(content))
         content = ''

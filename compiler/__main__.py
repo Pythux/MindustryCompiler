@@ -24,12 +24,12 @@ def run(args):
         fileContent = fd.read()
 
     if args.lex:
-        return runLex(fileContent)
+        return '\n'.join(map(str, runLex(fileContent)))
     elif args.yacc:
-        return runYacc(fileContent)
+        return runYacc(fileContent, debug=args.dbg)
     else:
         # give final compiled result in interactive
-        return runYacc(fileContent)
+        return runYacc(fileContent, debug=args.dbg)
 
 
 def main():
@@ -51,6 +51,8 @@ def main():
     parser.add_argument('--ctrlC', help='copie resulted ASM to clipboard (Ctrl-C), just what you need',
                         action='store_true')
     parser.add_argument('-i', '--interactive', '--repl', help='run interactive mode',
+                        action='store_true')
+    parser.add_argument('--dbg', '--debug', help='run with debug flag',
                         action='store_true')
 
     # for faster debugging:

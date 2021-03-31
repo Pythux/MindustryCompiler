@@ -1,4 +1,5 @@
 
+from compiler.lex.mainLex import runLex
 from typing import List, T
 from boa import boa
 
@@ -20,14 +21,25 @@ from .p_functionYacc import parser  # noqa
 
 
 # run parser on content
-def runYacc(content: str, clearContext=False):
+def runYacc(content: str, debug=False, clearContext=False):
     if content[-1] != '\n':
         content += '\n'
-    lines = parser.parse(content)
-    stringCode = changeRefToLineNumber(lines)
+    checkExistingVars(content)
+    lines = parser.parse(content, debug=debug)
+    if len(lines) > 0:
+        stringCode = changeRefToLineNumber(lines)
+    else:
+        stringCode = ''
     if clearContext:
         context.clear()
     return stringCode
+
+
+def checkExistingVars(content):
+    context.ids = (
+        boa(runLex(content))
+        .filter(lambda tok: tok.type == 'ID')
+        .map(lambda tok: tok.value))
 
 
 # we only have at this moment str, Jump and Ref Objects in lines
