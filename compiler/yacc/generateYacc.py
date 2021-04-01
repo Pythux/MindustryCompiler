@@ -7,6 +7,7 @@ import os
 class Context:
     p_fun = {}
     p_imports = {}
+    precedence = None
 
 
 context = Context()
@@ -23,6 +24,10 @@ def grammar(p_fun: Callable):
     if p_import not in context.p_imports:
         context.p_imports[p_import] = True
     return p_fun
+
+
+def precedence(precedence):
+    context.precedence = precedence
 
 
 fileInfo = '''
@@ -46,6 +51,11 @@ def getGeneratedContent():
 
     for p_import in list(context.p_imports.keys()):
         c.append('import {}'.format(p_import))
+
+    c.append('\n')
+
+    if context.precedence is not None:
+        c.append('precedence = ' + str(context.precedence))
 
     c.append('\n')
 

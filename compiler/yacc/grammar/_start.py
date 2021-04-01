@@ -2,7 +2,7 @@
 from ply.yacc import YaccProduction
 from compiler.lex.mainLex import LexToken
 
-from compiler.yacc.generateYacc import grammar
+from compiler.yacc.generateYacc import grammar, precedence
 
 from .contextAndClass import context
 
@@ -13,3 +13,9 @@ from . import lines  # noqa
 
 
 __all__ = [YaccProduction, LexToken, grammar, context]
+
+
+# precedence((
+#     # ('nonassoc', 'LESSTHAN', 'GREATERTHAN'),  # Nonassociative operators
+#     ('left', 'lines'),
+# ))

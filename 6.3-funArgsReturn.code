@@ -1,0 +1,12 @@
+// function definition
+def plusOne(a)
+    op add a a 1
+    return a
+
+
+// function call
+plusOne(4)
+
+
+// ----------------------
+

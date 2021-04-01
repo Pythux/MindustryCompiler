@@ -1,8 +1,5 @@
 
 
-from boa import boa
-
-
 class Context:
     def __init__(self) -> None:
         # will be used to store: ref -> code line
@@ -17,12 +14,11 @@ class Context:
         self.fun = Fun()
         self.funs = {}
 
-    def registerFun(self, name, content):
-        if name in self.funs:
-            raise SystemExit("function {} already defined".format(name))
-        self.funs[name] = boa({
-            'name': name, 'args': self.fun.args, 'content': content,
-            'returns': self.fun.returns, 'ids': self.fun.ids})
+    def registerFun(self):
+        if self.fun.name in self.funs:
+            raise SystemExit("function {} already defined".format(self.fun.name))
+
+        self.funs[self.fun.name] = self.fun
         self.fun = Fun()  # clean context fun scope
 
     def addRef(self, ref, index):
@@ -37,11 +33,14 @@ class Context:
 
 class Fun:
     def __init__(self) -> None:
+        self.name = None
         self.inFunScope = False
         self.idCount = 0
         self.ids = {}
         self.args = []
-        self.returns = {}
+        self.returns = None
+        self.returnRef = None
+        self.content = []
 
     def scopeId(self, identifier):
         if identifier not in self.ids:
