@@ -7,12 +7,14 @@ class Context:
         self.refCount = 0
         self.fun = Fun()
         self.funs = {}
+        self.nextNoVar = 0
 
     def clear(self):
         self.refDict = {}
         self.refCount = 0
         self.fun = Fun()
         self.funs = {}
+        self.nextNoVar = 0
 
     def registerFun(self):
         if self.fun.name in self.funs:
