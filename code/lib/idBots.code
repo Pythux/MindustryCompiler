@@ -1,15 +1,21 @@
 
 
-def getBot(type)
+// get a bot of botType given that is free
+// return false if all of that botType taken
+def getFreeBot(botType)
     #ref loop
-    ubind type
+    ubind botType
+
+    if @unit == null  // no bot of that botType
+        return false
+
     set firstFlag -1
     sensor flag @unit @flag
     if flag == 0  // bot is free
         return @unit
 
     else if flag == firstFlag
-        // we have see all the bots of that type
+        // we have see all the bots of that botType
         return false
 
     else if firstFlag == -1  // first bot
@@ -18,16 +24,108 @@ def getBot(type)
     jump loop
 
 
-ubind @flare
-ucontrol move 120 130 0 0 0
-sensor c @unit @controller
-set w 0
-op add w w 1
-jump 4 greaterThanEq w 400
-ulocate building core false @copper x y found building
-op rand r 1000000000 b
-op floor r r b
-ucontrol flag 123456789101112 0 0 0 0
-sensor r @unit @flag
-print r
-printflush message1
+// return random number of the kind:
+// XXX000
+def genProcId()
+    op rand r 999 null
+    op floor r r null
+    if r < 100
+        // make sur to be a 3 digit number
+        op mul r r 10
+
+    op mul r r 1000 // free 3x0
+    return r
+
+
+// mark a bot to proc ownership
+// flag: PPP000II
+// P is procId, I is botId (given to the function, ofter an proc internal inc counter)
+def flagBot(procId, botId)
+    op mul procId procId 100
+    op add f procId botId
+    ucontrol flag f null null null null
+
+
+def getFreeBotAndFlagIt(botType, procId, botId)
+    bot = getFreeBot(botType)
+    if bot == false
+        return false
+    flagBot(procId, botId)
+    return @unit
+
+
+def isMyBot(procId, botFlag)
+    op idiv r botFlag 1000
+    if botFlag == procId
+        return true
+    return false
+
+
+def getMyBot(procId, botType)
+    #ref loopMyBot
+    ubind type
+    if @unit == null  // no bot of that type
+        return false
+    sensor flag @unit @flag
+    isMine = isMyBot(procId, botFlag)
+    if isMine == true
+        return true
+    jump loopMyBot
+
+
+
+def distance(aX, aY, bX, bY)
+    // dist = racinCarré((aX-bX)^2 + (aY-bY)^2)
+
+    op sub rl aX bX
+    op mul rl rl rl // au carré
+
+    op sub rr aY bY
+    op mul rr rr rr // au carré
+
+    op add dist rl rr
+    op sqrt dist dist null
+
+    return dist
+
+
+def wait()
+    set wait 0
+    #ref waiting
+    op add wait wait 1
+    jump waiting wait <= 200
+
+
+
+// ------------------- PROG --------------
+
+set botType @flare
+
+procId = genProcId()
+set botTotal 0
+
+#ref ProgLoop
+
+if botTotal < 2
+    #ref getBot
+    bot = getFreeBotAndFlagIt(botType, procId, botTotal)
+    if bot != false
+        op add botTotal botTotal 1
+    else
+        print "no more bot q.q"
+        printflush message1
+        wait()  // wait to see the message
+
+
+if @unit == false
+    getMyBot(procId, botType)
+
+if @unit == false
+    print "I own no bot q.q"
+    printflush message1
+    wait()  // wait to see the message
+    jump ProgLoop
+
+// use bot
+
+
