@@ -1,0 +1,33 @@
+
+
+def getBot(type)
+    #ref loop
+    ubind type
+    set firstFlag -1
+    sensor flag @unit @flag
+    if flag == 0  // bot is free
+        return @unit
+
+    else if flag == firstFlag
+        // we have see all the bots of that type
+        return false
+
+    else if firstFlag == -1  // first bot
+        set firstFlag flag
+
+    jump loop
+
+
+ubind @flare
+ucontrol move 120 130 0 0 0
+sensor c @unit @controller
+set w 0
+op add w w 1
+jump 4 greaterThanEq w 400
+ulocate building core false @copper x y found building
+op rand r 1000000000 b
+op floor r r b
+ucontrol flag 123456789101112 0 0 0 0
+sensor r @unit @flag
+print r
+printflush message1

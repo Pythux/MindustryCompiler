@@ -54,8 +54,6 @@ You could check files [here](./tests/identicalCode) to see the difference from t
         print "else"
     ```
 
-## coming soon
-
 - function:
 
     ```plain
@@ -66,6 +64,14 @@ You could check files [here](./tests/identicalCode) to see the difference from t
     x = 0
     x = add(x, 2)
     ```
+
+## coming soon
+
+- fix scope of ref in function
+
+- def function after call
+
+- import functions form other files
 
 ## current usage
 

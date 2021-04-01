@@ -112,7 +112,7 @@ def t_RefJump(t: LexToken):
 # discards comments line (aka: '//')
 # must be defined before SpecialWord to catch it
 def t_CommentsSlashSlash(t):
-    r'\/\/.*'
+    r'[\n]*[ ]*\/\/.*'
     # no return, token discarded
 
 
