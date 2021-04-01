@@ -69,6 +69,7 @@ addCloseBracket = False
 # count indentation, 4 saces or 1 tab = 1 lvl of indent
 def t_EndLine(t: LexToken):
     r'\n[ ]*'
+    breakpoint()
     global previousIndentationLvl, indentSpacing, addCloseBracket
     if addCloseBracket:
         addCloseBracket = False
