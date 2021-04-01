@@ -122,11 +122,14 @@ comparison = {
     '<': 'lessThan',
     '<=': 'lessThanEq',
 }
-tokens += ['Comparison']
+tokens += ['Comparison', 'Affectaction']
 
 
 def t_Comparison(t: LexToken):
     r'[=!<>]+'
+    if t.value == '=':
+        t.type = 'Affectaction'
+        return t
     if t.value in comparison:
         t.type = 'Comparison'
         t.value = comparison[t.value]

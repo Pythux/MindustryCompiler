@@ -12,11 +12,11 @@ def lineAsm(p: YaccProduction):
 @grammar
 def asmInstr(p: YaccProduction):
     '''asmInstr : ID'''
-    p[0] = p[1]
     if p[1] == 'op':
         context.nextNoVar = 1
     elif p[1] == 'radar':
-        context.nextNoVar = 4
+        context.nextNoVar = 5
+    p[0] = p[1]
 
 
 @grammar

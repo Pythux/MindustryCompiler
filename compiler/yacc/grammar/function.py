@@ -7,18 +7,49 @@ def runFunc(p: YaccProduction):
     '''lines : ID OpenParenthesis argumentsCall CloseParenthesis'''
     funName = p[1]
     callArgs = p[3]
+    p[0] = toFunContent(funName, callArgs)
+
+
+@grammar
+def runFuncReturnArgs(p: YaccProduction):
+    '''lines : returnedVars Affectaction ID OpenParenthesis argumentsCall CloseParenthesis'''
+    returnTo = p[1]
+    funName = p[3]
+    callArgs = p[5]
+    p[0] = toFunContent(funName, callArgs, returnTo, p.lineno(1))
+
+
+def toFunContent(funName, callArgs, returnTo=None, line=None):
     if funName not in context.funs:
-        raise SystemExit("function '{}' does not exist at line {}".format(funName, p.lineno(1)))
+        raise SystemExit("function '{}' does not exist at line {}".format(funName, line))
     fun = context.funs[funName]
     lines = []
-    lines += setFunctionCallArgs(fun, callArgs)
+    lines += setters(map(lambda a: fun.ids[a], fun.args), callArgs)
     lines += fun.content
     lines.append(fun.returnRef)
-    p[0] = lines
+    if returnTo:
+        if len(returnTo) != len(fun.returns):
+            raise SystemExit('function “{}” return exactly {} values, {} is receved line {}'
+                             .format(fun.name, len(fun.returns), len(returnTo), line))
+        lines += setters(returnTo, fun.returns)
+    return lines
 
 
-def setFunctionCallArgs(fun, callArgs):
-    return ['set {} {}'.format(fun.ids[farg], carg) for farg, carg in zip(fun.args, callArgs)]
+def setters(liSet, liVar):
+    'set {liSet} {liVal}'
+    return ['set {} {}'.format(s, v) for s, v in zip(liSet, liVar)]
+
+
+@grammar
+def returnedVars_one(p: YaccProduction):
+    '''returnedVars : ID'''
+    p[0] = [p[1]]
+
+
+@grammar
+def returnedVars_many(p: YaccProduction):
+    '''returnedVars : returnedVars Comma ID'''
+    p[0] = p[1] + [p[3]]
 
 
 @grammar
@@ -114,7 +145,7 @@ def returnsVal_one(p: YaccProduction):
 @grammar
 def returnsVal_many(p: YaccProduction):
     '''returnsVal : returnsVal Comma info'''
-    p[0] = p[1].append(p[3])
+    p[0] = p[1] + [p[3]]
 
 
 def funReturn(args):
@@ -122,10 +153,11 @@ def funReturn(args):
         # no return meet before
         context.fun.returns = [context.fun.genId() for _ in range(len(args))]
 
+    # exact same return quantity
     if len(args) != len(context.fun.returns):
         raise SystemExit("function {} must return {} as many values for all it's return"
                          .format(context.fun.name, len(context.fun.returns)))
 
-    lines = ['set {} {}'.format(returnArg, arg) for returnArg, arg in zip(context.fun.returns, args)]
+    lines = setters(context.fun.returns, args)
     lines.append(Jump('return', context.fun.returnRef))
     return lines

@@ -1,16 +1,12 @@
 // function definition
 def plusOne(a)
     op add a a 1
-    radar player boss attacker shield turret1 1 result
-    op add result a b
     return a
 
 
 // function call
-plusOne(4)
-
-radar player boss attacker shield turret1 1 result
-op add result a b
+b = plusOne(4)
+print b
 
 
 ----------------------
@@ -18,9 +14,7 @@ op add result a b
 
 set tmp1 4
 op add tmp1 tmp1 1
-radar player boss attacker shield tmp2 1 tmp3
-op add tmp3 tmp1 tmp4
-set tmp5 tmp1
-jump 6 always true true
-radar player boss attacker shield turret1 1 result
-op add result a b
+set tmp2 tmp1
+jump 4 always true true
+set b tmp2
+print b
