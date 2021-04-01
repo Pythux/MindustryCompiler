@@ -6,6 +6,14 @@
 // (need a display linked to processor named display1 to see colors, if name is display2 or 3 ... change the name in the code to correspond)
 //
 
+
+def wait()
+    set wait 0
+    #ref waiting
+    op add wait wait 1
+    jump waiting wait <= 200
+
+
 sensor in node1 @powerNetIn
 sensor out node1 @powerNetOut
 
@@ -18,9 +26,6 @@ print net
 printflush message1 // put all printed message ("power: " + net) in message1 (need a message box liked to processor to read it)
 
 // color to corresponding power produced:
-jump green net >= 1200
-jump yellow net >= 500
-
 if net >= 1200 // green
     draw clear 0 1000 0 0 0 0
 
@@ -34,8 +39,4 @@ else // red
 drawflush display1
 
 // wait a short time to avoid disturbing blink colors change
-
-set wait 0
-#ref waiting
-op add wait wait 1
-jump waiting wait <= 200
+wait()

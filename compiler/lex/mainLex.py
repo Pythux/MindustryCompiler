@@ -69,7 +69,8 @@ addCloseBracket = False
 # count indentation, 4 saces or 1 tab = 1 lvl of indent
 def t_EndLine(t: LexToken):
     r'\n[ ]*'
-    breakpoint()
+    if isEmptyEndLine(t):
+        return
     global previousIndentationLvl, indentSpacing, addCloseBracket
     if addCloseBracket:
         addCloseBracket = False
@@ -92,6 +93,13 @@ def t_EndLine(t: LexToken):
     previousIndentationLvl = indent
     t.lexer.lineno += 1  # inc line number to track lines
     return t
+
+
+def isEmptyEndLine(t: LexToken):
+    pos = t.lexer.lexpos
+    length = len(t.value)
+    data = t.lexer.lexdata
+    return data[pos-1:pos-1+length+1] == '\n\n'
 
 
 # match: '#ref st', '#Ref st', '#ref: st', '#Ref: st', '#ref é4sét$sr'
