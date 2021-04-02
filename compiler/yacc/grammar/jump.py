@@ -1,5 +1,5 @@
 
-from ._start import grammar, YaccProduction
+from ._start import grammar, YaccProduction, context
 
 from .contextAndClass import Jump, Ref
 
@@ -9,6 +9,9 @@ from .contextAndClass import Jump, Ref
 def ref(p: YaccProduction):
     '''line : RefJump EndLine'''
     ref = p[1]
+    if context.fun.inFunScope:
+        ref = context.fun.scopeRef(ref)
+
     p[0] = Ref(ref)
 
 
@@ -23,7 +26,10 @@ def lineJump(p: YaccProduction):
 def jump_asmCondition(p: YaccProduction):
     '''jump : Jump ID asmCondition EndLine'''
     # get for error message line of jump instruction
-    jump = Jump(p.lineno(1), Ref(p[2]), p[3])
+    ref = p[2]
+    if context.fun.inFunScope:
+        ref = context.fun.scopeRef(ref)
+    jump = Jump(p.lineno(1), Ref(ref), p[3])
     p[0] = jump
 
 
@@ -36,7 +42,10 @@ def comparison(p: YaccProduction):
 @grammar
 def jump_always(p: YaccProduction):
     '''jump : Jump ID EndLine'''
-    p[0] = Jump(p.lineno(1), Ref(p[2]))
+    ref = p[2]
+    if context.fun.inFunScope:
+        ref = context.fun.scopeRef(ref)
+    p[0] = Jump(p.lineno(1), Ref(ref))
 
 
 # to keep the "valide ASM will pass"

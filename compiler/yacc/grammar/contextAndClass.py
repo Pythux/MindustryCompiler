@@ -1,4 +1,6 @@
 
+import copy
+
 
 class Context:
     def __init__(self) -> None:
@@ -40,6 +42,7 @@ class Fun:
         self.idCount = 0
         self.ids = {}
         self.args = []
+        self.refs = {}
         self.returns = None
         self.returnRef = None
         self.content = []
@@ -55,6 +58,32 @@ class Fun:
         if newId not in self.ids:
             return newId
         return self.genId()
+
+    def scopeRef(self, ref):
+        if ref not in self.refs:
+            self.refs[ref] = context.genRef().id
+        return self.refs[ref]
+
+    # change ref for multiple copie/paste
+    def genContent(self):
+        newRef = {}
+        lines = []
+        for line in self.content:
+            if isinstance(line, Ref):
+                if line.id not in newRef:
+                    newRef[line.id] = context.genRef()
+                line = newRef[line.id]
+            elif isinstance(line, Jump):
+                if line.ref.id not in newRef:
+                    newRef[line.ref.id] = context.genRef()
+                # j = copy.copy(line)
+                j = Jump(line.line, newRef[line.ref.id])
+                # j.ref = newRef[line.ref.id]
+                # j.line = line.line
+                j.asmCondition = line.asmCondition
+                line = j
+            lines.append(line)
+        return lines
 
 
 context = Context()
@@ -90,3 +119,8 @@ class Jump:
 
     def __repr__(self) -> str:
         return self.__str__()
+
+    # def copy(self):
+    #     j = Jump(self.line, self.ref)
+    #     j.asmCondition = self.asmCondition
+    #     return j

@@ -25,7 +25,7 @@ def toFunContent(funName, callArgs, returnTo=None, line=None):
     fun = context.funs[funName]
     lines = []
     lines += setters(map(lambda a: fun.ids[a], fun.args), callArgs)
-    lines += fun.content
+    lines += fun.genContent()
     lines.append(fun.returnRef)
     if returnTo:
         if len(returnTo) != len(fun.returns):
