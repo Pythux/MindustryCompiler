@@ -1,0 +1,17 @@
+
+if a > b
+    if true == true
+        print "yo"
+
+print "end"
+
+
+----------------------
+
+
+jump 2 greaterThan a b
+jump 5 always true true
+jump 4 equal true true
+jump 5 always true true
+print "yo"
+print "end"
