@@ -89,12 +89,14 @@ def distance(aX, aY, bX, bY)
     return dist
 
 
-def wait()
+def wait(secondes)
     set timestamps @time
-    op add timestampsToWait timestamps 2000
-    #ref waiting
-    jump waiting timestampsToWait <= @time
+    op mul secondes secondes 1000
+    op add timestampsToWait timestamps secondes
 
+    // can jump on himself, not possible on game UI
+    #ref waiting
+    jump waiting timestampsToWait >= @time
 
 
 // ------------------- PROG --------------
@@ -114,7 +116,7 @@ if botTotal < 2
     else
         print "no more bot q.q"
         printflush message1
-        wait()  // wait to see the message
+        wait(2)  // wait to see the message
 
 
 if @unit == false
@@ -123,8 +125,7 @@ if @unit == false
 if @unit == false
     print "I own no bot q.q"
     printflush message1
-    wait()  // wait to see the message
+    wait(2)  // wait to see the message
     jump ProgLoop
 
 // use bot
-
