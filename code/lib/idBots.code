@@ -90,10 +90,10 @@ def distance(aX, aY, bX, bY)
 
 
 def wait()
-    set wait 0
+    set timestamps @time
+    op add timestampsToWait timestamps 2000
     #ref waiting
-    op add wait wait 1
-    jump waiting wait <= 200
+    jump waiting timestampsToWait <= @time
 
 
 
@@ -127,5 +127,4 @@ if @unit == false
     jump ProgLoop
 
 // use bot
-
 

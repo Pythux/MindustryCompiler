@@ -83,6 +83,11 @@ class Fun:
                 j.asmCondition = line.asmCondition
                 line = j
             lines.append(line)
+
+        if self.returnRef.id in newRef:
+            self.returnRef = newRef[self.returnRef.id]
+        else:
+            self.returnRef = context.genRef()
         return lines
 
 
