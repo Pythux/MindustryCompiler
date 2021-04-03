@@ -67,10 +67,6 @@ You could check files [here](./tests/identicalCode) to see the difference from t
 
 ## coming soon
 
-- fix scope of ref in function
-
-- def function after call
-
 - import functions form other files
 
 ## current usage
