@@ -1,4 +1,5 @@
-from compiler.yacc.grammar.contextAndClass import Jump
+
+from compiler.yacc.classes import Jump
 from ._start import grammar, YaccProduction, context
 
 

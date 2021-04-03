@@ -4,7 +4,7 @@ from compiler.lex.mainLex import LexToken
 
 from compiler.yacc.generateYacc import grammar, precedence
 
-from .contextAndClass import context
+from ..context import context
 
 
 # starting grammar

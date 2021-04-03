@@ -9,7 +9,8 @@ from .generateYacc import generateYaccFunctions
 # import grammar
 from . import grammar  # noqa
 
-from .grammar.contextAndClass import context, Jump, Ref
+from .context import context
+from .classes import Jump, Ref
 
 
 # generate module .p_functionYacc
@@ -50,7 +51,7 @@ def changeRefToLineNumber(li: List[T]):
     li = refToLinesNumber(li)  # change ref to lineNumb
 
     # change jump ref to jump lineNumb
-    li = boa(li).map(lambda el: el.toLine() if isinstance(el, Jump) else el)
+    li = boa(li).map(lambda el: el.toLine(context) if isinstance(el, Jump) else el)
     return '\n'.join(li) + '\n'
 
 
