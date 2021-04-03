@@ -1,5 +1,5 @@
 
-from compiler.yacc.classes import Jump
+from compiler.yacc.classes import Jump, FunCall
 from ._start import grammar, YaccProduction, context
 
 
@@ -8,7 +8,7 @@ def runFunc(p: YaccProduction):
     '''lines : ID OpenParenthesis argumentsCall CloseParenthesis'''
     funName = p[1]
     callArgs = p[3]
-    p[0] = toFunContent(funName, callArgs)
+    p[0] = FunCall(funName, callArgs)
 
 
 @grammar
@@ -17,28 +17,7 @@ def runFuncReturnArgs(p: YaccProduction):
     returnTo = p[1]
     funName = p[3]
     callArgs = p[5]
-    p[0] = toFunContent(funName, callArgs, returnTo, p.lineno(1))
-
-
-def toFunContent(funName, callArgs, returnTo=None, line=None):
-    if funName not in context.funs:
-        raise SystemExit("function '{}' does not exist at line {}".format(funName, line))
-    fun = context.funs[funName]
-    lines = []
-    lines += setters(map(lambda a: fun.ids[a], fun.args), callArgs)
-    lines += fun.genContent()
-    lines.append(fun.returnRef)
-    if returnTo:
-        if len(returnTo) != len(fun.returns):
-            raise SystemExit('function “{}” return exactly {} values, {} is receved line {}'
-                             .format(fun.name, len(fun.returns), len(returnTo), line))
-        lines += setters(returnTo, fun.returns)
-    return lines
-
-
-def setters(liSet, liVar):
-    'set {liSet} {liVal}'
-    return ['set {} {}'.format(s, v) for s, v in zip(liSet, liVar)]
+    p[0] = FunCall(funName, callArgs, returnTo, p.lineno(1))
 
 
 @grammar
@@ -88,3 +67,8 @@ def funReturn(args):
     lines = setters(context.fun.returns, args)
     lines.append(Jump('return', context.fun.returnRef))
     return lines
+
+
+def setters(liSet, liVar):
+    'set {liSet} {liVal}'
+    return ['set {} {}'.format(s, v) for s, v in zip(liSet, liVar)]

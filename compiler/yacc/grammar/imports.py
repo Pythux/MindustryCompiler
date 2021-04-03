@@ -2,7 +2,7 @@
 
 from ._start import grammar, YaccProduction
 
-from ..context import imports
+from ..Imports import imports
 
 
 @grammar
