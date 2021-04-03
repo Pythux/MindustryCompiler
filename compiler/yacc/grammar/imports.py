@@ -1,10 +1,24 @@
 
-from ._start import grammar, YaccProduction, context
+
+from ._start import grammar, YaccProduction
+
+from ..context import imports
 
 
-def runFunc(p: YaccProduction):
-    '''lines : ID OpenParenthesis argumentsCall CloseParenthesis'''
+@grammar
+def importStd(p: YaccProduction):
+    '''noLine : Import ToImports'''
+    toImports = p[2]
+    imports.toImports += toImports
 
 
-def defFun(p: YaccProduction):
-    '''noLine : DefFun funName funScope OpenParenthesis arguments CloseParenthesis OpenCurlyBracket lines CloseCurlyBracket'''
+@grammar
+def toImports_one(p: YaccProduction):
+    '''ToImports : ID'''
+    p[0] = [p[1]]
+
+
+@grammar
+def toImports_many(p: YaccProduction):
+    '''ToImports : ToImports Comma ID'''
+    p[0] = p[1] + [p[3]]
