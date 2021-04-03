@@ -48,8 +48,10 @@ You could check files [here](./tests/identicalCode) to see the difference from t
         print "2 < 4"
     else if 2 == 1
         print "2 == 1"
-    elif 2 === 2
+
+    elif 2 === 2  // "elif" is equivalent to "else if"
         print "2 === 2"
+
     else
         print "else"
     ```
