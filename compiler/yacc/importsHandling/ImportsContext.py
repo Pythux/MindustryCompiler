@@ -12,10 +12,10 @@ class Imports:
             if fileLib not in self.imported:
                 self.toImports.append(fileLib)
 
-    def getNextToImport(self):
-        if len(self.toImports):
-            return self.toImports[-1]
-        return None
+    # generator
+    def nextToImport(self):
+        while len(self.toImports):
+            yield self.toImports.pop()
 
     @property
     def currentFile(self):

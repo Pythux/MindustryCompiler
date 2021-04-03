@@ -3,6 +3,8 @@ from compiler.lex.mainLex import runLex
 from typing import List, T
 from boa import boa
 
+from . import importsHandling
+
 
 from .generateYacc import generateYaccFunctions
 
@@ -23,23 +25,37 @@ from .p_functionYacc import parser  # noqa
 
 # run parser on content
 def runYacc(content: str, debug=False, clearContext=False):
+    if not len(content):
+        return ''
     if content[-1] != '\n':
         content += '\n'
     checkExistingVars(content)
     lines = parser.parse(content, debug=debug)
-    doAllImports()
-    lines = transformFunCall(lines)
-    if len(lines) > 0:
-        stringCode = changeRefToLineNumber(lines)
-    else:
-        stringCode = ''
+
+    runImports()
+
+    # back to main file:
+    lines = importsHandling.fillFunCall(lines)
+
+    # last step, put ref to code line
+    stringCode = refToCodeLine(lines)
+
     if clearContext:
         context.clear()
     return stringCode
 
 
-# if have to imports stuff, do so, no need to clear context
-def doAllImports
+# run all imports to do
+def runImports():
+    for nextImpContent in importsHandling.nextImportContent():
+        if nextImpContent is not None:
+            runYacc(nextImpContent, clearContext=True)  # no need to keep context
+
+
+def refToCodeLine(lines):
+    if len(lines) > 0:
+        return changeRefToLineNumber(lines)
+    return ''
 
 
 def checkExistingVars(content):
