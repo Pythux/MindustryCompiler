@@ -1,0 +1,10 @@
+
+
+def wait(secondes)
+    set timestamps @time
+    op mul secondes secondes 1000
+    op add timestampsToWait timestamps secondes
+
+    // can jump on himself, not possible on game UI
+    #ref waiting
+    jump waiting timestampsToWait >= @time
