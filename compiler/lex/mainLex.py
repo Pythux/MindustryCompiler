@@ -61,35 +61,94 @@ def t_stringSimpleQuote(t: LexToken):
 
 
 previousIndentationLvl = 0
-indentSpacing = None
+indentNb = None
 tokens += ['OpenCurlyBracket', 'CloseCurlyBracket']
-addCloseBracket = False
+addCloseBracket = 0
 
 
-# count indentation, 4 saces or 1 tab = 1 lvl of indent
+# count indentation, indent could be spaces or tabs
 def t_EndLine(t: LexToken):
-    r'\n[ ]*'
-    global previousIndentationLvl, indentSpacing, addCloseBracket
-    if addCloseBracket:
-        addCloseBracket = False
-        t.type = 'CloseCurlyBracket'
+    r'\n[ ]*\t*'
+    if isEmptyEndLine(t):
+        t.lexer.lineno += 1  # inc line number to track lines
+        return
+
+    global addCloseBracket
+    if addCloseBracket > 0:
+        return closeBracket(t)
+
+    global indentNb
+    if indentNb is None:
+        if len(t.value[1:]) > 0:
+            indentNb = len(t.value[1:])
+
+    if indentNb is None:
+        t.lexer.lineno += 1  # inc line number to track lines
         return t
 
-    if indentSpacing is None:
-        spaces = len(t.value[1:])
-        if spaces > 0:
-            indentSpacing = spaces
-    indent = len(t.value[1:])
-    if indentSpacing:
-        indent = len(t.value[1:].replace(' '*indentSpacing, '\t'))
-    if indent > previousIndentationLvl:
-        t.type = 'OpenCurlyBracket'
-    elif indent < previousIndentationLvl:
-        t.type = 'EndLine'
-        addCloseBracket = True
-        t.lexer.lexpos -= len(t.value)
-    previousIndentationLvl = indent
+    tok = handleIndent(t)
+    if tok is not None:
+        return tok
+
+
+def isEmptyEndLine(t: LexToken):
+    pos = t.lexer.lexpos
+    length = len(t.value)
+    data = t.lexer.lexdata
+    return data[pos-1:pos-1+length+1] == '\n\n'
+
+
+def closeBracket(t):
+    # add CloseCurlyBracket as needed
+    global addCloseBracket
+    if addCloseBracket > 0:
+        addCloseBracket -= 1
+        t.type = 'CloseCurlyBracket'
+        if addCloseBracket > 0:
+            redoToken(t)
+        return t
+
+
+# rerun the same to create more than one token
+def redoToken(t):
+    t.lexer.lexpos -= len(t.value)
+
+
+def handleIndent(t: LexToken):
+    global indentNb, addCloseBracket, previousIndentationLvl
+
+    nb = len(t.value[1:])
+    if nb / indentNb != nb // indentNb:
+        raise SystemExit('line {}, indentation incorrect to previous lines in file'.format(t.lineno))
+    indentLvl = len(t.value[1:]) // indentNb
+
+    if indentLvl > previousIndentationLvl:
+        return indentUp(t, indentLvl)
+
+    elif indentLvl < previousIndentationLvl:
+        return indentDown(t, indentLvl)
+
+    previousIndentationLvl = indentLvl
     t.lexer.lineno += 1  # inc line number to track lines
+    return t
+
+
+def indentUp(t: LexToken, indentLvl):
+    global previousIndentationLvl
+    if indentLvl > previousIndentationLvl + 1:
+        raise SystemExit('too much indentation line {}'.format(t.lineno))
+    t.type = 'OpenCurlyBracket'
+    previousIndentationLvl = indentLvl
+    t.lexer.lineno += 1  # inc line number to track lines
+    return t
+
+
+def indentDown(t: LexToken, indentLvl):
+    global previousIndentationLvl, addCloseBracket
+    t.type = 'EndLine'
+    addCloseBracket = previousIndentationLvl - indentLvl
+    redoToken(t)
+    previousIndentationLvl = indentLvl
     return t
 
 
@@ -103,7 +162,7 @@ def t_RefJump(t: LexToken):
 # discards comments line (aka: '//')
 # must be defined before SpecialWord to catch it
 def t_CommentsSlashSlash(t):
-    r'\/\/.*'
+    r'[\n]*[ ]*\/\/.*'
     # no return, token discarded
 
 
@@ -122,11 +181,14 @@ comparison = {
     '<': 'lessThan',
     '<=': 'lessThanEq',
 }
-tokens += ['Comparison']
+tokens += ['Comparison', 'Affectaction']
 
 
 def t_Comparison(t: LexToken):
     r'[=!<>]+'
+    if t.value == '=':
+        t.type = 'Affectaction'
+        return t
     if t.value in comparison:
         t.type = 'Comparison'
         t.value = comparison[t.value]

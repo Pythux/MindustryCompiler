@@ -1,0 +1,20 @@
+// function definition
+def plusOne(a)
+    op add a a 1
+    return a
+
+
+// function call
+b = plusOne(4)
+print b
+
+
+----------------------
+
+
+set tmp1 4
+op add tmp1 tmp1 1
+set tmp2 tmp1
+jump 4 always true true
+set b tmp2
+print b

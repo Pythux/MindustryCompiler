@@ -43,4 +43,8 @@ def splitCodeASM(file):
 
 
 def checkCodeToASM(file):
-    assert runYacc(file.code, clearContext=True) == file.asm
+    try:
+        assert runYacc(file.code, clearContext=True) == file.asm
+    except: # noqa
+        print('\nfail runYacc on file: {}\n'.format(file.file))
+        raise SystemError()

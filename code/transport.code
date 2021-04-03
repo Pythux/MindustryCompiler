@@ -256,7 +256,6 @@ ulocate building core false @copper corex corey found core
 ucontrol approach corex corey 5 corey 0
 ucontrol itemTake core ressource 100 0 0
 
-
 // inc index une fois un bot envoyé avec succès
 op add index index 1
 

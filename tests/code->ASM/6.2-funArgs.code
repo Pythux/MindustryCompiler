@@ -12,3 +12,4 @@ show(data)
 
 set tmp1 data
 print tmp1
+end
