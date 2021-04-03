@@ -6,7 +6,7 @@ from boa import boa
 
 from .generateYacc import generateYaccFunctions
 
-# import grammar
+# import grammar, required
 from . import grammar  # noqa
 
 from .context import context
@@ -27,6 +27,8 @@ def runYacc(content: str, debug=False, clearContext=False):
         content += '\n'
     checkExistingVars(content)
     lines = parser.parse(content, debug=debug)
+    doAllImports()
+    lines = transformFunCall(lines)
     if len(lines) > 0:
         stringCode = changeRefToLineNumber(lines)
     else:
@@ -34,6 +36,10 @@ def runYacc(content: str, debug=False, clearContext=False):
     if clearContext:
         context.clear()
     return stringCode
+
+
+# if have to imports stuff, do so, no need to clear context
+def doAllImports
 
 
 def checkExistingVars(content):

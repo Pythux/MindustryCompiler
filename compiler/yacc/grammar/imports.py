@@ -9,7 +9,7 @@ from ..Imports import imports
 def importStd(p: YaccProduction):
     '''noLine : Import ToImports'''
     toImports = p[2]
-    imports.toImports += toImports
+    imports.toImport(toImports)
 
 
 @grammar
