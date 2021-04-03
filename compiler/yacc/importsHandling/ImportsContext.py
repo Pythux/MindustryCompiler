@@ -2,7 +2,7 @@
 
 class Imports:
     def __init__(self) -> None:
-        self.imported = {}
+        self.imported = {None: {}}  # None is main file
         self.toImports = []
         self._currentFile = None
 
@@ -10,6 +10,7 @@ class Imports:
     def toImport(self, filesToImport):
         for fileLib in filesToImport:
             if fileLib not in self.imported:
+                self.currentFile = fileLib  # will pe processed
                 self.toImports.append(fileLib)
 
     # generator
@@ -26,7 +27,7 @@ class Imports:
     def currentFile(self, value):
         self.currentFile = value
         assert value not in self.imported
-        self.imported[value] = {}
+        self.imported[value] = {}  # functions will be stored here
 
     def addFunToModule(self, funDef):
         assert self.currentFile in self.imported

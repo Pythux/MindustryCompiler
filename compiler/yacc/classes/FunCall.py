@@ -1,6 +1,13 @@
 
 
-from ..Imports import imports
+from pathlib import PurePath
+import os
+
+
+a = PurePath(os.path.dirname(__file__), *['..' for _ in range(len(__package__.split('.')))], 'code', 'lib')
+breakpoint()
+
+from ..importsHandling import imports
 
 
 class FunCall:

@@ -48,8 +48,7 @@ def runYacc(content: str, debug=False, clearContext=False):
 # run all imports to do
 def runImports():
     for nextImpContent in importsHandling.nextImportContent():
-        if nextImpContent is not None:
-            runYacc(nextImpContent, clearContext=True)  # no need to keep context
+        runYacc(nextImpContent, clearContext=True)  # no need to keep context
 
 
 def refToCodeLine(lines):
