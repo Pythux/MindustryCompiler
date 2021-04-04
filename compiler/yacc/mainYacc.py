@@ -28,13 +28,13 @@ def yaccParse(content, debug=False):
         return ''
     if content[-1] != '\n':
         content += '\n'
-    checkExistingVars(content)
     lines = parser.parse(content, debug=debug)
     return lines
 
 
-# run parser on content
+# run parser on content, which is main file or REPL
 def runYacc(content: str, debug=False, clearContext=False):
+    checkExistingVars(content)  # only on main file
     lines = yaccParse(content, debug=debug)
 
     runImports()
@@ -74,10 +74,10 @@ def refToCodeLine(lines):
 
 
 def checkExistingVars(content):
-    context.ids = (
+    context.existingVars = set((
         boa(runLex(content))
         .filter(lambda tok: tok.type == 'ID')
-        .map(lambda tok: tok.value))
+        .map(lambda tok: tok.value)))
 
 
 # we only have at this moment str, Jump and Ref Objects in lines

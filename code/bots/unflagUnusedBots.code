@@ -4,7 +4,7 @@ import time
 
 
 // will get a botType and if is flagged without owner within 3s, free it (flag 0)
-def freeSomeBots(type, message)
+freeSomeBots(type, message)
     ubind type
     set t @time
     #ref waitingOwner // recheck sensor @controller
@@ -28,8 +28,7 @@ def freeSomeBots(type, message)
                 jump waitingOwner
 
 
-#ref loop
 set type @mono
 set message message1
+
 freeSomeBots(type, message)
-jump loop

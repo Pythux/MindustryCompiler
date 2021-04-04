@@ -79,6 +79,10 @@ You could check files [here](./tests/identicalCode) to see the difference from t
 
 - afectation `a = 1` and simple operation +, -, /, *, ...
 
+- operation += -=
+
+- improve if, if var, if not var, and / or
+
 ## current usage
 
 - compile a file :

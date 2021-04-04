@@ -201,7 +201,6 @@ reserved = {
     'if': 'If',
     'else': 'Else',
     'elif': 'ElseIf',
-    'def': 'DefFun',
     'return': 'Return',
     'import': 'Import',
 }

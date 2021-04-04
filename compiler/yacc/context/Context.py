@@ -12,6 +12,8 @@ class Context:
         self.fun = Fun(self)
         self.funs = {}
         self.nextNoVar = 0
+        self.existingVars = set()
+        self.idInc = 0
 
     def clear(self):
         self.refDict = {}
@@ -19,6 +21,8 @@ class Context:
         self.fun = Fun(self)
         self.funs = {}
         self.nextNoVar = 0
+        self.existingVars = set()
+        self.idInc = 0
 
     def getDefinedFunction(self):
         fun = self.fun

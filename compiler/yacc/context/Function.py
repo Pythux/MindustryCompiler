@@ -6,7 +6,6 @@ class Fun:
     def __init__(self, context) -> None:
         self.name = None
         self.inFunScope = False
-        self.idCount = 0
         self.ids = {}
         self.args = []
         self.refs = {}
@@ -21,9 +20,9 @@ class Fun:
         return self.ids[identifier]
 
     def genId(self):
-        self.idCount += 1
-        newId = 'tmp{}'.format(self.idCount)
-        if newId not in self.ids:
+        self.context.idInc += 1
+        newId = 'tmp{}'.format(self.context.idInc)
+        if newId not in self.context.existingVars:
             return newId
         return self.genId()
 

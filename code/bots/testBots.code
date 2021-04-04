@@ -10,10 +10,21 @@ set message message1
 
 procId = idBots.genProcId()
 set botTotal 0
-
 set turnAround 0
+set nbLoop 0
 
 #ref ProgLoop
+
+op add nbLoop nbLoop 1
+
+print "nb loop: "
+msg.printAndWait(nbLoop, message)
+
+// switch on/off:
+sensor isActive switch1 @enabled
+if isActive == false
+    msg.printAndWait("switch off, inactive", message)
+    jump ProgLoop
 
 op add turnAround turnAround 0.1
 
@@ -26,6 +37,7 @@ if botTotal < 2
     else
         msg.printAndWait("[orange]no more bot q.q", message)
 
+msg.printAndWait("[orange]yo ?", message)
 
 if @unit == false
     idBots.getMyBot(procId, botType)

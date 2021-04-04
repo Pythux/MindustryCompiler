@@ -1,5 +1,6 @@
 
 import time
+import msg
 
 
 // get a bot of botType given that is free
@@ -66,9 +67,12 @@ flagBot(procId, botId)
 
 
 getFreeBotAndFlagIt(botType, procId, botId, message)
+    msg.printAndWait("try getting some free bots ...", message)
     bot = getFreeBot(botType, message)
     if bot == false
+        msg.printAndWait("no success", message)
         return false
+    msg.printAndWait("We have a free bot !", message)
     flagBot(procId, botId)
     return @unit
 

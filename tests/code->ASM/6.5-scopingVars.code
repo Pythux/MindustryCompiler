@@ -1,0 +1,19 @@
+
+show(a, b, tmp1)
+    print tmp1
+
+
+// function call
+set tmp2 1
+show(tmp2, 2, 3)
+
+
+----------------------
+
+
+set tmp2 1
+set tmp4 tmp2
+set tmp5 2
+set tmp3 3
+print tmp3
+end
