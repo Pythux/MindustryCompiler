@@ -52,12 +52,10 @@ def runImports():
 
 
 def fillFunCall(lines):
-    result = []
-    for line in lines:
-        if isinstance(line, FunCall):
-            result += line.toFunContent()
-        else:
-            result.append(line)
+    def reducer(li, el):
+        return li + el.toFunContent() if isinstance(el, FunCall) else [el]
+
+    return boa(lines).reduce(reducer, [])
 
 
 def refToCodeLine(lines):

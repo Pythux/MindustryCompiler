@@ -4,8 +4,8 @@ from ..importsHandling import imports
 
 
 class FunCall:
-    def __init__(self, funName, callArgs, line, returnTo=None, module=None) -> None:
-        self.funName = funName
+    def __init__(self, name, callArgs, line, returnTo=None, module=None) -> None:
+        self.name = name
         self.callArgs = callArgs
         self.returnTo = returnTo
         self.line = line
@@ -13,9 +13,9 @@ class FunCall:
 
     def toFunContent(self):
         module = imports.getModule(self.module)
-        if self.funName not in module:
-            raise SystemExit("function '{}' does not exist at line {}".format(self.funName, self.line))
-        fun = module[self.funName]
+        if self.name not in module:
+            raise SystemExit("function '{}' does not exist at line {}".format(self.name, self.line))
+        fun = module[self.name]
         lines = []
         lines += setters(map(lambda a: fun.ids[a], fun.args), self.callArgs)
         lines += fun.genContent()
