@@ -56,7 +56,6 @@ def addArguments(args):
         context.fun.scopeId(arg)
 
 
-
 @grammar
 def funScope(p: YaccProduction):
     '''funScope : '''
