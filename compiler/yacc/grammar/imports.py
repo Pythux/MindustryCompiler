@@ -2,14 +2,14 @@
 
 from ._start import grammar, YaccProduction
 
-from ..Imports import imports
+from .. import importsHandling
 
 
 @grammar
 def importStd(p: YaccProduction):
     '''noLine : Import ToImports'''
     toImports = p[2]
-    imports.toImport(toImports)
+    importsHandling.imports.toImport(toImports)
 
 
 @grammar

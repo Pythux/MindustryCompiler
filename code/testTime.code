@@ -1,7 +1,7 @@
 
-import time
+// import time
 
-time.wait(2)
+// time.wait(2)
 
 yo()
 
