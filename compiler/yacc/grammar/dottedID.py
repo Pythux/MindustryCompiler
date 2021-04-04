@@ -11,5 +11,5 @@ def dottedID_one(p: YaccProduction):
 
 @grammar
 def dottedID_many(p: YaccProduction):
-    '''dottedID : ToImports Dot ID'''
+    '''dottedID : dottedID Dot ID'''
     p[0] = p[1] + [p[3]]

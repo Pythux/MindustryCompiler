@@ -4,7 +4,7 @@ from ..importsHandling import imports
 
 
 class FunCall:
-    def __init__(self, name, callArgs, line, returnTo=None, module=None) -> None:
+    def __init__(self, module, name, callArgs, line, returnTo=None) -> None:
         self.name = name
         self.callArgs = callArgs
         self.returnTo = returnTo

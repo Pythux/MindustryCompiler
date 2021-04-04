@@ -7,19 +7,31 @@ from .. import importsHandling
 
 @grammar
 def runFunc(p: YaccProduction):
-    '''line : ID OpenParenthesis argumentsCall CloseParenthesis'''
-    funName = p[1]
+    '''line : dottedID OpenParenthesis argumentsCall CloseParenthesis'''
+    dotted = p[1]
+    module, funName = getModuleAndFunName(dotted)
     callArgs = p[3]
-    p[0] = FunCall(funName, callArgs, p.lineno(1))
+    p[0] = FunCall(module, funName, callArgs, p.lineno(1))
+
+
+def getModuleAndFunName(dotted):
+    module = None
+    if len(dotted) == 2:
+        module, funName = dotted
+    else:
+        assert len(dotted) == 1
+        funName = dotted[0]
+    return module, funName
 
 
 @grammar
 def runFuncReturnArgs(p: YaccProduction):
-    '''line : returnedVars Affectaction ID OpenParenthesis argumentsCall CloseParenthesis'''
+    '''line : returnedVars Affectaction dottedID OpenParenthesis argumentsCall CloseParenthesis'''
     returnTo = p[1]
-    funName = p[3]
+    dotted = p[3]
+    module, funName = getModuleAndFunName(dotted)
     callArgs = p[5]
-    p[0] = FunCall(funName, callArgs, p.lineno(1), returnTo)
+    p[0] = FunCall(module, funName, callArgs, p.lineno(1), returnTo)
 
 
 @grammar
