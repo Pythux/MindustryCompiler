@@ -50,7 +50,6 @@ def publish():
     wheel()
     comfirme_publish_version()
     upload_wheel()
-    clean_dirs()
     print_git_tag_info()
 
 
