@@ -6,6 +6,11 @@ class Imports:
         self.toImports = []
         self.currentFile = None
 
+    def clear(self):
+        self.imported = {None: {}}  # None is main file
+        self.toImports = []
+        self.currentFile = None
+
     # simple absolute import from lib/, one lvl
     def toImport(self, filesToImport):
         for fileLib in filesToImport:

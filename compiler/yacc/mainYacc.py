@@ -40,6 +40,7 @@ def runYacc(content: str, debug=False, clearContext=False):
     stringCode = refToCodeLine(lines)
 
     if clearContext:
+        importsHandling.imports.clear()
         context.clear()
     return stringCode
 
@@ -47,12 +48,12 @@ def runYacc(content: str, debug=False, clearContext=False):
 # run all imports to do
 def runImports():
     for nextImpContent in importsHandling.nextImportContent():
-        runYacc(nextImpContent, clearContext=True)  # no need to keep context
+        runYacc(nextImpContent)
 
 
 def fillFunCall(lines):
     def reducer(li, el):
-        return li + el.toFunContent() if isinstance(el, FunCall) else [el]
+        return li + (el.toFunContent() if isinstance(el, FunCall) else [el])
 
     return boa(lines).reduce(reducer, [])
 
