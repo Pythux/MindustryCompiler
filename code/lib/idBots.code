@@ -9,7 +9,7 @@ def getFreeBot(botType)
     sensor flag @unit @flag
     print "WTF"
     printflush message3
-    wait(1)
+    time.wait(1)
 
     if @unit == null  // no bot of that botType
         print "no bot of type: "
@@ -108,4 +108,3 @@ def distance(aX, aY, bX, bY)
     op sqrt dist dist null
 
     return dist
-

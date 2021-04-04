@@ -9,12 +9,13 @@ class FunCall:
         self.callArgs = callArgs
         self.returnTo = returnTo
         self.line = line
-        self.module = module
+        self.module = module if module else imports.currentFile
 
     def toFunContent(self):
         module = imports.getModule(self.module)
         if self.name not in module:
-            raise SystemExit("function '{}' does not exist at line {}".format(self.name, self.line))
+            raise Exception("function '{}' does not exist, module {}, at line {}"
+                            .format(self.name, self.module, self.line))
         fun = module[self.name]
         lines = []
         lines += setters(map(lambda a: fun.ids[a], fun.args), self.callArgs)
@@ -22,8 +23,8 @@ class FunCall:
         lines.append(fun.returnRef)
         if self.returnTo:
             if len(self.returnTo) != len(fun.returns):
-                raise SystemExit('function “{}” return exactly {} values, {} is receved line {}'
-                                 .format(fun.name, len(fun.returns), len(self.returnTo), self.line))
+                raise Exception('function “{}” return exactly {} values, {} is receved line {}'
+                                .format(fun.name, len(fun.returns), len(self.returnTo), self.line))
             lines += setters(self.returnTo, fun.returns)
         return lines
 

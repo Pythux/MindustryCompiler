@@ -1,7 +1,13 @@
 
-set botType @dagger
 
-procId = genProcId()
+import idBots
+
+set botType @mono
+
+set message message1
+
+
+procId = idBots.genProcId()
 set botTotal 0
 
 set turnAround 0
@@ -12,27 +18,27 @@ op add turnAround turnAround 0.1
 
 if botTotal < 2
     #ref getBot
-    bot = getFreeBotAndFlagIt(botType, procId, botTotal)
+    bot = idBots.getFreeBotAndFlagIt(botType, procId, botTotal)
     if bot != false
         op add botTotal botTotal 1
     else
         print "no more bot q.q"
-        printflush message1
+        printflush message
         time.wait(2)  // wait to see the message
 
 
 if @unit == false
-    getMyBot(procId, botType)
+    idBots.getMyBot(procId, botType)
 
 print "procId: "
 print procId
 print " botTotal: "
 print botTotal
-printflush message2
+printflush message
 
 if @unit == false
     print "I own no bot q.q"
-    printflush message1
+    printflush message
     time.wait(2)  // wait to see the message
     jump ProgLoop
 
@@ -40,7 +46,7 @@ if @unit == false
 // use bot
 
 print "I rull bot"
-printflush message1
+printflush message
 time.wait(2)
 op cos x turnAround null
 op sin y turnAround null

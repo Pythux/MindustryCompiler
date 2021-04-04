@@ -23,14 +23,19 @@ generateYaccFunctions()
 from .p_functionYacc import parser  # noqa
 
 
-# run parser on content
-def runYacc(content: str, debug=False, clearContext=False):
+def yaccParse(content, debug=False):
     if not len(content):
         return ''
     if content[-1] != '\n':
         content += '\n'
     checkExistingVars(content)
     lines = parser.parse(content, debug=debug)
+    return lines
+
+
+# run parser on content
+def runYacc(content: str, debug=False, clearContext=False):
+    lines = yaccParse(content, debug=debug)
 
     runImports()
     # back to main file:
@@ -48,14 +53,18 @@ def runYacc(content: str, debug=False, clearContext=False):
 # run all imports to do
 def runImports():
     for nextImpContent in importsHandling.nextImportContent():
-        runYacc(nextImpContent)
+        yaccParse(nextImpContent)
 
 
 def fillFunCall(lines):
+    lines = boa(lines)
+    if len(lines.filter(lambda el: isinstance(el, FunCall))) == 0:
+        return lines
+
     def reducer(li, el):
         return li + (el.toFunContent() if isinstance(el, FunCall) else [el])
 
-    return boa(lines).reduce(reducer, [])
+    return fillFunCall(lines.reduce(reducer, []))
 
 
 def refToCodeLine(lines):
