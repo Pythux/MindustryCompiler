@@ -1,0 +1,35 @@
+
+
+import time
+
+
+// will get a botType and if is flagged without owner within 3s, free it (flag 0)
+def freeSomeBots(type, message)
+    ubind type
+    set t @time
+    #ref waitingOwner // recheck sensor @controller
+    sensor c @unit @controller
+    print "searching for flagged bots ..."
+    printflush message
+    // if controller is not player or proc, return type
+    if c == type  // type is str enum
+        // bot not controled by processors or players
+        sensor flag @unit @flag
+        if flag != 0  // bot not free, having an owner ?
+            print "flagged bot found, waiting for owner ..."
+            printflush message
+            op sub waiting @time t  // waiting = @time - t
+            if waiting > 3000
+                ucontrol flag 0 null null null null
+                print "flagged bot found, have waited 3s, free him"
+                printflush message
+                time.wait(2)
+            else
+                jump waitingOwner
+
+
+#ref loop
+set type @mono
+set message message1
+freeSomeBots(type, message)
+jump loop

@@ -77,7 +77,7 @@ You could check files [here](./tests/identicalCode) to see the difference from t
 
 ## coming soon
 
-- ...
+- afectation `a = 1` and simple operation +, -, /, *, ...
 
 ## current usage
 

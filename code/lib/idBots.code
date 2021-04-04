@@ -58,24 +58,6 @@ def genProcId()
     return r
 
 
-// will get a botType and if is flagged without owner within 3s, free it (flag 0)
-def freeSomeBots(type)
-    ubind type
-    set t @time
-    #ref waitingOwner // recheck sensor @controller
-    sensor c @unit @controller
-    // if controller is not player or proc, return type
-    if c == type  // type is str enum
-        // bot not controled by processors or players
-        sensor flag @unit @flag
-        if flag != 0  // bot not free, having an owner ?
-            op sub waiting @time t  // waiting = @time - t
-            if waiting > 3000
-                ucontrol flag 0 null null null null
-            else
-                jump waitingOwner
-
-
 // mark a bot to proc ownership
 // flag: PPP000II
 // P is procId, I is botId (given to the function, ofter an proc internal inc counter)
