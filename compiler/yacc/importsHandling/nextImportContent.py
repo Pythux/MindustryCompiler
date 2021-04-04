@@ -13,9 +13,8 @@ def nextImportContent():
 
 # from lib name, get libFile content
 def getContent(libFile):
+    libFile = libFile + '.code'
     libPath = PurePath(os.path.dirname(__file__), *['..' for _ in range(len(__package__.split('.')))], 'code', 'lib')
     filePath = libPath.joinpath(libFile)
     with open(filePath, 'r') as fd:
-        print('get lib content')
-        breakpoint()
         return fd.read()

@@ -33,7 +33,6 @@ def runYacc(content: str, debug=False, clearContext=False):
     lines = parser.parse(content, debug=debug)
 
     runImports()
-
     # back to main file:
     lines = fillFunCall(lines)
 
