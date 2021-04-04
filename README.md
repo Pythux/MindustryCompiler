@@ -67,9 +67,17 @@ You could check files [here](./tests/identicalCode) to see the difference from t
     x = add(x, 2)
     ```
 
+- module:
+
+    ```plain
+    import time
+
+    time.wait(2)  // wait 2 secondes
+    ```
+
 ## coming soon
 
-- import functions form other files
+- ...
 
 ## current usage
 

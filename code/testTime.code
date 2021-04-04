@@ -1,9 +1,0 @@
-
-import time
-
-time.wait(2)
-
-yo()
-
-def yo()
-    print "hey"

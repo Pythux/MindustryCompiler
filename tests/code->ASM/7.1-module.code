@@ -1,0 +1,24 @@
+
+
+import time  // import from lib folder (will be standard lib)
+
+
+time.wait(2)  // call function 'wait' defined in module 'time'
+
+
+yo()  // call before defined
+
+def yo()
+    print "hey"
+
+
+----------------------
+
+
+set tmp1 2
+set tmp2 @time
+op mul tmp1 tmp1 1000
+op add tmp3 tmp2 tmp1
+jump 4 greaterThanEq tmp3 @time
+print "hey"
+end
