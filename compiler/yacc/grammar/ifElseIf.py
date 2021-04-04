@@ -1,5 +1,5 @@
 from boa import boa
-from .contextAndClass import Jump
+from ..classes import Jump
 from ._start import grammar, YaccProduction, context
 
 

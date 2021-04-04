@@ -1,7 +1,7 @@
 
-from ._start import grammar, YaccProduction, context
 
-from .contextAndClass import Jump, Ref
+from ._start import grammar, YaccProduction, context
+from ..classes import Jump, Ref
 
 
 # handle a ref instruction, we store info in context.refDict and discard information

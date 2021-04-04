@@ -203,6 +203,7 @@ reserved = {
     'elif': 'ElseIf',
     'def': 'DefFun',
     'return': 'Return',
+    'import': 'Import',
 }
 tokens += list(reserved.values())
 tokens += ['ID']  # not reserved words
@@ -223,6 +224,7 @@ separator = {
     '(': 'OpenParenthesis',
     ')': 'CloseParenthesis',
     ',': 'Comma',
+    '.': 'Dot',
 }
 tokens += list(separator.values())
 

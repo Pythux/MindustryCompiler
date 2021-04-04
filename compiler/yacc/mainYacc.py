@@ -3,13 +3,16 @@ from compiler.lex.mainLex import runLex
 from typing import List, T
 from boa import boa
 
+from . import importsHandling
+
 
 from .generateYacc import generateYaccFunctions
 
-# import grammar
+# import grammar, required
 from . import grammar  # noqa
 
-from .grammar.contextAndClass import context, Jump, Ref
+from .context import context
+from .classes import Jump, Ref, FunCall
 
 
 # generate module .p_functionYacc
@@ -20,19 +23,54 @@ generateYaccFunctions()
 from .p_functionYacc import parser  # noqa
 
 
-# run parser on content
-def runYacc(content: str, debug=False, clearContext=False):
+def yaccParse(content, debug=False):
+    if not len(content):
+        return ''
     if content[-1] != '\n':
         content += '\n'
     checkExistingVars(content)
     lines = parser.parse(content, debug=debug)
-    if len(lines) > 0:
-        stringCode = changeRefToLineNumber(lines)
-    else:
-        stringCode = ''
+    return lines
+
+
+# run parser on content
+def runYacc(content: str, debug=False, clearContext=False):
+    lines = yaccParse(content, debug=debug)
+
+    runImports()
+    # back to main file:
+    lines = fillFunCall(lines)
+
+    # last step, put ref to code line
+    stringCode = refToCodeLine(lines)
+
     if clearContext:
+        importsHandling.imports.clear()
         context.clear()
     return stringCode
+
+
+# run all imports to do
+def runImports():
+    for nextImpContent in importsHandling.nextImportContent():
+        yaccParse(nextImpContent)
+
+
+def fillFunCall(lines):
+    lines = boa(lines)
+    if len(lines.filter(lambda el: isinstance(el, FunCall))) == 0:
+        return lines
+
+    def reducer(li, el):
+        return li + (el.toFunContent() if isinstance(el, FunCall) else [el])
+
+    return fillFunCall(lines.reduce(reducer, []))
+
+
+def refToCodeLine(lines):
+    if len(lines) > 0:
+        return changeRefToLineNumber(lines)
+    return ''
 
 
 def checkExistingVars(content):
@@ -50,7 +88,7 @@ def changeRefToLineNumber(li: List[T]):
     li = refToLinesNumber(li)  # change ref to lineNumb
 
     # change jump ref to jump lineNumb
-    li = boa(li).map(lambda el: el.toLine() if isinstance(el, Jump) else el)
+    li = boa(li).map(lambda el: el.toLine(context) if isinstance(el, Jump) else el)
     return '\n'.join(li) + '\n'
 
 

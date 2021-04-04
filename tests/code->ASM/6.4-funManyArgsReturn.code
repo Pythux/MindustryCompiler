@@ -1,5 +1,5 @@
 // function definition
-def plusAndGetBot(a, b)
+plusAndGetBot(a, b)
     op add a a b
     radar ally enemy boss distance empty 1 éÀîj
     return a, éÀîj

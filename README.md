@@ -48,8 +48,10 @@ You could check files [here](./tests/identicalCode) to see the difference from t
         print "2 < 4"
     else if 2 == 1
         print "2 == 1"
-    elif 2 === 2
+
+    elif 2 === 2  // "elif" is equivalent to "else if"
         print "2 === 2"
+
     else
         print "else"
     ```
@@ -57,7 +59,7 @@ You could check files [here](./tests/identicalCode) to see the difference from t
 - function:
 
     ```plain
-    def add(a, b)
+    add(a, b)
         add result a b
         return result
 
@@ -65,9 +67,17 @@ You could check files [here](./tests/identicalCode) to see the difference from t
     x = add(x, 2)
     ```
 
+- module:
+
+    ```plain
+    import time
+
+    time.wait(2)  // wait 2 secondes
+    ```
+
 ## coming soon
 
-- import functions form other files
+- afectation `a = 1` and simple operation +, -, /, *, ...
 
 ## current usage
 

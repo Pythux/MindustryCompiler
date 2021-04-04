@@ -6,13 +6,7 @@
 // (need a display linked to processor named display1 to see colors, if name is display2 or 3 ... change the name in the code to correspond)
 //
 
-
-def wait()
-    set wait 0
-    #ref waiting
-    op add wait wait 1
-    jump waiting wait <= 200
-
+import time
 
 sensor in node1 @powerNetIn
 sensor out node1 @powerNetOut
@@ -39,4 +33,4 @@ else // red
 drawflush display1
 
 // wait a short time to avoid disturbing blink colors change
-wait()
+time.wait(1.5)

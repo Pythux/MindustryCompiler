@@ -1,46 +1,36 @@
 
-def wait(secondes)
-    set timestamps @time
-    op mul secondes secondes 1000
-    op add timestampsToWait timestamps secondes
-
-    // can jump on himself, not possible on game UI
-    #ref waiting
-    jump waiting timestampsToWait >= @time
+import time
 
 
 // get a bot of botType given that is free
 // return false if all of that botType taken
-def getFreeBot(botType)
+getFreeBot(botType, message)
     #ref loop
     ubind botType
     sensor flag @unit @flag
-    print "WTF"
-    printflush message3
-    wait(1)
 
     if @unit == null  // no bot of that botType
         print "no bot of type: "
         print botType
-        printflush message3
-        wait(2)
+        printflush message
+        time.wait(2)
         return false
 
     set firstFlag -1
     sensor flag @unit @flag
     print "bot not free ? "
     print flag
-    printflush message3
-    wait(2)
+    printflush message
+    time.wait(2)
     sensor r @unit @controlled
     print "bot contrôled ?"
     print r
-    printflush message3
-    wait(3)
+    printflush message
+    time.wait(3)
     if flag == null  // bot is free
         print "Yes it's free real estate"
-        printflush message3
-        wait(2)
+        printflush message
+        time.wait(2)
         return @unit
 
     else if flag == firstFlag
@@ -55,7 +45,7 @@ def getFreeBot(botType)
 
 // return random number of the kind:
 // XXX000
-def genProcId()
+genProcId()
     op rand r 999 null
     op floor r r null
     if r < 100
@@ -66,49 +56,31 @@ def genProcId()
     return r
 
 
-// will get a botType and if is flagged without owner within 3s, free it (flag 0)
-def freeSomeBots(type)
-    ubind type
-    set t @time
-    #ref waitingOwner // recheck sensor @controller
-    sensor c @unit @controller
-    // if controller is not player or proc, return type
-    if c == type  // type is str enum
-        // bot not controled by processors or players
-        sensor flag @unit @flag
-        if flag != 0  // bot not free, having an owner ?
-            op sub waiting @time t  // waiting = @time - t
-            if waiting > 3000
-                ucontrol flag 0 null null null null
-            else
-                jump waitingOwner
-
-
 // mark a bot to proc ownership
 // flag: PPP000II
 // P is procId, I is botId (given to the function, ofter an proc internal inc counter)
-def flagBot(procId, botId)
+flagBot(procId, botId)
     op mul procId procId 100
     op add f procId botId
     ucontrol flag f null null null null
 
 
-def getFreeBotAndFlagIt(botType, procId, botId)
-    bot = getFreeBot(botType)
+getFreeBotAndFlagIt(botType, procId, botId, message)
+    bot = getFreeBot(botType, message)
     if bot == false
         return false
     flagBot(procId, botId)
     return @unit
 
 
-def isMyBot(procId, botFlag)
+isMyBot(procId, botFlag)
     op idiv r botFlag 1000
     if botFlag == procId
         return true
     return false
 
 
-def getMyBot(procId, botType)
+getMyBot(procId, botType)
     #ref loopMyBot
     ubind type
     if @unit == null  // no bot of that type
@@ -121,7 +93,7 @@ def getMyBot(procId, botType)
 
 
 
-def distance(aX, aY, bX, bY)
+distance(aX, aY, bX, bY)
     // dist = racinCarré((aX-bX)^2 + (aY-bY)^2)
 
     op sub rl aX bX
@@ -134,63 +106,3 @@ def distance(aX, aY, bX, bY)
     op sqrt dist dist null
 
     return dist
-
-
-// ------------------- PROG --------------
-
-set botType @dagger
-
-procId = genProcId()
-set botTotal 0
-
-set turnAround 0
-
-#ref ProgLoop
-
-op add turnAround turnAround 0.1
-
-if botTotal < 2
-    #ref getBot
-    bot = getFreeBotAndFlagIt(botType, procId, botTotal)
-    if bot != false
-        op add botTotal botTotal 1
-    else
-        print "no more bot q.q"
-        printflush message1
-        wait(2)  // wait to see the message
-
-
-if @unit == false
-    getMyBot(procId, botType)
-
-print "procId: "
-print procId
-print " botTotal: "
-print botTotal
-printflush message2
-
-if @unit == false
-    print "I own no bot q.q"
-    printflush message1
-    wait(2)  // wait to see the message
-    jump ProgLoop
-
-
-// use bot
-
-print "I rull bot"
-printflush message1
-wait(2)
-op cos x turnAround null
-op sin y turnAround null
-
-op mul x x 10
-op mul y y 10
-
-op add x x @thisx
-op add y y @thisy
-
-set radius 5
-ucontrol approach x y radius 0 0
-
-jump ProgLoop

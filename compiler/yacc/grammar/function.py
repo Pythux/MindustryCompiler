@@ -1,94 +1,67 @@
-from compiler.yacc.grammar.contextAndClass import Jump
+
+from compiler.yacc.classes import Jump, FunCall
 from ._start import grammar, YaccProduction, context
 
+from .. import importsHandling
 
-@grammar
-def runFunc(p: YaccProduction):
-    '''lines : ID OpenParenthesis argumentsCall CloseParenthesis'''
-    funName = p[1]
-    callArgs = p[3]
-    p[0] = toFunContent(funName, callArgs)
+
+def getModuleAndFunName(dotted):
+    module = None
+    if len(dotted) == 2:
+        module, funName = dotted
+    else:
+        assert len(dotted) == 1
+        funName = dotted[0]
+    return module, funName
 
 
 @grammar
 def runFuncReturnArgs(p: YaccProduction):
-    '''lines : returnedVars Affectaction ID OpenParenthesis argumentsCall CloseParenthesis'''
+    '''line : returnedVars Affectaction dottedID OpenParenthesis arguments CloseParenthesis'''
     returnTo = p[1]
-    funName = p[3]
+    dotted = p[3]
+    module, funName = getModuleAndFunName(dotted)
     callArgs = p[5]
-    p[0] = toFunContent(funName, callArgs, returnTo, p.lineno(1))
-
-
-def toFunContent(funName, callArgs, returnTo=None, line=None):
-    if funName not in context.funs:
-        raise SystemExit("function '{}' does not exist at line {}".format(funName, line))
-    fun = context.funs[funName]
-    lines = []
-    lines += setters(map(lambda a: fun.ids[a], fun.args), callArgs)
-    lines += fun.genContent()
-    lines.append(fun.returnRef)
-    if returnTo:
-        if len(returnTo) != len(fun.returns):
-            raise SystemExit('function “{}” return exactly {} values, {} is receved line {}'
-                             .format(fun.name, len(fun.returns), len(returnTo), line))
-        lines += setters(returnTo, fun.returns)
-    return lines
-
-
-def setters(liSet, liVar):
-    'set {liSet} {liVal}'
-    return ['set {} {}'.format(s, v) for s, v in zip(liSet, liVar)]
+    p[0] = FunCall(module, funName, callArgs, p.lineno(1), returnTo)
 
 
 @grammar
-def returnedVars_one(p: YaccProduction):
-    '''returnedVars : ID'''
-    p[0] = [p[1]]
-
-
-@grammar
-def returnedVars_many(p: YaccProduction):
-    '''returnedVars : returnedVars Comma ID'''
-    p[0] = p[1] + [p[3]]
-
-
-@grammar
-def argumentsCall(p: YaccProduction):
-    '''argumentsCall : info'''
-    p[0] = [p[1]]
-
-
-@grammar
-def argumentsCall_many(p: YaccProduction):
-    '''argumentsCall : argumentsCall Comma info'''
-    p[0] = p[1] + [p[3]]
-
-
-@grammar
-def argumentsCall_empty(p: YaccProduction):
-    '''argumentsCall : '''
-    p[0] = []
+def runFunc(p: YaccProduction):
+    '''line : dottedID OpenParenthesis arguments CloseParenthesis'''
+    dotted = p[1]
+    module, funName = getModuleAndFunName(dotted)
+    callArgs = p[3]
+    p[0] = FunCall(module, funName, callArgs, p.lineno(1))
 
 
 @grammar
 def defFun(p: YaccProduction):
-    '''noLine : DefFun funName funScope OpenParenthesis arguments CloseParenthesis OpenCurlyBracket lines CloseCurlyBracket'''
-    content = p[8]
+    '''noLine : dottedID OpenParenthesis arguments CloseParenthesis OpenCurlyBracket funScope lines CloseCurlyBracket''' # noqa
+    if len(p[1]) != 1:
+        raise Exception("function definition incorrect: {} is not accepted".format(p[1]))
+    context.fun.name = p[1][0]
+    args = p[3]
+    addArguments(args)
+    content = p[7]
     context.fun.content = content
-    context.registerFun()
+    importsHandling.imports.addFunToModule(context.getDefinedFunction())
 
 
-@grammar
-def funName(p: YaccProduction):
-    '''funName : ID'''
-    context.fun.name = p[1]
+# register function definition arguments
+def addArguments(args):
+    for arg in args:
+        if arg in context.fun.args:
+            raise SystemExit('Duplicate parameter "{}"'.format(arg))
+        context.fun.args.append(arg)
+        context.fun.scopeId(arg)
+
 
 
 @grammar
 def funScope(p: YaccProduction):
     '''funScope : '''
     if context.fun.inFunScope:
-        print("function definition inside function is not handled")
+        print("function definition inside function is not handled line: {}".format(p.lineno(0)))
         raise SystemExit()
     context.fun.inFunScope = True
 
@@ -96,56 +69,12 @@ def funScope(p: YaccProduction):
 
 
 @grammar
-def args(p: YaccProduction):
-    '''arguments : ID'''
-    arg = p[1]
-    addArgument(arg)
-
-
-@grammar
-def args_many(p: YaccProduction):
-    '''arguments : arguments Comma ID'''
-    arg = p[3]
-    addArgument(arg)
-
-
-@grammar
-def args_empty(p: YaccProduction):
-    '''arguments : '''
-
-
-def addArgument(arg):
-    if arg in context.fun.args:
-        raise SystemExit('Duplicate parameter "{}"'.format(arg))
-    context.fun.args.append(arg)
-    context.fun.scopeId(arg)
-
-
-@grammar
 def handleReturn(p: YaccProduction):
-    '''lines : Return returnsVal'''
+    '''lines : Return arguments'''
     if not context.fun.inFunScope:
         print("return keyword only indide function definition, line {}".format(p.lineno(1)))
         raise SystemExit()
     p[0] = funReturn(p[2])
-
-
-@grammar
-def returnsVal_empty(p: YaccProduction):
-    '''returnsVal : '''
-    p[0] = []
-
-
-@grammar
-def returnsVal_one(p: YaccProduction):
-    '''returnsVal : info'''
-    p[0] = [p[1]]
-
-
-@grammar
-def returnsVal_many(p: YaccProduction):
-    '''returnsVal : returnsVal Comma info'''
-    p[0] = p[1] + [p[3]]
 
 
 def funReturn(args):
@@ -161,3 +90,8 @@ def funReturn(args):
     lines = setters(context.fun.returns, args)
     lines.append(Jump('return', context.fun.returnRef))
     return lines
+
+
+def setters(liSet, liVar):
+    'set {liSet} {liVal}'
+    return ['set {} {}'.format(s, v) for s, v in zip(liSet, liVar)]
