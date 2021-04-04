@@ -1,0 +1,57 @@
+
+set botType @dagger
+
+procId = genProcId()
+set botTotal 0
+
+set turnAround 0
+
+#ref ProgLoop
+
+op add turnAround turnAround 0.1
+
+if botTotal < 2
+    #ref getBot
+    bot = getFreeBotAndFlagIt(botType, procId, botTotal)
+    if bot != false
+        op add botTotal botTotal 1
+    else
+        print "no more bot q.q"
+        printflush message1
+        time.wait(2)  // wait to see the message
+
+
+if @unit == false
+    getMyBot(procId, botType)
+
+print "procId: "
+print procId
+print " botTotal: "
+print botTotal
+printflush message2
+
+if @unit == false
+    print "I own no bot q.q"
+    printflush message1
+    time.wait(2)  // wait to see the message
+    jump ProgLoop
+
+
+// use bot
+
+print "I rull bot"
+printflush message1
+time.wait(2)
+op cos x turnAround null
+op sin y turnAround null
+
+op mul x x 10
+op mul y y 10
+
+op add x x @thisx
+op add y y @thisy
+
+set radius 5
+ucontrol approach x y radius 0 0
+
+jump ProgLoop

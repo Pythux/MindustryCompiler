@@ -36,7 +36,7 @@ def runFuncReturnArgs(p: YaccProduction):
 
 @grammar
 def defFun(p: YaccProduction):
-    '''noLine : DefFun funName funScope OpenParenthesis arguments CloseParenthesis OpenCurlyBracket lines CloseCurlyBracket'''
+    '''noLine : DefFun funName funScope OpenParenthesis arguments CloseParenthesis OpenCurlyBracket lines CloseCurlyBracket''' # noqa
     content = p[8]
     context.fun.content = content
     importsHandling.imports.addFunToModule(context.getDefinedFunction())
