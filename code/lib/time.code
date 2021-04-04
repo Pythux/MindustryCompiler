@@ -1,6 +1,6 @@
 
 
-def wait(secondes)
+wait(secondes)
     set timestamps @time
     op mul secondes secondes 1000
     op add timestampsToWait timestamps secondes

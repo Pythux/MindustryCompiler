@@ -33,4 +33,4 @@ else // red
 drawflush display1
 
 // wait a short time to avoid disturbing blink colors change
-time.wait(1)
+time.wait(1.5)

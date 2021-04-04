@@ -1,6 +1,7 @@
 
 
 import idBots
+import msg
 
 set botType @mono
 
@@ -18,23 +19,23 @@ op add turnAround turnAround 0.1
 
 if botTotal < 2
     #ref getBot
-    bot = idBots.getFreeBotAndFlagIt(botType, procId, botTotal)
+    bot = idBots.getFreeBotAndFlagIt(botType, procId, botTotal, message)
     if bot != false
+        msg.printAndWait("[green]get a bot !", message)
         op add botTotal botTotal 1
     else
-        print "no more bot q.q"
-        printflush message
-        time.wait(2)  // wait to see the message
+        msg.printAndWait("[orange]no more bot q.q", message)
 
 
 if @unit == false
     idBots.getMyBot(procId, botType)
 
+
 print "procId: "
 print procId
 print " botTotal: "
-print botTotal
-printflush message
+msg.printAndWait(botTotal, message)
+
 
 if @unit == false
     print "I own no bot q.q"

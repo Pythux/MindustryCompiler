@@ -59,7 +59,7 @@ You could check files [here](./tests/identicalCode) to see the difference from t
 - function:
 
     ```plain
-    def add(a, b)
+    add(a, b)
         add result a b
         return result
 

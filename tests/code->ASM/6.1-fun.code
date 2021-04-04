@@ -1,5 +1,5 @@
 // function definition
-def show()
+show()
     print "yo"
 
 

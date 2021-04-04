@@ -8,17 +8,17 @@ time.wait(2)  // call function 'wait' defined in module 'time'
 
 yo()  // call before defined
 
-def yo()
+yo()
     print "hey"
 
 
 ----------------------
 
 
-set tmp1 2
-set tmp2 @time
-op mul tmp1 tmp1 1000
-op add tmp3 tmp2 tmp1
+set tmp2 2
+set tmp1 @time
+op mul tmp2 tmp2 1000
+op add tmp3 tmp1 tmp2
 jump 4 greaterThanEq tmp3 @time
 print "hey"
 end

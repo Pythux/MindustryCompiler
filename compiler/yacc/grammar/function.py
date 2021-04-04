@@ -5,15 +5,6 @@ from ._start import grammar, YaccProduction, context
 from .. import importsHandling
 
 
-@grammar
-def runFunc(p: YaccProduction):
-    '''line : dottedID OpenParenthesis argumentsCall CloseParenthesis'''
-    dotted = p[1]
-    module, funName = getModuleAndFunName(dotted)
-    callArgs = p[3]
-    p[0] = FunCall(module, funName, callArgs, p.lineno(1))
-
-
 def getModuleAndFunName(dotted):
     module = None
     if len(dotted) == 2:
@@ -26,7 +17,7 @@ def getModuleAndFunName(dotted):
 
 @grammar
 def runFuncReturnArgs(p: YaccProduction):
-    '''line : returnedVars Affectaction dottedID OpenParenthesis argumentsCall CloseParenthesis'''
+    '''line : returnedVars Affectaction dottedID OpenParenthesis arguments CloseParenthesis'''
     returnTo = p[1]
     dotted = p[3]
     module, funName = getModuleAndFunName(dotted)
@@ -35,24 +26,42 @@ def runFuncReturnArgs(p: YaccProduction):
 
 
 @grammar
+def runFunc(p: YaccProduction):
+    '''line : dottedID OpenParenthesis arguments CloseParenthesis'''
+    dotted = p[1]
+    module, funName = getModuleAndFunName(dotted)
+    callArgs = p[3]
+    p[0] = FunCall(module, funName, callArgs, p.lineno(1))
+
+
+@grammar
 def defFun(p: YaccProduction):
-    '''noLine : DefFun funName funScope OpenParenthesis arguments CloseParenthesis OpenCurlyBracket lines CloseCurlyBracket''' # noqa
-    content = p[8]
+    '''noLine : dottedID OpenParenthesis arguments CloseParenthesis OpenCurlyBracket funScope lines CloseCurlyBracket''' # noqa
+    if len(p[1]) != 1:
+        raise Exception("function definition incorrect: {} is not accepted".format(p[1]))
+    context.fun.name = p[1][0]
+    args = p[3]
+    addArguments(args)
+    content = p[7]
     context.fun.content = content
     importsHandling.imports.addFunToModule(context.getDefinedFunction())
 
 
-@grammar
-def funName(p: YaccProduction):
-    '''funName : ID'''
-    context.fun.name = p[1]
+# register function definition arguments
+def addArguments(args):
+    for arg in args:
+        if arg in context.fun.args:
+            raise SystemExit('Duplicate parameter "{}"'.format(arg))
+        context.fun.args.append(arg)
+        context.fun.scopeId(arg)
+
 
 
 @grammar
 def funScope(p: YaccProduction):
     '''funScope : '''
     if context.fun.inFunScope:
-        print("function definition inside function is not handled")
+        print("function definition inside function is not handled line: {}".format(p.lineno(0)))
         raise SystemExit()
     context.fun.inFunScope = True
 
@@ -61,7 +70,7 @@ def funScope(p: YaccProduction):
 
 @grammar
 def handleReturn(p: YaccProduction):
-    '''lines : Return returnsVal'''
+    '''lines : Return arguments'''
     if not context.fun.inFunScope:
         print("return keyword only indide function definition, line {}".format(p.lineno(1)))
         raise SystemExit()
