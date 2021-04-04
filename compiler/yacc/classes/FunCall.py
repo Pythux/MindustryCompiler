@@ -1,35 +1,30 @@
 
 
-from pathlib import PurePath
-import os
-
-
-a = PurePath(os.path.dirname(__file__), *['..' for _ in range(len(__package__.split('.')))], 'code', 'lib')
-breakpoint()
-
 from ..importsHandling import imports
 
 
 class FunCall:
-    def __init__(self, funName, callArgs, returnTo=None, line=None) -> None:
+    def __init__(self, funName, callArgs, line, returnTo=None, module=None) -> None:
         self.funName = funName
         self.callArgs = callArgs
         self.returnTo = returnTo
         self.line = line
+        self.module = module
 
-    def toFunContent(funName, callArgs, returnTo=None, line=None):
-        if funName not in context.funs:
-            raise SystemExit("function '{}' does not exist at line {}".format(funName, line))
-        fun = context.funs[funName]
+    def toFunContent(self):
+        module = imports.getModule(self.module)
+        if self.funName not in module:
+            raise SystemExit("function '{}' does not exist at line {}".format(self.funName, self.line))
+        fun = module[self.funName]
         lines = []
-        lines += setters(map(lambda a: fun.ids[a], fun.args), callArgs)
+        lines += setters(map(lambda a: fun.ids[a], fun.args), self.callArgs)
         lines += fun.genContent()
         lines.append(fun.returnRef)
-        if returnTo:
-            if len(returnTo) != len(fun.returns):
+        if self.returnTo:
+            if len(self.returnTo) != len(fun.returns):
                 raise SystemExit('function “{}” return exactly {} values, {} is receved line {}'
-                                 .format(fun.name, len(fun.returns), len(returnTo), line))
-            lines += setters(returnTo, fun.returns)
+                                 .format(fun.name, len(fun.returns), len(self.returnTo), self.line))
+            lines += setters(self.returnTo, fun.returns)
         return lines
 
 

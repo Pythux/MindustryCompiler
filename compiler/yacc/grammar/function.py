@@ -2,13 +2,15 @@
 from compiler.yacc.classes import Jump, FunCall
 from ._start import grammar, YaccProduction, context
 
+from .. import importsHandling
+
 
 @grammar
 def runFunc(p: YaccProduction):
     '''lines : ID OpenParenthesis argumentsCall CloseParenthesis'''
     funName = p[1]
     callArgs = p[3]
-    p[0] = FunCall(funName, callArgs)
+    p[0] = FunCall(funName, callArgs, p.lineno(1))
 
 
 @grammar
@@ -17,7 +19,7 @@ def runFuncReturnArgs(p: YaccProduction):
     returnTo = p[1]
     funName = p[3]
     callArgs = p[5]
-    p[0] = FunCall(funName, callArgs, returnTo, p.lineno(1))
+    p[0] = FunCall(funName, callArgs, p.lineno(1), returnTo)
 
 
 @grammar
@@ -25,7 +27,7 @@ def defFun(p: YaccProduction):
     '''noLine : DefFun funName funScope OpenParenthesis arguments CloseParenthesis OpenCurlyBracket lines CloseCurlyBracket'''
     content = p[8]
     context.fun.content = content
-    context.registerFun()
+    importsHandling.registerFun(context.getDefinedFunction())
 
 
 @grammar

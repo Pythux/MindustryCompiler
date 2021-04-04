@@ -12,7 +12,7 @@ from .generateYacc import generateYaccFunctions
 from . import grammar  # noqa
 
 from .context import context
-from .classes import Jump, Ref
+from .classes import Jump, Ref, FunCall
 
 
 # generate module .p_functionYacc
@@ -35,7 +35,7 @@ def runYacc(content: str, debug=False, clearContext=False):
     runImports()
 
     # back to main file:
-    lines = importsHandling.fillFunCall(lines)
+    lines = fillFunCall(lines)
 
     # last step, put ref to code line
     stringCode = refToCodeLine(lines)
@@ -49,6 +49,15 @@ def runYacc(content: str, debug=False, clearContext=False):
 def runImports():
     for nextImpContent in importsHandling.nextImportContent():
         runYacc(nextImpContent, clearContext=True)  # no need to keep context
+
+
+def fillFunCall(lines):
+    result = []
+    for line in lines:
+        if isinstance(line, FunCall):
+            result += line.toFunContent()
+        else:
+            result.append(line)
 
 
 def refToCodeLine(lines):

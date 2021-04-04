@@ -20,12 +20,10 @@ class Context:
         self.funs = {}
         self.nextNoVar = 0
 
-    def registerFun(self):
-        if self.fun.name in self.funs:
-            raise SystemExit("function {} already defined".format(self.fun.name))
-
-        self.funs[self.fun.name] = self.fun
+    def getDefinedFunction(self):
+        fun = self.fun
         self.fun = Fun(self)  # clean context fun scope
+        return fun
 
     def addRef(self, ref, index):
         if ref.id in self.refDict:

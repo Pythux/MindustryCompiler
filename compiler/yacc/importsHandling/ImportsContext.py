@@ -30,7 +30,8 @@ class Imports:
         self.imported[value] = {}  # functions will be stored here
 
     def addFunToModule(self, funDef):
-        assert self.currentFile in self.imported
+        if funDef.name in self.imported[self.currentFile]:
+            raise SystemExit("function {} already defined".format(funDef.name))
         self.imported[self.currentFile][funDef.name] = funDef
 
     # called at the verry end, once everything is imported
