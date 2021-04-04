@@ -31,13 +31,13 @@ class Imports:
 
     def addFunToModule(self, funDef):
         if funDef.name in self.imported[self.currentFile]:
-            raise SystemExit("function {} already defined".format(funDef.name))
+            raise Exception("function {} already defined".format(funDef.name))
         self.imported[self.currentFile][funDef.name] = funDef
 
     # called at the verry end, once everything is imported
     def getModule(self, fileLib):
-        if fileLib not in self.toImports:
-            raise SystemExit("module {} is used but not imported".format(fileLib))
+        if fileLib not in self.imported:
+            raise Exception("module {} is used but not imported".format(fileLib))
         return self.imported[fileLib]
 
 

@@ -7,7 +7,7 @@ from .. import importsHandling
 
 @grammar
 def runFunc(p: YaccProduction):
-    '''lines : ID OpenParenthesis argumentsCall CloseParenthesis'''
+    '''line : ID OpenParenthesis argumentsCall CloseParenthesis'''
     funName = p[1]
     callArgs = p[3]
     p[0] = FunCall(funName, callArgs, p.lineno(1))
@@ -15,7 +15,7 @@ def runFunc(p: YaccProduction):
 
 @grammar
 def runFuncReturnArgs(p: YaccProduction):
-    '''lines : returnedVars Affectaction ID OpenParenthesis argumentsCall CloseParenthesis'''
+    '''line : returnedVars Affectaction ID OpenParenthesis argumentsCall CloseParenthesis'''
     returnTo = p[1]
     funName = p[3]
     callArgs = p[5]
@@ -27,7 +27,7 @@ def defFun(p: YaccProduction):
     '''noLine : DefFun funName funScope OpenParenthesis arguments CloseParenthesis OpenCurlyBracket lines CloseCurlyBracket'''
     content = p[8]
     context.fun.content = content
-    importsHandling.registerFun(context.getDefinedFunction())
+    importsHandling.imports.addFunToModule(context.getDefinedFunction())
 
 
 @grammar
