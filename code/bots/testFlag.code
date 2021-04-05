@@ -1,0 +1,27 @@
+
+import idBots
+import msg
+
+set botType @mono
+set message message1
+
+set totalBots 2
+
+procId = idBots.genProcId()
+
+#ref loop
+
+// ubind botType
+// idBots.flagBot(procId, botId, message)
+
+idBots.getMyBot(procId, botType)
+
+if @unit != false
+    msg.printAndWait("[green] I own bots", message)
+else
+    msg.printAndWait("[orange] I don't own bots", message)
+
+if @unit == false
+    idBots.getFreeBotAndFlagIt(botType, procId, 1, message)
+
+jump loop

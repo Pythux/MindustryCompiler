@@ -14,7 +14,7 @@ class Imports:
     # simple absolute import from lib/, one lvl
     def toImport(self, filesToImport):
         for fileLib in filesToImport:
-            if fileLib not in self.imported:
+            if fileLib not in self.imported and fileLib not in self.toImports:
                 self.toImports.append(fileLib)
 
     # generator that give the next module that will be parsed

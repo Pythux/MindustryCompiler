@@ -19,20 +19,10 @@ getFreeBot(botType, message)
 
     set firstFlag -1
     sensor flag @unit @flag
-    print "bot not free ? "
-    print flag
-    printflush message
-    time.wait(2)
-    sensor r @unit @controlled
-    print "bot contrôled ?"
-    print r
-    printflush message
-    time.wait(3)
+
     if flag == null  // bot is free
-        print "Yes it's free real estate"
-        printflush message
-        time.wait(2)
-        return @unit
+        msg.printAndWait("[green] Yes it's free real estate", message)
+        return true
 
     else if flag == firstFlag
         // we have see all the bots of that botType
@@ -60,9 +50,18 @@ genProcId()
 // mark a bot to proc ownership
 // flag: PPP000II
 // P is procId, I is botId (given to the function, ofter an proc internal inc counter)
-flagBot(procId, botId)
+flagBot(procId, botId, message)
+    msg.printAndWait("gonna flag bot", message)
+    print " procId "
+    print procId
+    print " x100 => "
     op mul procId procId 100
+    print procId
+    print " and bot id: "
+    print botId
     op add f procId botId
+    print " result in: "
+    msg.printAndWait(f, message)
     ucontrol flag f null null null null
 
 
@@ -70,15 +69,17 @@ getFreeBotAndFlagIt(botType, procId, botId, message)
     msg.printAndWait("try getting some free bots ...", message)
     bot = getFreeBot(botType, message)
     if bot == false
-        msg.printAndWait("no success", message)
+        msg.printAndWait("returned false", message)
         return false
+    else
+        msg.printAndWait("returned true", message)
     msg.printAndWait("We have a free bot !", message)
-    flagBot(procId, botId)
+    flagBot(procId, botId, message)
     return @unit
 
 
 isMyBot(procId, botFlag)
-    op idiv r botFlag 1000
+    op idiv r botFlag 100
     if botFlag == procId
         return true
     return false

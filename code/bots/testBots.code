@@ -22,9 +22,11 @@ msg.printAndWait(nbLoop, message)
 
 // switch on/off:
 sensor isActive switch1 @enabled
-if isActive == false
-    msg.printAndWait("switch off, inactive", message)
-    jump ProgLoop
+
+if switch1 != null  // switch1 exist ?
+    if isActive == false
+        msg.printAndWait("switch off, inactive", message)
+        jump ProgLoop
 
 op add turnAround turnAround 0.1
 
@@ -32,22 +34,26 @@ if botTotal < 2
     #ref getBot
     bot = idBots.getFreeBotAndFlagIt(botType, procId, botTotal, message)
     if bot != false
-        msg.printAndWait("[green]get a bot !", message)
+        msg.printAndWait("[green]get free bot !", message)
         op add botTotal botTotal 1
     else
-        msg.printAndWait("[orange]no more bot q.q", message)
+        msg.printAndWait("[orange]no more free bot q.q", message)
 
-msg.printAndWait("[orange]yo ?", message)
 
 if @unit == false
     idBots.getMyBot(procId, botType)
 
+    if @unit != false
+        msg.printAndWait("[green] get one of my bot !", message)
 
 print "procId: "
 print procId
 print " botTotal: "
 msg.printAndWait(botTotal, message)
 
+sensor flag @unit @flag
+print "my bot id: "
+msg.printAndWait(flag, message)
 
 if @unit == false
     print "I own no bot q.q"
