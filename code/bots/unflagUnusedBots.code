@@ -2,50 +2,116 @@
 
 import time
 import msg
-import onOff
 
-
-set type @mono
 set message message1
-set switch switch1
 
 
-// for test, to delete
-isOn = onOff.isOn(switch, message)
-if isOn == false
-    msg.printAndWait("[yellow] unflag is turn off", message)
+// units that could be useful to control and need to be checked for freeing them:
+// ubind @dagger // nice transport short distance, 30x speed 0.5
+// ubind @mace
+// ubind @nova
+// ubind @pulsar // can mine
+// ubind @quasar // mine even more
+// ubind @crawler // super nice transport 30x speed 1
+// ubind @atrax
+// ubind @flare // flying transport 20x speed 3
+// ubind @horizon // slower 30x speed 1.7
+// ubind @zenith // super 80x speed 1.8
+// ubind @antumbra // super big transport, but slow
+// ubind @mono // starting mining guy, 20x speed 1.5
+
+set typeId 0
+
+#ref NextBotType
+
+op add typeId typeId 1
+
+if typeId == 1
+    set type @dagger // nice transport short distance, 30x speed 0.5
+elif typeId == 2
+    set type @mace
+elif typeId == 3
+    set type @nova
+elif typeId == 4
+    set type @pulsar // can mine
+elif typeId == 5
+    set type @quasar // mine even more
+elif typeId == 6
+    set type @crawler // super nice transport 30x speed 1
+elif typeId == 7
+    set type @atrax
+elif typeId == 8
+    set type @flare // flying transport 20x speed 3
+elif typeId == 9
+    set type @horizon // slower 30x speed 1.7
+elif typeId == 10
+    set type @zenith // super 80x speed 1.8
+elif typeId == 11
+    set type @antumbra // super big transport, but slow
+elif typeId == 12
+    set type @mono // starting mining guy, 20x speed 1.5
+
+
+// the rest of the bots:
+elif typeId == 13
+    set type @fortress
+elif typeId == 14
+    set type @scepter
+elif typeId == 15
+    set type @reign
+elif typeId == 16
+    set type @vela
+elif typeId == 17
+    set type @corvus
+elif typeId == 18
+    set type @spiroct
+elif typeId == 19
+    set type @arkyid
+elif typeId == 20
+    set type @toxopid
+elif typeId == 21
+    set type @eclipse
+elif typeId == 22
+    set type @poly
+elif typeId == 23
+    set type @mega
+elif typeId == 24
+    set type @quad
+elif typeId == 25
+    set type @oct
+else
     end
 
-
-ubind type
-set startTime @time
-sensor botFlag @unit @flag
-
-if @unit == false
-    msg.printAndWait("no bots of that type", message)
-    end
-
-
-if botFlag == 0
-    end
 
 set botsQuantity 24
 set count 0
+set lastSeenFlag -1
 
-#ref waitingOwner
+#ref typeLoop
+
+op add count count 1
+if count > botsQuantity
+    // we have passed the maximum limit of bot of one kind
+    jump NextBotType
 
 ubind type
 
-sensor flag @unit @flag
-if flag != botFlag
-    add count count 1
-    if count > botsQuantity
-        print "[yellow] bot with flag "
-        print botFlag
-        msg.printAndWait(" does not exist anymore", message)
-        end
-    jump waitingOwner  // searching for the good idBot
+if @unit == false
+    print "no bots of that type: "
+    print type
+    printflush message
+    jump NextBotType
 
+
+sensor flag @unit @flag
+if flag == 0
+    jump typeLoop
+
+if lastSeenFlag == flag
+    jump NextBotType
+
+if lastSeenFlag == -1
+    set lastSeenFlag flag
 
 sensor owner @unit @controller
 sensor botType owner @type
@@ -54,24 +120,13 @@ sensor botType owner @type
 // if controller is not player or proc, return type
 if botType == type
     // bot not controled by processors or players, it return itself
-
-    print "flagged bot found, no owner ? waiting owner of bot id: "
-    msg.printAndWait(flag, message)
-    op sub waiting @time startTime  // waiting = @time - startTime
-    if waiting > 5000  // 1000 -> 1 secondes
-        ucontrol flag 0 null null null null
-        msg.printAndWait("flagged bot found, have waited 5s, had free him", message)
-        end
-    msg.printAndWait("waiting manifestation of owner ...", message)
-    jump waitingOwner
+    ucontrol flag 0 null null null null
+    msg.printAndWait("[green] flagged bot found with no owner", message)
 
 elif owner == @this
     msg.printAndWait("It's me ! Mario", message)
-    if waiting > 5000
-        ucontrol flag 0 null null null null
-        msg.printAndWait("[green] have waited 3s, free him", message)
-        end
-    jump waitingOwner
 
 else
     msg.printAndWait("flagged bot is owned, everything alright", message)
+
+jump typeLoop
