@@ -88,7 +88,7 @@ getMyBot(procId, botType)
 
     sensor botFlag @unit @flag
 
-    elif flag == firstFlag // we have looped throught all of them
+    if flag == firstFlag // we have looped throught all of them
         return false
 
     elif firstFlag == -1  // first bot seen not recorded
@@ -99,4 +99,3 @@ getMyBot(procId, botType)
     if isMine == true
         return true
     jump loopMyBot
-

@@ -21,7 +21,7 @@ if isOn != true
     jump loop
 
 
-myBot = idBots.getMyBot(procId, botType, message)
+myBot = idBots.getMyBot(procId, botType)
 
 if myBot != false
     msg.printAndWait("[green] I own bots", message)
