@@ -6,4 +6,4 @@ import time
 printAndWait(msg, messageX)
     print msg
     printflush messageX
-    time.wait(1)
+    time.wait(2)

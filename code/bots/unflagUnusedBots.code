@@ -52,7 +52,8 @@ elif typeId == 12
     set type @mono // starting mining guy, 20x speed 1.5
 
 
-// the rest of the bots:
+//    the rest of the bots:
+
 elif typeId == 13
     set type @fortress
 elif typeId == 14
@@ -97,7 +98,8 @@ if count > botsQuantity
 ubind type
 
 if @unit == false
-    print "no bots of that type: "
+    print "no bots of the type:\n"
+    print "[grey]   "
     print type
     printflush message
     jump NextBotType
@@ -121,7 +123,9 @@ sensor botType owner @type
 if botType == type
     // bot not controled by processors or players, it return itself
     ucontrol flag 0 null null null null
-    msg.printAndWait("[green] flagged bot found with no owner", message)
+    print "flagged bot: "
+    print flag
+    msg.printAndWait("[green] free !", message)
 
 elif owner == @this
     msg.printAndWait("It's me ! Mario", message)
