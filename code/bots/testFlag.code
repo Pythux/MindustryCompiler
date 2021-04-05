@@ -13,7 +13,7 @@ procId = idBots.genProcId()
 
 #ref loop
 
-op add turnAround turnAround 0.1
+op add turnAround turnAround 2
 
 isOn = onOff.isOn(switch, message)
 if isOn != true
@@ -23,26 +23,28 @@ if isOn != true
 
 myBot = idBots.getMyBot(procId, botType)
 
-if myBot != false
-    msg.printAndWait("[green] I own bots", message)
-else
-    msg.printAndWait("[orange] I don't own bots", message)
+// if myBot != false
+//     msg.printAndWait("[green] I own bots", message)
+// else
+//     msg.printAndWait("[orange] I don't own bots", message)
 
 if myBot == false
     idBots.getFreeBotAndFlagIt(botType, procId, 1, message)
 
 
-print "I rull bot"
-printflush message
-time.wait(0.4)
+
+// time.wait(0.4)
 op cos x turnAround null
 op sin y turnAround null
 
-op mul x x 10
-op mul y y 10
+op mul x x 20
+op mul y y 20
 
 op add x x @thisx
 op add y y @thisy
+
+print x
+printflush message
 
 set radius 4
 ucontrol approach x y radius 0 0
