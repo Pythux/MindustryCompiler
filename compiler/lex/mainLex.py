@@ -94,8 +94,11 @@ def t_EndLine(t: LexToken):
 def isEmptyEndLine(t: LexToken):
     pos = t.lexer.lexpos
     length = len(t.value)
-    data = t.lexer.lexdata
-    return data[pos-1:pos-1+length+1] == '\n\n'
+    if t.lexer.lexdata[pos-1:pos-1+length+1] == '\n\n':
+        return True
+    if t.lexer.lexdata[pos-1:pos-1+length+2] == '\n//':
+        return True
+    return False
 
 
 def closeBracket(t):
