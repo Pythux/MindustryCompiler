@@ -18,17 +18,33 @@ if isOn == false
 
 
 ubind type
-set t @time
-sensor flag @unit @flag
+set startTime @time
+sensor botFlag @unit @flag
 
 if @unit == false
     msg.printAndWait("no bots of that type", message)
+    end
 
 
-msg.printAndWait("searching for flagged bots ...", message)
+if botFlag == 0
+    end
 
+set botsQuantity 24
+set count 0
 
-#ref waitingOwner // recheck sensor @controller
+#ref waitingOwner
+
+ubind type
+
+sensor flag @unit @flag
+if flag != botFlag
+    add count count 1
+    if count > botsQuantity
+        print "[yellow] bot with flag "
+        print botFlag
+        msg.printAndWait(" does not exist anymore", message)
+        end
+    jump waitingOwner  // searching for the good idBot
 
 
 sensor owner @unit @controller
@@ -38,22 +54,20 @@ sensor botType owner @type
 // if controller is not player or proc, return type
 if botType == type
     // bot not controled by processors or players, it return itself
-    if flag != 0  // bot not free, having an owner ?
-        print "flagged bot found, waiting for owner: "
-        msg.printAndWait(flag, message)
-        op sub waiting @time t  // waiting = @time - t
-        if waiting > 3000
-            ucontrol flag 0 null null null null
-            msg.printAndWait("flagged bot found, have waited 3s, had free him", message)
-        else
-            msg.printAndWait("waiting manifestation of owner ...", message)
-            jump waitingOwner
-    else
-        msg.printAndWait("flag == 0, nothing to free here", message)
+
+    print "flagged bot found, no owner ? waiting owner of bot id: "
+    msg.printAndWait(flag, message)
+    op sub waiting @time startTime  // waiting = @time - startTime
+    if waiting > 5000  // 1000 -> 1 secondes
+        ucontrol flag 0 null null null null
+        msg.printAndWait("flagged bot found, have waited 5s, had free him", message)
+        end
+    msg.printAndWait("waiting manifestation of owner ...", message)
+    jump waitingOwner
 
 elif owner == @this
     msg.printAndWait("It's me ! Mario", message)
-    if waiting > 3000
+    if waiting > 5000
         ucontrol flag 0 null null null null
         msg.printAndWait("[green] have waited 3s, free him", message)
         end
