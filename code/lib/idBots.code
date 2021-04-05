@@ -68,6 +68,8 @@ flagBot(procId, botId, message)
 getFreeBotAndFlagIt(botType, procId, botId, message)
     msg.printAndWait("try getting some free bots ...", message)
     bot = getFreeBot(botType, message)
+    print "returned ..."
+    msg.printAndWait(bot, message)
     if bot == false
         msg.printAndWait("returned false", message)
         return false

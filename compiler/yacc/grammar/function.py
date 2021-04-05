@@ -19,10 +19,17 @@ def getModuleAndFunName(dotted):
 def runFuncReturnArgs(p: YaccProduction):
     '''line : returnedVars Affectaction dottedID OpenParenthesis arguments CloseParenthesis'''
     returnTo = p[1]
+    returnTo = handleScopeReturnedVars(returnTo)
     dotted = p[3]
     module, funName = getModuleAndFunName(dotted)
     callArgs = p[5]
     p[0] = FunCall(module, funName, callArgs, p.lineno(1), returnTo)
+
+
+def handleScopeReturnedVars(liReturn):
+    if context.fun.inFunScope:
+        return [context.fun.scopeId(arg) for arg in liReturn]
+    return liReturn
 
 
 @grammar
