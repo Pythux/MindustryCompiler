@@ -1,0 +1,16 @@
+
+
+
+distance(aX, aY, bX, bY)
+    // dist = racinCarré((aX-bX)^2 + (aY-bY)^2)
+
+    op sub rl aX bX
+    op mul rl rl rl // au carré
+
+    op sub rr aY bY
+    op mul rr rr rr // au carré
+
+    op add dist rl rr
+    op sqrt dist dist null
+
+    return dist

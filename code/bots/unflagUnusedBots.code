@@ -2,44 +2,62 @@
 
 import time
 import msg
-
-
-// will get a botType and if is flagged without owner within 3s, free it (flag 0)
-// freeSomeBots(type, message)
+import onOff
 
 
 set type @mono
 set message message1
+set switch switch1
 
-// freeSomeBots(type, message)
+
+// for test, to delete
+isOn = onOff.isOn(switch, message)
+if isOn == false
+    msg.printAndWait("[yellow] unflag is turn off", message)
+    end
+
 
 ubind type
 set t @time
-#ref waitingOwner // recheck sensor @controller
-sensor c @unit @controller
-sensor c c @type
+sensor flag @unit @flag
 
-print "searching for flagged bots ..."
-printflush message
+if @unit == false
+    msg.printAndWait("no bots of that type", message)
+
+
+msg.printAndWait("searching for flagged bots ...", message)
+
+
+#ref waitingOwner // recheck sensor @controller
+
+
+sensor owner @unit @controller
+sensor botType owner @type
+
+
 // if controller is not player or proc, return type
-if c == type  // type is str enum
-    // bot not controled by processors or players
-    msg.printAndWait("bot found ...", message)
-    sensor flag @unit @flag
+if botType == type
+    // bot not controled by processors or players, it return itself
     if flag != 0  // bot not free, having an owner ?
-        msg.printAndWait("flagged bot found, waiting for owner ...", message)
+        print "flagged bot found, waiting for owner: "
+        msg.printAndWait(flag, message)
         op sub waiting @time t  // waiting = @time - t
         if waiting > 3000
             ucontrol flag 0 null null null null
-            print "flagged bot found, have waited 3s, free him"
-            printflush message
-            time.wait(2)
+            msg.printAndWait("flagged bot found, have waited 3s, had free him", message)
         else
-            msg.printAndWait("flag == 0, nothing to free here", message)
+            msg.printAndWait("waiting manifestation of owner ...", message)
             jump waitingOwner
+    else
+        msg.printAndWait("flag == 0, nothing to free here", message)
+
+elif owner == @this
+    msg.printAndWait("It's me ! Mario", message)
+    if waiting > 3000
+        ucontrol flag 0 null null null null
+        msg.printAndWait("[green] have waited 3s, free him", message)
+        end
+    jump waitingOwner
+
 else
-    print "c != type ? "
-    print c
-    print " -> "
-    print type
-    msg.printAndWait(" ?", message)
+    msg.printAndWait("flagged bot is owned, everything alright", message)

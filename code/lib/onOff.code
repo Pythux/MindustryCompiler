@@ -1,0 +1,10 @@
+
+
+import msg
+
+isOn(switch, message)
+    if switch == null
+        msg.printAndWait("switch does not exist", message)
+        return true
+    sensor isActive switch @enabled
+    return isActive

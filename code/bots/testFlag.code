@@ -1,27 +1,51 @@
 
 import idBots
 import msg
+import onOff
 
 set botType @mono
 set message message1
+set switch switch1
 
-set totalBots 2
+set turnAround 0
 
 procId = idBots.genProcId()
 
 #ref loop
 
-// ubind botType
-// idBots.flagBot(procId, botId, message)
+op add turnAround turnAround 0.1
 
-idBots.getMyBot(procId, botType)
+isOn = onOff.isOn(switch, message)
+if isOn != true
+    msg.printAndWait("[yellow] testFlag is turn off", message)
+    jump loop
 
-if @unit != false
+
+myBot = idBots.getMyBot(procId, botType, message)
+
+if myBot != false
     msg.printAndWait("[green] I own bots", message)
 else
     msg.printAndWait("[orange] I don't own bots", message)
 
-if @unit == false
+if myBot == false
     idBots.getFreeBotAndFlagIt(botType, procId, 1, message)
+
+
+print "I rull bot"
+printflush message
+time.wait(0.4)
+op cos x turnAround null
+op sin y turnAround null
+
+op mul x x 10
+op mul y y 10
+
+op add x x @thisx
+op add y y @thisy
+
+set radius 4
+ucontrol approach x y radius 0 0
+
 
 jump loop
