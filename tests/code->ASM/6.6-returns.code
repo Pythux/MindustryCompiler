@@ -1,0 +1,37 @@
+
+
+import msg
+
+set message message1
+
+yo(a, message)
+    if a == true
+        msg.printAndWait("a is true", message)
+        return true
+    return false
+
+x = yo(true, message)
+
+
+----------------------
+
+
+set message message1
+set tmp1 true
+set tmp2 message
+jump 5 equal tmp1 true
+jump 16 always true true
+set tmp4 "a is true"
+set tmp5 tmp2
+print tmp4
+printflush tmp5
+set tmp7 1
+set tmp6 @time
+op mul tmp7 tmp7 1000
+op add tmp8 tmp6 tmp7
+jump 13 greaterThanEq tmp8 @time
+set tmp3 true
+jump 18 always true true
+set tmp3 false
+jump 18 always true true
+set x tmp3

@@ -203,6 +203,8 @@ reserved = {
     'elif': 'ElseIf',
     'return': 'Return',
     'import': 'Import',
+    'true': 'True',
+    'false': 'False',
 }
 tokens += list(reserved.values())
 tokens += ['ID']  # not reserved words

@@ -57,5 +57,7 @@ def info(p: YaccProduction):
     '''info : Number
             | String
             | ArobasedInfo
+            | True
+            | False
     '''
     p[0] = p[1]
