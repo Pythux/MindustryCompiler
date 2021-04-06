@@ -18,6 +18,8 @@ def asmInstr(p: YaccProduction):
         context.nextNoVar = 5
     elif p[1] == 'ucontrol':
         context.nextNoVar = 1
+    elif p[1] == 'ulocate':
+        context.nextNoVar = 2
     p[0] = p[1]
 
 

@@ -83,6 +83,8 @@ You could check files [here](./tests/identicalCode) to see the difference from t
 
 - improve if, if var, if not var, and / or
 
+- fill empty args of ASM lines (`ucontrol itemDrop store 800 0 0 0` -> `ucontrol itemDrop store 800`)
+
 ## current usage
 
 - compile a file :

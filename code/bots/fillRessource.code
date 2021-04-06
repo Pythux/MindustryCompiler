@@ -1,0 +1,143 @@
+
+
+// select all the ressources to take into a container
+// if not false, it will be taken
+// can change who take it (here @flare)
+// the bot will take ressource to it's max transport capacity
+
+
+import onOff
+import idBots
+
+
+set store container1
+set switch switch1
+set message message1
+
+
+// which bot to use
+set botType @dagger
+
+
+// which ressources to take ?
+// name in french, because it's easier for me to read it in game
+set cuivre false
+set plomb false
+set silicium false
+set graphite false
+set charbon false
+set verreTremp false
+set titane false
+set thorium false
+set plastanium false
+set tissuPhasé false
+set alliageSup false
+set spore false
+set mélangeExplo false
+set pyratite false
+set sable false
+set ferraille false
+
+
+// limite "enougth" at 100 (ps: max container is 300)
+set storeStopQuantity 100
+set storeMaxQuantity 300
+
+
+set coreX null
+set coreY null
+
+
+procId = idBots.genProcId()
+
+
+#ref noStore
+if store == null
+    if container1 != null
+        msg.printAndWait("[green] container1 linked !", message)
+        set store container1
+    else
+        print "[yellow] not linked to store\n [white] default: [grey] container1 "
+        msg.printAndWait("\n must reload process to take it into account if not container1", message)
+        jump noStore
+
+
+// store position
+sensor storeX store @x
+sensor storeY store @y
+
+
+// --- Prog Loop ---
+#ref loop
+
+// switch to turn off
+isOn = onOff.isOn(switch)
+if isOn != true
+    msg.printAndWait("[yellow] process is turn off", message)
+    end
+
+
+myBot = idBots.getMyBot(procId, botType)
+
+
+if myBot == false
+    msg.printAndWait("I don't own bot", message)
+    freeBot = idBots.getFreeBotAndFlagIt(botType, procId, 1, message)
+    if freeBot == false
+        msg.printAndWait("no free bots", message)
+        jump loop
+
+
+if @unit == null
+    print "[yellow] no bots avalable of type: [grey]"
+    msg.printAndWait(botType, message)
+    jump loop
+
+
+// get core position
+#ref getCorePos
+// require to have a @unite
+if coreX == null
+    msg.printAndWait("looking for core, this is done once", message)
+    ulocate building core false @copper coreX coreY coreFound core
+    if coreFound == false
+        msg.printAndWait("[red] core not found, searching again", message)
+        msg.printAndWait(core, message)
+        msg.printAndWait(coreFound, message)
+        jump getCorePos
+    msg.printAndWait("[green] core found", message)
+
+
+// sensor sur cargaison
+sensor payload @unit @totalItems
+// sensor loadType @unit @payloadType  // this does not work, return null
+
+
+// to check if content a specific ressource:
+// sensor copperTranported @unit @copper
+// copperTranported will be equal to payload if unit tranport it, else null
+// need to check max ressource to know if we can unload it
+// sensor stored store loadType
+
+
+if payload > 0
+    ucontrol approach storeX storeY 5 null null
+    ucontrol itemDrop store 800 null null null
+
+else
+    // empty bots, go to base
+    ucontrol approach coreX coreY 5 null null
+    // need to know what to take
+    set toTake @copper
+    sensor coreStored core toTake
+    print "take core"
+    printflush message
+    if coreStored > 60
+        // have some in core
+        ucontrol itemTake core toTake 800 null null
+    else
+        print "not enouth of "
+        print toTake
+        msg.printAndWait(" in base, will take something else", message)
+
+jump loop
