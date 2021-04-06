@@ -29,12 +29,12 @@ set charbon false
 set verreTremp false
 set titane false
 set thorium false
-set plastanium false
-set tissuPhasé false
 set alliageSup false
-set spore false
 set mélangeExplo false
 set pyratite false
+set tissuPhasé false
+set plastanium false
+set spore false
 set sable false
 set ferraille false
 
@@ -43,6 +43,8 @@ set ferraille false
 set storeStopQuantity 100
 set storeMaxQuantity 300
 
+set radiusApproche 5 // max working radius: 8
+set radiusClose 12
 
 set coreX null
 set coreY null
@@ -121,19 +123,18 @@ sensor payload @unit @totalItems
 
 
 if payload > 0
-    ucontrol approach storeX storeY 5 null null
+    ucontrol approach storeX storeY radiusApproche null null
     ucontrol itemDrop store 800 null null null
 
 else
     // empty bots, go to base
-    ucontrol approach coreX coreY 5 null null
+    ucontrol approach coreX coreY radiusApproche null null
     // need to know what to take
     set toTake @copper
     sensor coreStored core toTake
-    print "take core"
-    printflush message
     if coreStored > 60
         // have some in core
+        // ucontrol within coreX coreY radiusClose isWithin null
         ucontrol itemTake core toTake 800 null null
     else
         print "not enouth of "
