@@ -55,7 +55,15 @@ flagBot(procId, botId)
     ucontrol flag f null null null null
 
 
-isMyBot(procId, botFlag)
+isMyBotFlag(procId, botFlag)
+    op idiv botProcId botFlag 100
+    if botProcId == procId
+        return true
+    return false
+
+
+isMyBot(procId)
+    sensor botFlag @unit @flag
     op idiv botProcId botFlag 100
     if botProcId == procId
         return true
@@ -95,7 +103,7 @@ getMyBot(procId, botType)
         if flag != 0  // first bot seen with an unique ID
             set firstFlag flag
 
-    isMine = isMyBot(procId, botFlag)
+    isMine = isMyBotFlag(procId, botFlag)
     if isMine == true
         return true
     jump loopMyBot
