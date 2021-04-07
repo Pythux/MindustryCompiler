@@ -1,5 +1,5 @@
 
-from compiler.yacc.classes import Jump, FunCall
+from compiler.yacc.classes import Jump, FunOrMacroCall, Macro
 from ._start import grammar, YaccProduction, context
 
 from .. import importsHandling
@@ -23,7 +23,7 @@ def runFuncReturnArgs(p: YaccProduction):
     dotted = p[3]
     module, funName = getModuleAndFunName(dotted)
     callArgs = p[5]
-    p[0] = FunCall(module, funName, callArgs, p.lineno(1), returnTo)
+    p[0] = FunOrMacroCall(module, funName, callArgs, p.lineno(1), returnTo)
 
 
 def handleScopeReturnedVars(liReturn):
@@ -33,12 +33,23 @@ def handleScopeReturnedVars(liReturn):
 
 
 @grammar
-def runFunc(p: YaccProduction):
+def runFuncOrMacro(p: YaccProduction):
     '''line : dottedID OpenParenthesis arguments CloseParenthesis'''
     dotted = p[1]
-    module, funName = getModuleAndFunName(dotted)
+    module, funOrMacroName = getModuleAndFunName(dotted)
     callArgs = p[3]
-    p[0] = FunCall(module, funName, callArgs, p.lineno(1))
+    p[0] = FunOrMacroCall(module, funOrMacroName, callArgs, p.lineno(1))
+
+
+# it's call will be replaced with the value given
+# there is no scope for macro, that is the big difference with fuctions
+@grammar
+def macro_definition(p: YaccProduction):
+    '''noLine : Macro ID OpenParenthesis arguments CloseParenthesis OpenCurlyBracket lines CloseCurlyBracket'''
+    name = p[2]
+    args = p[4]
+    lines = p[7]
+    importsHandling.imports.addMacroToModule(Macro(name, args, lines))
 
 
 @grammar

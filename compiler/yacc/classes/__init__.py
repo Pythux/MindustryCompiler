@@ -1,5 +1,6 @@
 
 from .RefAndJump import Ref, Jump
-from .FunCall import FunCall
+from .FunOrMacroCall import FunOrMacroCall
+from .Macro import Macro
 
-__all__ = [Ref, Jump, FunCall]
+__all__ = [Ref, Jump, FunOrMacroCall, Macro]

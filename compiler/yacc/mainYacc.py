@@ -12,7 +12,7 @@ from .generateYacc import generateYaccFunctions
 from . import grammar  # noqa
 
 from .context import context
-from .classes import Jump, Ref, FunCall
+from .classes import Jump, Ref, FunOrMacroCall
 
 
 # generate module .p_functionYacc
@@ -58,11 +58,11 @@ def runImports():
 
 def fillFunCall(lines):
     lines = boa(lines)
-    if len(lines.filter(lambda el: isinstance(el, FunCall))) == 0:
+    if len(lines.filter(lambda el: isinstance(el, FunOrMacroCall))) == 0:
         return lines
 
     def reducer(li, el):
-        return li + (el.toFunContent() if isinstance(el, FunCall) else [el])
+        return li + (el.toContent() if isinstance(el, FunOrMacroCall) else [el])
 
     return fillFunCall(lines.reduce(reducer, []))
 

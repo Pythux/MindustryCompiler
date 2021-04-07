@@ -208,6 +208,7 @@ reserved = {
     'import': 'Import',
     'true': 'True',
     'false': 'False',
+    'macro': 'Macro',
 }
 tokens += list(reserved.values())
 tokens += ['ID']  # not reserved words

@@ -28,8 +28,13 @@ class Imports:
 
     def addFunToModule(self, funDef):
         if funDef.name in self.imported[self.currentFile]:
-            raise Exception("function {} already defined".format(funDef.name))
+            raise Exception("function/macro {} already defined".format(funDef.name))
         self.imported[self.currentFile][funDef.name] = funDef
+
+    def addMacroToModule(self, macroDef):
+        if macroDef.name in self.imported[self.currentFile]:
+            raise Exception("function/macro {} already defined".format(macroDef.name))
+        self.imported[self.currentFile][macroDef.name] = macroDef
 
     # called at the verry end, once everything is imported
     def getModule(self, fileLib):
