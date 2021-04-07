@@ -20,7 +20,6 @@ class FunCall:
         lines = []
         lines += setters(map(lambda a: fun.ids[a], fun.args), self.callArgs)
         lines += fun.genContent()
-        lines.append(fun.returnRef)
         if self.returnTo:
             if len(self.returnTo) != len(fun.returns):
                 raise Exception('function “{}” return exactly {} values, {} is receved line {}'

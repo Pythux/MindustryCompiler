@@ -25,7 +25,7 @@ set tmp4 "a is true"
 set tmp5 tmp2
 print tmp4
 printflush tmp5
-set tmp7 1
+set tmp7 2
 set tmp6 @time
 op mul tmp7 tmp7 1000
 op add tmp8 tmp6 tmp7

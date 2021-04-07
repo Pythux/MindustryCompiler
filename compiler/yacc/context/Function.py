@@ -52,7 +52,9 @@ class Fun:
             lines.append(line)
 
         if self.returnRef.id in newRef:
-            self.returnRef = newRef[self.returnRef.id]
+            returnRef = newRef[self.returnRef.id]
         else:
-            self.returnRef = self.context.genRef()
+            returnRef = self.context.genRef()
+
+        lines.append(returnRef)
         return lines

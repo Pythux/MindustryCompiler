@@ -1,0 +1,28 @@
+
+
+fun()
+    if true == true
+        return true
+    return false
+
+x = fun()
+y = fun()
+
+
+----------------------
+
+
+jump 2 equal true true
+jump 4 always true true
+set tmp1 true
+jump 6 always true true
+set tmp1 false
+jump 6 always true true
+set x tmp1
+jump 9 equal true true
+jump 11 always true true
+set tmp1 true
+jump 13 always true true
+set tmp1 false
+jump 13 always true true
+set y tmp1
