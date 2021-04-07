@@ -183,42 +183,33 @@ op add loopingToTake loopingToTake 1
 //         if stored < storeStopQuantity
 //             set toTake @lead
 //             jump setTimesToTake
+//     op add toTakeId toTakeId 1
 
 
 op add toTakeId toTakeId 1
 
-if toTakeId == 1
-    toTake = processToTake(cuivre, @copper, store, storeStopQuantity, message)
-    if toTake != null
-        print "[green] toTake ! "
-        msg.printAndWait(toTake, message)
-        op add toTakeId toTakeId 1
-        jump setTimesToTake
-    op add toTakeId toTakeId 1
-
-if toTakeId == 2
-    toTake = processToTake(plomb, @lead, store, storeStopQuantity, message)
-    if toTake != null
-        print "[green] toTake ! "
-        msg.printAndWait(toTake, message)
-        op add toTakeId toTakeId 1
-        jump setTimesToTake
-    op add toTakeId toTakeId 1
+// if toTakeId == 2
+//     if plomb == true
+//         // need it ?
+//         sensor stored store @lead
+//         if stored < storeStopQuantity
+//             set toTake @lead
+//             jump setTimesToTake
+//     op add toTakeId toTakeId 1
 
 
-processToTake(ressourceBool, ressourceType, store, storeStopQuantity, message)
-    msg.printAndWait("ressourceId ok", message)
-    if ressourceBool == true
-        msg.printAndWait("we take it", message)
-        sensor stored store ressourceType
-        print "stored: "
-        print stored
-        print " storeStopQuantity: "
-        msg.printAndWait(storeStopQuantity, message)
-        if stored < storeStopQuantity
-            msg.printAndWait("yes !!!", message)
-            return ressourceType
-    return null
+// a marco is a brutal copy/past (no scope unlike function)
+macro processToTake(id, ressource, ressourceType)
+    if toTakeId == id
+        op add toTakeId toTakeId 1  // will pass to next ressource even if this one is still needed
+        if ressource == true
+            sensor stored store ressourceType
+            if stored < storeStopQuantity
+                set toTake ressourceType
+                jump setTimesToTake
+
+processToTake(1, cuivre, @copper)
+processToTake(2, plomb, @lead)
 
 
 // we have done alls the ifs, back to the start

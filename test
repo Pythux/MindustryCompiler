@@ -1,0 +1,12 @@
+
+
+
+macro yolo(x, y)
+    if x == y
+        print z
+
+set z "z"
+
+set a "a"
+
+yolo(true, a)
