@@ -1,10 +1,9 @@
 
 
 from ..importsHandling import imports
-from .Macro import Macro
 
 
-class FunOrMacroCall:
+class FunCall:
     def __init__(self, module, name, callArgs, line, returnTo=None) -> None:
         self.name = name
         self.callArgs = callArgs
@@ -17,11 +16,8 @@ class FunOrMacroCall:
         if self.name not in module:
             raise Exception("function '{}' does not exist, module {}, at line {}"
                             .format(self.name, self.module, self.line))
-        funOrMacro = module[self.name]
-
-        if isinstance(funOrMacro, Macro):
-            return self.toMacroContent(funOrMacro)
-        return self.toFunContent(funOrMacro)
+        fun = module[self.name]
+        return self.toFunContent(fun)
 
     def toFunContent(self, fun):
         lines = []
@@ -33,9 +29,6 @@ class FunOrMacroCall:
                                 .format(fun.name, len(fun.returns), len(self.returnTo), self.line))
             lines += setters(self.returnTo, fun.returns)
         return lines
-
-    def toMacroContent(self, macro):
-        pass
 
 
 def setters(liSet, liVar):

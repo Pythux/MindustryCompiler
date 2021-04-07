@@ -1,12 +1,9 @@
 
 
+li = [1, "yo", @data, lol]
 
-macro yolo(x, y)
-    if x == y
-        print z
+for el in li
+    print el
 
-set z "z"
-
-set a "a"
-
-yolo(true, a)
+for a in [1, 2]
+    print a

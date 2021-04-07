@@ -208,7 +208,7 @@ reserved = {
     'import': 'Import',
     'true': 'True',
     'false': 'False',
-    'macro': 'Macro',
+    'for': 'For',
 }
 tokens += list(reserved.values())
 tokens += ['ID']  # not reserved words
@@ -216,7 +216,7 @@ tokens += ['ID']  # not reserved words
 
 # function starting with t_ will be run for tokens even if not in tokens list
 def t_Word(t: LexToken):
-    r'''[^ \n.,()*{}'"]+'''
+    r'''[^ \n.,()*{}'"\[\]]+'''
     # r'''[^ .,()'"*{}\n]+'''  # match words, including utf-8 characters
     if t.value[0] == '#':
         return None  # unofficial comments "#"
@@ -230,12 +230,14 @@ separator = {
     ')': 'CloseParenthesis',
     ',': 'Comma',
     '.': 'Dot',
+    '[': 'OpenBracket',
+    ']': 'CloseBracket',
 }
 tokens += list(separator.values())
 
 
 def t_Separator(t: LexToken):
-    r'''[.,()*{}]'''
+    r'''[.,()*{}\[\]]'''
     t.type = separator[t.value]
     return t
 

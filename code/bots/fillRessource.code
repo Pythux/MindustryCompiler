@@ -198,8 +198,9 @@ op add toTakeId toTakeId 1
 //     op add toTakeId toTakeId 1
 
 
-// a marco is a brutal copy/past (no scope unlike function)
-macro processToTake(id, ressource, ressourceType)
+// a kind of repeated code, brutal copy/past (no scope)
+ressourceList = [(1, cuivre, @copper), (2, plomb, @lead)]
+for id, ressource, ressourceType in ressourceList
     if toTakeId == id
         op add toTakeId toTakeId 1  // will pass to next ressource even if this one is still needed
         if ressource == true
@@ -210,6 +211,11 @@ macro processToTake(id, ressource, ressourceType)
 
 processToTake(1, cuivre, @copper)
 processToTake(2, plomb, @lead)
+
+set id 1
+set ressource cuivre
+set ressourceType @copper
+jump Looping
 
 
 // we have done alls the ifs, back to the start

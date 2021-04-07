@@ -1,0 +1,74 @@
+
+
+from ._start import grammar, YaccProduction, context
+from boa import boa
+
+
+# ressourceList = [(1, cuivre, @copper), (2, plomb, @lead)]
+# for id, ressource, ressourceType in ressourceList
+#     if toTakeId == id
+
+# it's call will be replaced with the value given
+# there is no scope for macro, that is the big difference with fuctions
+@grammar
+def staticFor(p: YaccProduction):
+    '''lines : For arguments ID liNameOrList OpenCurlyBracket lines CloseCurlyBracket'''
+    decompose = p[2]
+    li = p[4]
+    lines = p[6]
+    breakpoint()
+
+
+@grammar
+def liNameOrList(p: YaccProduction):
+    '''liNameOrList : ID
+                    | list'''
+    liNameOrList = p[1]
+    p[0] = liNameOrList if isinstance(liNameOrList, list) else context.staticVarsList[liNameOrList]
+
+
+@grammar
+def staticList(p: YaccProduction):
+    '''noLine : affectation list'''
+    if len(p[1]) != 1:
+        raise Exception("afectation incorrect: {} is not accepted".format(p[1]))
+    name = p[1][0]
+    val = p[2]
+    if name in context.staticVarsList:
+        raise Exception("static list named: ⸄{}⸅ alrealy defined".format(name))
+    context.staticVarsList[name] = val
+
+
+@grammar
+def staticList_list(p: YaccProduction):
+    '''list : OpenBracket tuplesOrInfo CloseBracket'''
+    p[0] = p[2]
+
+
+@grammar
+def tuplesOrInfo(p: YaccProduction):
+    '''tuplesOrInfo : tuples
+                    | arguments'''
+    val = p[1]
+    if isinstance(val[0], list):
+        p[0] = p[1]
+    else:
+        p[0] = boa(val).map(lambda el: [el])
+
+
+@grammar
+def tuples_one(p: YaccProduction):
+    '''tuples : tuple'''
+    p[0] = [p[1]]
+
+
+@grammar
+def tuples_many(p: YaccProduction):
+    '''tuples : tuples Comma tuple'''
+    p[0] = p[1] + [p[3]]
+
+
+@grammar
+def tupleDef(p: YaccProduction):
+    '''tuple : OpenParenthesis arguments CloseParenthesis'''
+    p[0] = p[2]
