@@ -39,6 +39,9 @@ set spore false         // @spore-pod
 set sable false         // @sand
 set ferraille false     // @scrap
 
+ressourceList = [
+    (1, cuivre, @copper), (2, plomb, @lead)]
+
 
 // limite "enougth" at 100 (ps: max container is 300)
 set storeStopQuantity 100
@@ -180,7 +183,6 @@ op add loopingToTake loopingToTake 1
 //     op add toTakeId toTakeId 1
 
 // a kind of repeated code, brutal copy/past (no scope)
-ressourceList = [(1, cuivre, @copper), (2, plomb, @lead)]
 for id, ressource, ressourceType in ressourceList
     if toTakeId == id
         op add toTakeId toTakeId 1  // will pass to next ressource even if this one is still needed

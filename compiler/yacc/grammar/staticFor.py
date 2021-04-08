@@ -100,6 +100,13 @@ def tuples_many(p: YaccProduction):
 
 
 @grammar
+def tuples_oneComma(p: YaccProduction):
+    '''tuples : tuples Comma'''
+    p[0] = p[1]
+
+
+
+@grammar
 def tupleDef(p: YaccProduction):
     '''tuple : OpenParenthesis arguments CloseParenthesis'''
     p[0] = p[2]

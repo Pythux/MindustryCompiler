@@ -1,6 +1,9 @@
 
 
-li = [1, "yo", @data, lol]
+li = [
+    1, "yo",
+    @data, lol
+]
 
 for el in li
     print el
