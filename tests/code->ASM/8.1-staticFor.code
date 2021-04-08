@@ -1,0 +1,26 @@
+
+
+li = [1, "yo", @data, lol]
+
+for el in li
+    print el
+
+for a in [1, 2]
+    print a
+
+
+for a, b in [(x, y), (i, j)]
+    op add c a b
+
+
+----------------------
+
+
+print 1
+print "yo"
+print @data
+print lol
+print 1
+print 2
+op add c x y
+op add c i j

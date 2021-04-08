@@ -2,6 +2,7 @@
 
 from ._start import grammar, YaccProduction, context
 from boa import boa
+import copy
 
 
 # ressourceList = [(1, cuivre, @copper), (2, plomb, @lead)]
@@ -15,8 +16,20 @@ def staticFor(p: YaccProduction):
     '''lines : For arguments ID liNameOrList OpenCurlyBracket lines CloseCurlyBracket'''
     decompose = p[2]
     li = p[4]
-    lines = p[6]
-    breakpoint()
+    originalLines = p[6]
+    # copiedLines = copy.deepcopy(originalLines)
+    for el in li:
+        if len(decompose) != len(el):
+            raise Exception("cannot unpack list, el length not equal")
+    # do a variable replacing
+    lines = []
+    for tuple in li:
+        copiedLines = copy.deepcopy(originalLines)
+        for line in copiedLines:
+            for toReplace, toReplaceBy in zip(decompose, tuple):
+                line.replace(toReplace, toReplaceBy)
+        lines += copiedLines
+    p[0] = lines
 
 
 @grammar

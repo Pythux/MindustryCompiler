@@ -1,9 +1,0 @@
-
-
-li = [1, "yo", @data, lol]
-
-for el in li
-    print el
-
-for a in [1, 2]
-    print a
