@@ -23,5 +23,10 @@ print @data
 print lol
 print 1
 print 2
-op add c x y
-op add c i j
+jump 8 lessThan x y
+jump 9 always true true
+op add res x y
+jump 11 lessThan 1 true
+jump 12 always true true
+op add res 1 true
+end

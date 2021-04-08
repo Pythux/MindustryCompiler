@@ -47,14 +47,14 @@ def asmFollowInstructions_many(p: YaccProduction):
 @grammar
 def info_id(p: YaccProduction):
     '''info : ID'''
-    info = p[1]
+    info = Variable(p[1])
     if context.nextNoVar > 0:
         context.nextNoVar -= 1
     elif context.fun.inFunScope:
         p[0] = context.fun.scopeId(info)
         return
 
-    p[0] = Variable(info)
+    p[0] = info
 
 
 @grammar

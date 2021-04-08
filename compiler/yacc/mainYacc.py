@@ -12,7 +12,7 @@ from .generateYacc import generateYaccFunctions
 from . import grammar  # noqa
 
 from .context import context
-from .classes import Jump, Ref, FunCall, AsmInst
+from .classes import Jump, Ref, FunCall, AsmInst, Variable
 
 
 # generate module .p_functionYacc
@@ -78,7 +78,7 @@ def checkExistingVars(content):
     context.existingVars = set((
         boa(runLex(content))
         .filter(lambda tok: tok.type == 'ID')
-        .map(lambda tok: tok.value)))
+        .map(lambda tok: Variable(tok.value))))
 
 
 # we only have at this moment str, Jump and Ref Objects in lines
