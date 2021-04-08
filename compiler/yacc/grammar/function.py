@@ -3,6 +3,7 @@ from compiler.yacc.classes import Jump, FunCall
 from ._start import grammar, YaccProduction, context
 
 from .. import importsHandling
+from ..classes import AsmInst
 
 
 def getModuleAndFunName(dotted):
@@ -98,6 +99,6 @@ def funReturn(args):
     return lines
 
 
+# set {liSet} {liVal}
 def setters(liSet, liVar):
-    'set {liSet} {liVal}'
-    return ['set {} {}'.format(s, v) for s, v in zip(liSet, liVar)]
+    return [AsmInst('set', [s, v]) for s, v in zip(liSet, liVar)]

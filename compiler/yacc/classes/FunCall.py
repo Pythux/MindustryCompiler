@@ -1,6 +1,7 @@
 
 
 from ..importsHandling import imports
+from .AsmInst import AsmInst, Variable
 
 
 class FunCall:
@@ -31,6 +32,6 @@ class FunCall:
         return lines
 
 
+# set {liSet} {liVal}
 def setters(liSet, liVar):
-    'set {liSet} {liVal}'
-    return ['set {} {}'.format(s, v) for s, v in zip(liSet, liVar)]
+    return [AsmInst('set', [s, v]) for s, v in zip(liSet, liVar)]

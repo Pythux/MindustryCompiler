@@ -12,7 +12,7 @@ from .generateYacc import generateYaccFunctions
 from . import grammar  # noqa
 
 from .context import context
-from .classes import Jump, Ref, FunCall
+from .classes import Jump, Ref, FunCall, AsmInst
 
 
 # generate module .p_functionYacc
@@ -39,10 +39,17 @@ def runYacc(content: str, debug=False, clearContext=False):
 
     runImports()
     # back to main file:
+    if lines is None or len(lines) == 0:
+        return ''
+
     lines = fillFunCall(lines)
 
     # last step, put ref to code line
-    stringCode = refToCodeLine(lines)
+    lines = consumeRefAndChangeJump(lines)
+
+    stringLi = boa(lines).map(lambda line: line.toStr())
+
+    stringCode = '\n'.join(stringLi) + '\n'
 
     if clearContext:
         importsHandling.imports.clear()
@@ -67,12 +74,6 @@ def fillFunCall(lines):
     return fillFunCall(lines.reduce(reducer, []))
 
 
-def refToCodeLine(lines):
-    if len(lines) > 0:
-        return changeRefToLineNumber(lines)
-    return ''
-
-
 def checkExistingVars(content):
     context.existingVars = set((
         boa(runLex(content))
@@ -81,18 +82,21 @@ def checkExistingVars(content):
 
 
 # we only have at this moment str, Jump and Ref Objects in lines
-def changeRefToLineNumber(li: List[T]):
+def consumeRefAndChangeJump(li: List[T]):
     if isinstance(li[-1], Ref):
-        li.append('end')  # finish with end statement to #ref on it
+        li.append(AsmInst('end', []))  # finish with end statement to #ref on it
 
-    li = refToLinesNumber(li)  # change ref to lineNumb
+    li = consumeRef(li)  # build refDictionary
 
     # change jump ref to jump lineNumb
-    li = boa(li).map(lambda el: el.toLine(context) if isinstance(el, Jump) else el)
-    return '\n'.join(li) + '\n'
+    for el in li:
+        if isinstance(el, Jump):
+            el.refToLine(context.refDict)
+
+    return li
 
 
-def refToLinesNumber(li: List[T]):
+def consumeRef(li: List[T]):
     result = []
     for el in li:
         if isinstance(el, Ref):
