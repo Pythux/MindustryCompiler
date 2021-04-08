@@ -9,8 +9,9 @@ for a in [1, 2]
     print a
 
 
-for a, b in [(x, y), (i, j)]
-    op add c a b
+for a, b in [(x, y), (1, true)]
+    if a < b
+        op add res a b
 
 
 ----------------------

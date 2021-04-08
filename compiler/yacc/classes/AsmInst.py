@@ -1,6 +1,4 @@
 
-import copy
-
 
 class Value:
     def __init__(self, value: str) -> None:
@@ -10,10 +8,15 @@ class Value:
         return self.value
 
     def __eq__(self, o: object) -> bool:
-        return o.variable == self.variable
+        if isinstance(o, self.__class__):
+            return o.value == self.value
+        return False
 
     def __repr__(self) -> str:
         return '<Value {}>'.format(self.value)
+
+    def copy(self):
+        return self.__class__(self.value)
 
 
 class Variable:
@@ -29,12 +32,15 @@ class Variable:
         return '<Variable {}>'.format(self.variable)
 
     def __eq__(self, o: object) -> bool:
-        if isinstance(o, str):
-            return o == self.variable
-        return o.variable == self.variable
+        if isinstance(o, self.__class__):
+            return o.variable == self.variable
+        return False
 
     def __hash__(self) -> int:
         return hash(self.variable)
+
+    def copy(self):
+        return self.__class__(self.variable)
 
 
 class AsmInst:
@@ -58,3 +64,9 @@ class AsmInst:
 
         return "{instr} {liValVar}".format(
             instr=self.instruction, liValVar=' '.join(map(str, self.liValVar)))
+
+    def copy(self):
+        return self.__class__(self.instruction, list(map(lambda el: el.copy(), self.liValVar)))
+
+    def __repr__(self) -> str:
+        return '<AsmInstr {}>'.format(self.toStr())

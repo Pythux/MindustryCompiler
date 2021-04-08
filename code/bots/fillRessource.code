@@ -186,18 +186,6 @@ op add loopingToTake loopingToTake 1
 //     op add toTakeId toTakeId 1
 
 
-op add toTakeId toTakeId 1
-
-// if toTakeId == 2
-//     if plomb == true
-//         // need it ?
-//         sensor stored store @lead
-//         if stored < storeStopQuantity
-//             set toTake @lead
-//             jump setTimesToTake
-//     op add toTakeId toTakeId 1
-
-
 // a kind of repeated code, brutal copy/past (no scope)
 ressourceList = [(1, cuivre, @copper), (2, plomb, @lead)]
 for id, ressource, ressourceType in ressourceList
@@ -209,8 +197,6 @@ for id, ressource, ressourceType in ressourceList
                 set toTake ressourceType
                 jump setTimesToTake
 
-processToTake(1, cuivre, @copper)
-processToTake(2, plomb, @lead)
 
 set id 1
 set ressource cuivre

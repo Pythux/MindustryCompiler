@@ -1,7 +1,7 @@
 
 
 from ..importsHandling import imports
-from .AsmInst import AsmInst, Variable
+from .AsmInst import AsmInst
 
 
 class FunCall:

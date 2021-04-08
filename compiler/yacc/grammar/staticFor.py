@@ -2,7 +2,7 @@
 
 from ._start import grammar, YaccProduction, context
 from boa import boa
-import copy
+from ..classes import Ref, Jump
 
 
 # ressourceList = [(1, cuivre, @copper), (2, plomb, @lead)]
@@ -17,17 +17,34 @@ def staticFor(p: YaccProduction):
     decompose = p[2]
     li = p[4]
     originalLines = p[6]
-    # copiedLines = copy.deepcopy(originalLines)
+
+    refDict = {}
+
+    # create list of ref
+    for line in originalLines:
+        if isinstance(line, Ref):
+            refDict[line] = None
+
     for el in li:
         if len(decompose) != len(el):
             raise Exception("cannot unpack list, el length not equal")
     # do a variable replacing
     lines = []
+
     for tuple in li:
-        copiedLines = copy.deepcopy(originalLines)
+        copiedLines = [el.copy() for el in originalLines]
+        for k in refDict.keys():  # new refs
+            refDict[k] = context.genRef()
         for line in copiedLines:
-            for toReplace, toReplaceBy in zip(decompose, tuple):
-                line.replace(toReplace, toReplaceBy)
+            if isinstance(line, Ref):  # change ref
+                line.changeRef(refDict[line])
+            elif isinstance(line, Jump):
+                line.changeRef(refDict[line.ref])
+                for toReplace, toReplaceBy in zip(decompose, tuple):
+                    line.replace(toReplace, toReplaceBy)
+            else:
+                for toReplace, toReplaceBy in zip(decompose, tuple):
+                    line.replace(toReplace, toReplaceBy)
         lines += copiedLines
     p[0] = lines
 

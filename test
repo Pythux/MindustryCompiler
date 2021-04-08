@@ -1,0 +1,7 @@
+// function definition
+show(a)
+    print a
+
+
+// function call
+show(data)
