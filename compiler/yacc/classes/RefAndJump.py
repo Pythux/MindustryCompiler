@@ -42,7 +42,7 @@ class Jump:
     def refToLine(self, refDict):
         if self.ref.id not in refDict:
             print("for jump at line: {}".format(self.line))
-            print("ref {} not exist, existing ref: {}".format(self.ref.id, self.context.refDict))
+            print("ref {} does not exist".format(self.ref.id))
             raise SystemExit()
         self.refLine = refDict[self.ref.id]
 

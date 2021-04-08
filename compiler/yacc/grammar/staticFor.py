@@ -39,7 +39,8 @@ def staticFor(p: YaccProduction):
             if isinstance(line, Ref):  # change ref
                 line.changeRef(refDict[line])
             elif isinstance(line, Jump):
-                line.changeRef(refDict[line.ref])
+                if line.ref in refDict:
+                    line.changeRef(refDict[line.ref])
                 for toReplace, toReplaceBy in zip(decompose, tuple):
                     line.replace(toReplace, toReplaceBy)
             else:

@@ -80,7 +80,7 @@ if message == null
 
 set toTake null
 set toTakeTimes 0
-set toTakeId 0
+set toTakeId 1
 
 set loopSearchingBots 0
 
@@ -154,14 +154,17 @@ if toTakeTimes > 0
     print toTakeTimes
     printflush message
     op sub toTakeTimes toTakeTimes 1
+    sensor stored store toTake
+    if stored > storeStopQuantity  // full, change ressource
+        jump startToTake
     jump endToTake
 
-
-msg.printAndWait("[yellow] process toTake", message)
 
 set loopingToTake 0
 
 #ref startToTake
+print "[yellow] process toTake"
+printflush message
 
 op add loopingToTake loopingToTake 1
 
@@ -176,16 +179,6 @@ op add loopingToTake loopingToTake 1
 //             jump setTimesToTake
 //     op add toTakeId toTakeId 1
 
-// if toTakeId == 2
-//     if plomb == true
-//         // need it ?
-//         sensor stored store @lead
-//         if stored < storeStopQuantity
-//             set toTake @lead
-//             jump setTimesToTake
-//     op add toTakeId toTakeId 1
-
-
 // a kind of repeated code, brutal copy/past (no scope)
 ressourceList = [(1, cuivre, @copper), (2, plomb, @lead)]
 for id, ressource, ressourceType in ressourceList
@@ -198,19 +191,14 @@ for id, ressource, ressourceType in ressourceList
                 jump setTimesToTake
 
 
-set id 1
-set ressource cuivre
-set ressourceType @copper
-jump Looping
-
-
 // we have done alls the ifs, back to the start
-set toTakeId 0
+set toTakeId 1
 // if it repeat
 // will need a check stuck (bot full that can't unload)
 // or lower the bot owned for a shot time ?
 if loopingToTake > 5
-    msg.printAndWait("[red] nothing toTake, is all ressource set to false or store is full ?", message)
+    print "[red] nothing toTake, is all ressource set to false or store is full ?\n [grey] full is above: "
+    msg.printAndWait(storeStopQuantity, message)
 
 jump startToTake
 
