@@ -10,7 +10,7 @@ def lines_one(p: YaccProduction):
     if line is None:
         p[0] = []
     else:
-        p[0] = [p[1]]
+        p[0] = [line]
 
 
 @grammar

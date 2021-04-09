@@ -1,6 +1,7 @@
 
 
 from ..importsHandling import imports
+from .AsmInst import AsmInst
 
 
 class FunCall:
@@ -11,16 +12,18 @@ class FunCall:
         self.line = line
         self.module = module if module else imports.currentFile
 
-    def toFunContent(self):
+    def toContent(self):
         module = imports.getModule(self.module)
         if self.name not in module:
             raise Exception("function '{}' does not exist, module {}, at line {}"
                             .format(self.name, self.module, self.line))
         fun = module[self.name]
+        return self.toFunContent(fun)
+
+    def toFunContent(self, fun):
         lines = []
         lines += setters(map(lambda a: fun.ids[a], fun.args), self.callArgs)
         lines += fun.genContent()
-        lines.append(fun.returnRef)
         if self.returnTo:
             if len(self.returnTo) != len(fun.returns):
                 raise Exception('function “{}” return exactly {} values, {} is receved line {}'
@@ -29,6 +32,6 @@ class FunCall:
         return lines
 
 
+# set {liSet} {liVal}
 def setters(liSet, liVar):
-    'set {liSet} {liVal}'
-    return ['set {} {}'.format(s, v) for s, v in zip(liSet, liVar)]
+    return [AsmInst('set', [s, v]) for s, v in zip(liSet, liVar)]

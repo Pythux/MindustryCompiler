@@ -1,0 +1,35 @@
+
+
+li = [
+    1, "yo",
+    @data, lol
+]
+
+for el in li
+    print el
+
+for a in [1, 2]
+    print a
+
+
+for a, b in [(x, y), (1, true)]
+    if a < b
+        op add res a b
+
+
+----------------------
+
+
+print 1
+print "yo"
+print @data
+print lol
+print 1
+print 2
+jump 8 lessThan x y
+jump 9 always true true
+op add res x y
+jump 11 lessThan 1 true
+jump 12 always true true
+op add res 1 true
+end

@@ -8,6 +8,7 @@
 
 from ply import lex
 from ply.lex import Lexer
+from boa import boa
 
 
 class LexToken:
@@ -44,7 +45,7 @@ def t_Number(t):
 
 
 def t_ArobasedInfo(t):
-    r'@\w+'
+    r'@[\w-]+'
     return t
 
 
@@ -60,29 +61,32 @@ def t_stringSimpleQuote(t: LexToken):
     return t
 
 
-previousIndentationLvl = 0
-indentNb = None
 tokens += ['OpenCurlyBracket', 'CloseCurlyBracket']
-addCloseBracket = 0
+endLineContext = boa({})
+endLineContext.addCloseBracket = 0
+endLineContext.previousIndentationLvl = 0
+endLineContext.indentNb = None
+endLineContext.inOpenBracket = False
 
 
 # count indentation, indent could be spaces or tabs
 def t_EndLine(t: LexToken):
     r'\n[ ]*\t*'
+    if endLineContext.inOpenBracket:
+        t.lexer.lineno += 1
+        return
     if isEmptyEndLine(t):
         t.lexer.lineno += 1  # inc line number to track lines
         return
 
-    global addCloseBracket
-    if addCloseBracket > 0:
+    if endLineContext.addCloseBracket > 0:
         return closeBracket(t)
 
-    global indentNb
-    if indentNb is None:
+    if endLineContext.indentNb is None:
         if len(t.value[1:]) > 0:
-            indentNb = len(t.value[1:])
+            endLineContext.indentNb = len(t.value[1:])
 
-    if indentNb is None:
+    if endLineContext.indentNb is None:
         t.lexer.lineno += 1  # inc line number to track lines
         return t
 
@@ -94,17 +98,19 @@ def t_EndLine(t: LexToken):
 def isEmptyEndLine(t: LexToken):
     pos = t.lexer.lexpos
     length = len(t.value)
-    data = t.lexer.lexdata
-    return data[pos-1:pos-1+length+1] == '\n\n'
+    if t.lexer.lexdata[pos-1:pos-1+length+1] == '\n\n':
+        return True
+    if t.lexer.lexdata[pos-1:pos-1+length+2] == '\n//':
+        return True
+    return False
 
 
 def closeBracket(t):
     # add CloseCurlyBracket as needed
-    global addCloseBracket
-    if addCloseBracket > 0:
-        addCloseBracket -= 1
+    if endLineContext.addCloseBracket > 0:
+        endLineContext.addCloseBracket -= 1
         t.type = 'CloseCurlyBracket'
-        if addCloseBracket > 0:
+        if endLineContext.addCloseBracket > 0:
             redoToken(t)
         return t
 
@@ -115,40 +121,36 @@ def redoToken(t):
 
 
 def handleIndent(t: LexToken):
-    global indentNb, addCloseBracket, previousIndentationLvl
-
     nb = len(t.value[1:])
-    if nb / indentNb != nb // indentNb:
+    if nb / endLineContext.indentNb != nb // endLineContext.indentNb:
         raise SystemExit('line {}, indentation incorrect to previous lines in file'.format(t.lineno))
-    indentLvl = len(t.value[1:]) // indentNb
+    indentLvl = len(t.value[1:]) // endLineContext.indentNb
 
-    if indentLvl > previousIndentationLvl:
+    if indentLvl > endLineContext.previousIndentationLvl:
         return indentUp(t, indentLvl)
 
-    elif indentLvl < previousIndentationLvl:
+    elif indentLvl < endLineContext.previousIndentationLvl:
         return indentDown(t, indentLvl)
 
-    previousIndentationLvl = indentLvl
+    endLineContext.previousIndentationLvl = indentLvl
     t.lexer.lineno += 1  # inc line number to track lines
     return t
 
 
 def indentUp(t: LexToken, indentLvl):
-    global previousIndentationLvl
-    if indentLvl > previousIndentationLvl + 1:
+    if indentLvl > endLineContext.previousIndentationLvl + 1:
         raise SystemExit('too much indentation line {}'.format(t.lineno))
     t.type = 'OpenCurlyBracket'
-    previousIndentationLvl = indentLvl
+    endLineContext.previousIndentationLvl = indentLvl
     t.lexer.lineno += 1  # inc line number to track lines
     return t
 
 
 def indentDown(t: LexToken, indentLvl):
-    global previousIndentationLvl, addCloseBracket
     t.type = 'EndLine'
-    addCloseBracket = previousIndentationLvl - indentLvl
+    endLineContext.addCloseBracket = endLineContext.previousIndentationLvl - indentLvl
     redoToken(t)
-    previousIndentationLvl = indentLvl
+    endLineContext.previousIndentationLvl = indentLvl
     return t
 
 
@@ -201,9 +203,11 @@ reserved = {
     'if': 'If',
     'else': 'Else',
     'elif': 'ElseIf',
-    'def': 'DefFun',
     'return': 'Return',
     'import': 'Import',
+    'true': 'True',
+    'false': 'False',
+    'for': 'For',
 }
 tokens += list(reserved.values())
 tokens += ['ID']  # not reserved words
@@ -211,7 +215,7 @@ tokens += ['ID']  # not reserved words
 
 # function starting with t_ will be run for tokens even if not in tokens list
 def t_Word(t: LexToken):
-    r'''[^ \n.,()*{}'"]+'''
+    r'''[^ \n.,()*{}'"\[\]]+'''
     # r'''[^ .,()'"*{}\n]+'''  # match words, including utf-8 characters
     if t.value[0] == '#':
         return None  # unofficial comments "#"
@@ -225,13 +229,19 @@ separator = {
     ')': 'CloseParenthesis',
     ',': 'Comma',
     '.': 'Dot',
+    '[': 'OpenBracket',
+    ']': 'CloseBracket',
 }
 tokens += list(separator.values())
 
 
 def t_Separator(t: LexToken):
-    r'''[.,()*{}]'''
+    r'''[.,()*{}\[\]]'''
     t.type = separator[t.value]
+    if t.value == '[':
+        endLineContext.inOpenBracket = True
+    if t.value == ']':
+        endLineContext.inOpenBracket = False
     return t
 
 

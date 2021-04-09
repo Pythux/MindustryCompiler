@@ -75,9 +75,32 @@ You could check files [here](./tests/identicalCode) to see the difference from t
     time.wait(2)  // wait 2 secondes
     ```
 
+- static for loop:
+
+    ```plain
+    import msg
+
+    set message message1
+
+    for x, y in [(1, 2), (4, 3)]
+        if x > y
+            print "x : "
+            print x
+            print " higher than: "
+            msg.printAndWait(y, message)
+    ```
+
+- look file [fillRessource](./code/bots/fillRessource.code) for a code exemple
+
 ## coming soon
 
 - afectation `a = 1` and simple operation +, -, /, *, ...
+
+- operation += -=
+
+- improve if, if var, if not var, and / or
+
+- fill empty args of ASM lines (`ucontrol itemDrop store 800 0 0 0` -> `ucontrol itemDrop store 800`)
 
 ## current usage
 

@@ -1,12 +1,11 @@
 
-from ..classes import Jump, Ref
+from ..classes import Jump, Ref, Variable
 
 
 class Fun:
     def __init__(self, context) -> None:
         self.name = None
         self.inFunScope = False
-        self.idCount = 0
         self.ids = {}
         self.args = []
         self.refs = {}
@@ -15,15 +14,15 @@ class Fun:
         self.content = []
         self.context = context
 
-    def scopeId(self, identifier):
+    def scopeId(self, identifier: Variable):
         if identifier not in self.ids:
             self.ids[identifier] = self.genId()
         return self.ids[identifier]
 
     def genId(self):
-        self.idCount += 1
-        newId = 'tmp{}'.format(self.idCount)
-        if newId not in self.ids:
+        self.context.idInc += 1
+        newId = Variable('tmp{}'.format(self.context.idInc))
+        if newId not in self.context.existingVars:
             return newId
         return self.genId()
 
@@ -44,16 +43,15 @@ class Fun:
             elif isinstance(line, Jump):
                 if line.ref.id not in newRef:
                     newRef[line.ref.id] = self.context.genRef()
-                # j = copy.copy(line)
                 j = Jump(line.line, newRef[line.ref.id])
-                # j.ref = newRef[line.ref.id]
-                # j.line = line.line
                 j.asmCondition = line.asmCondition
                 line = j
             lines.append(line)
 
         if self.returnRef.id in newRef:
-            self.returnRef = newRef[self.returnRef.id]
+            returnRef = newRef[self.returnRef.id]
         else:
-            self.returnRef = self.context.genRef()
+            returnRef = self.context.genRef()
+
+        lines.append(returnRef)
         return lines

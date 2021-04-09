@@ -1,7 +1,7 @@
 
 
 from ._start import grammar, YaccProduction, context
-from ..classes import Jump, Ref
+from ..classes import Jump, Ref, AsmInst, Value, Comparison
 
 
 # handle a ref instruction, we store info in context.refDict and discard information
@@ -36,7 +36,7 @@ def jump_asmCondition(p: YaccProduction):
 @grammar
 def comparison(p: YaccProduction):
     '''asmCondition : info Comparison info'''
-    p[0] = p[2] + ' ' + str(p[1]) + ' ' + str(p[3])
+    p[0] = Comparison(p[1], p[2], p[3])
 
 
 @grammar
@@ -52,10 +52,14 @@ def jump_always(p: YaccProduction):
 @grammar
 def jump_asmNoRef(p: YaccProduction):
     '''line : Jump Number asmCondition EndLine'''
-    p[0] = p[1] + ' ' + str(p[2]) + ' ' + p[3]
+    instr = 'jump'
+    comparison = p[3]
+    liValVar = [Value(p[2]), Value(comparison.comp), comparison.ab[0], comparison.ab[1]]
+    p[0] = AsmInst(instr, liValVar)
 
 
 @grammar
 def asmCondition(p: YaccProduction):
     '''asmCondition : ID info info'''
-    p[0] = p[1] + ' ' + str(p[2]) + ' ' + str(p[3])
+    p[0] = Comparison(p[2], p[1], p[3])
+    # it's an operation "equal, notEqual, ..., not a variable"

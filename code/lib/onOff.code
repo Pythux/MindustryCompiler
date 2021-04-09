@@ -1,0 +1,9 @@
+
+
+import msg
+
+isOn(switch)
+    if switch == null
+        return true
+    sensor isActive switch @enabled
+    return isActive

@@ -1,43 +1,30 @@
 
 import time
+import msg
 
 
 // get a bot of botType given that is free
 // return false if all of that botType taken
 getFreeBot(botType, message)
+    set firstFlag -1
     #ref loop
     ubind botType
     sensor flag @unit @flag
 
     if @unit == null  // no bot of that botType
-        print "no bot of type: "
-        print botType
-        printflush message
-        time.wait(2)
         return false
 
-    set firstFlag -1
     sensor flag @unit @flag
-    print "bot not free ? "
-    print flag
-    printflush message
-    time.wait(2)
-    sensor r @unit @controlled
-    print "bot contrôled ?"
-    print r
-    printflush message
-    time.wait(3)
-    if flag == null  // bot is free
-        print "Yes it's free real estate"
-        printflush message
-        time.wait(2)
-        return @unit
+
+    if flag == 0  // bot is free
+        msg.printAndWait("[green] It's free real estate", message)
+        return true
 
     else if flag == firstFlag
         // we have see all the bots of that botType
         return false
 
-    else if firstFlag == -1  // first bot
+    else if firstFlag == -1  // first bot seen with an unique ID
         set firstFlag flag
 
     jump loop
@@ -48,61 +35,75 @@ getFreeBot(botType, message)
 genProcId()
     op rand r 999 null
     op floor r r null
+    #ref up
     if r < 100
         // make sur to be a 3 digit number
         op mul r r 10
+        jump up
 
-    op mul r r 1000 // free 3x0
+    op mul r r 10 // free 1x0
     return r
 
 
 // mark a bot to proc ownership
-// flag: PPP000II
+// flag: PPP0II
 // P is procId, I is botId (given to the function, ofter an proc internal inc counter)
 flagBot(procId, botId)
-    op mul procId procId 100
-    op add f procId botId
+    // procId is of value PPP0, will be PPP000
+    op mul procId procId 100 // to put botId
+    op add f procId botId // put botId
     ucontrol flag f null null null null
 
 
-getFreeBotAndFlagIt(botType, procId, botId, message)
-    bot = getFreeBot(botType, message)
-    if bot == false
-        return false
-    flagBot(procId, botId)
-    return @unit
-
-
-isMyBot(procId, botFlag)
-    op idiv r botFlag 1000
-    if botFlag == procId
+isMyBotFlag(procId, botFlag)
+    op idiv botProcId botFlag 100
+    if botProcId == procId
         return true
     return false
 
 
+isMyBot(procId)
+    sensor botFlag @unit @flag
+    op idiv botProcId botFlag 100
+    if botProcId == procId
+        return true
+    return false
+
+
+getFreeBotAndFlagIt(botType, procId, botId, message)
+    msg.printAndWait("try getting some free bots ...", message)
+    bot = getFreeBot(botType, message)
+
+    if bot == false
+        return false
+
+    flagBot(procId, botId)
+    return true
+
+
 getMyBot(procId, botType)
+    set count 0
+    set firstFlag -1  // if one bot with an unique ID, will be shortened by firstFlag
     #ref loopMyBot
-    ubind type
+    ubind botType
+    // count to 24 if all bots identicals (aka flag == 0)
+    op add count count 1
+    if count > 24
+        return false
+
     if @unit == null  // no bot of that type
         return false
-    sensor flag @unit @flag
-    isMine = isMyBot(procId, botFlag)
+
+    sensor botFlag @unit @flag
+
+    if flag == firstFlag // we have looped throught all of them
+        return false
+
+    elif firstFlag == -1  // first bot seen not recorded
+        if flag != 0  // first bot seen with an unique ID
+            set firstFlag flag
+
+    isMine = isMyBotFlag(procId, botFlag)
     if isMine == true
         return true
     jump loopMyBot
-
-
-
-distance(aX, aY, bX, bY)
-    // dist = racinCarré((aX-bX)^2 + (aY-bY)^2)
-
-    op sub rl aX bX
-    op mul rl rl rl // au carré
-
-    op sub rr aY bY
-    op mul rr rr rr // au carré
-
-    op add dist rl rr
-    op sqrt dist dist null
-
-    return dist
