@@ -168,16 +168,18 @@ if botOwnedNb < botNb // need one ?
     // have an owner ?
     sensor owner @unit @controller
     sensor typeOfOwner owner @type
+    sensor botFlag @unit @flag
     if typeOfOwner == botType  // is free
-        // ucontrol flag procId null null null null  // tag it
-        print "[green] free bot found !"
-        printflush message
-        op add botOwnedNb botOwnedNb 1  // botOwnedNb += 1
-        // save owned bot
-        for ownedBot in [bot1, bot2, bot3, bot4, bot5, bot6]
-            if ownedBot == null
-                set ownedBot @unit
-                jump endBotSave
+        if botFlag == 0
+            ucontrol flag procId null null null null  // tag it
+            print "[green] free bot found !"
+            printflush message
+            op add botOwnedNb botOwnedNb 1  // botOwnedNb += 1
+            // save owned bot
+            for ownedBot in [bot1, bot2, bot3, bot4, bot5, bot6]
+                if ownedBot == null
+                    set ownedBot @unit
+                    jump endBotSave
 
 
 #ref endBotSave
