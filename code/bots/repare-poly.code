@@ -1,0 +1,22 @@
+// repare poly / mega when low on health, need on processor for each unit type
+// link it to processor position, need healthBot point around
+
+
+ubind @poly
+// ubind @mega
+
+if @unit == null
+    end
+
+sensor botType @unit @type // get botType
+sensor healthMax @unit @maxHealth
+
+#ref loop
+
+ubind botType
+sensor health @unit @health
+
+if health < healthMax
+    ucontrol move @thisx @thisy 0 0 0
+
+jump loop
