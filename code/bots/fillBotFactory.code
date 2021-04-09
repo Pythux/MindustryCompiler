@@ -15,41 +15,13 @@ set appro container1
 
 set switch switch1
 set message message1
-
+set ressource @silicium
+sensor helper copyPast @silicon
+set copyHelper toRessource
 
 // which bot to use
 ubind @dagger  // let player choose with bot image the bind
 set botNb 3
-
-
-
-// which ressources to take ?
-// name in french, because it's easier for me to read it in game
-set cuivre false        // @copper
-set plomb true         // @lead
-set silicium true      // @silicon
-set graphite true      // @graphite
-set charbon true       // @coal
-set verreTremp false    // @metaglass
-set titane true        // @titanium
-set thorium false       // @thorium
-set alliageSup false    // @surge-alloy
-set mélangeExplo false  // @blast-compound
-set pyratite false      // @pyratite
-set tissuPhasé false    // @phase-fabric
-set plastanium false    // @plastanium
-set spore false         // @spore-pod
-set sable false         // @sand
-set ferraille false     // @scrap
-
-ressourceList = [
-    (1, cuivre, @copper), (2, plomb, @lead), (3, silicium, @silicon),
-    (4, graphite, @graphite), (5, charbon, @coal), (6, verreTremp, @metaglass),
-    (7, titane, @titanium), (8, thorium, @thorium), (9, alliageSup, @surge-alloy),
-    (10, mélangeExplo, @blast-compound), (11, pyratite, @pyratite),
-    (12, tissuPhasé, @phase-fabric), (13, plastanium, @plastanium),
-    (14, spore, @spore-pod), (15, sable, @sand), (16, ferraille, @scrap),
-]
 
 set radiusApproche 6 // max working radius: 8
 
@@ -107,27 +79,19 @@ for ownedBot in [bot1, bot2, bot3, bot4, bot5, bot6]
 
 set currentOwnedId 1
 
+set factoLinkIndice 0
+
+
+set ressourceGroundFact false
+
+if ressource == @lead
+    set ressourceGroundFact true
+elif ressource == @silicon
+    set ressourceGroundFact true
+
+
 // --- Prog Loop ---
 #ref loop
-
-// link position:
-getlink link indice
-sensor type link @type
-if type == @message
-    jump loop
-elif type == @ground-factory
-    msg.printAndWait("is ground fact", message)
-elif type == @air-factory
-    msg.printAndWait("is air fact", message)
-
-sensor x link @x
-sensor y link @y
-sensor maxCapacity link @itemCapacity
-sensor currentCapacity link ressource
-
-if currentCapacity == maxCapacity
-    msg.printAndWait("is full", message)
-
 
 // switch to turn off
 isOn = onOff.isOn(switch)
@@ -197,71 +161,42 @@ if @unit == null
     end
 
 
-// does we need to know what to take ?
-if toTakeTimes > 0
-    print "to Take: [grey]"
-    print toTake
-    print " [white]"
-    print toTakeTimes
-    printflush message
-    op sub toTakeTimes toTakeTimes 1
-    sensor stored store toTake
-    if stored > storeStopQuantity  // full, change ressource
-        jump startToTake
-    jump endToTake
+#ref linkingFacto
+// link stuff
+set passLink false
+getlink facto factoLinkIndice
+if facto == null // end link list
+    set factoLinkIndice 0
+    jump linkingFacto
+
+// check facto type
+sensor type facto @type
+if type == @message
+    set passLink true
+elif type == @ground-factory
+    msg.printAndWait("is ground fact", message)
+    if ressourceGroundFact == true
+        msg.printAndWait("ressource ok for a ground factory", message)
+elif type == @air-factory
+    msg.printAndWait("is air fact", message)
+
+op add factoLinkIndice factoLinkIndice 1
+
+if passLink == true
+    jump linkingFacto
 
 
-set loopingToTake 0
+sensor factoX facto @x
+sensor factoY facto @y
+sensor maxCapacity facto @itemCapacity
+sensor currentCapacity facto ressource
 
-#ref startToTake
-print "[yellow] process toTake"
-printflush message
-
-op add loopingToTake loopingToTake 1
-
-// need to change what to take
-// op add toTakeId toTakeId 1
-// if toTakeId == 1
-//     if cuivre == true
-//         // need it ?
-//         sensor stored store @copper
-//         if stored < storeStopQuantity
-//             set toTake @copper
-//             jump setTimesToTake
-//     op add toTakeId toTakeId 1
-
-// a kind of repeated code, brutal copy/past (no scope)
-for id, ressource, ressourceType in ressourceList
-    if toTakeId == id
-        op add toTakeId toTakeId 1  // will pass to next ressource even if this one is still needed
-        if ressource == true
-            sensor stored store ressourceType
-            if stored < storeStopQuantity
-                set toTake ressourceType
-                jump setTimesToTake
-
-
-// we have done alls the ifs, back to the start
-set toTakeId 1
-// if it repeat
-// will need a check stuck (bot full that can't unload)
-// or lower the bot owned for a shot time ?
-if loopingToTake > 5
-    print "[red] nothing toTake, is all ressource set to false or store is full ?\n [grey] full is above: "
-    msg.printAndWait(storeStopQuantity, message)
-
-jump startToTake
-
-// we will conserve this calculation X times
-#ref setTimesToTake
-set toTakeTimes 30
-
-#ref endToTake
+if currentCapacity == maxCapacity
+    msg.printAndWait("is full", message)
 
 
 // sensor on bot load
 sensor payload @unit @totalItems
-// sensor loadType @unit @payloadType  // sadly, this does not work, always return null
 
 
 // to check if content a specific ressource:
@@ -272,7 +207,10 @@ sensor payload @unit @totalItems
 
 
 if payload > 0 // unload in store
-    ucontrol approach storeX storeY radiusApproche null null
+    sensor actuallyTranportingRessource @unit ressource
+    if actuallyTranportingRessource != payload // not transporting the desired ressource
+        ucontrol payDrop 0 0 0 0 0
+    ucontrol approach factoX factoY radiusApproche null null
     ucontrol itemDrop store 800 null null null
 
 else // take some ressources
