@@ -8,6 +8,7 @@
 
 import onOff
 import idBots
+import msg
 
 
 set store container1
@@ -16,8 +17,9 @@ set message message1
 
 
 // which bot to use
-set botType @dagger
+ubind @dagger  // let player choose with bot image the bind
 set botNb 3
+
 
 
 // which ressources to take ?
@@ -40,7 +42,13 @@ set sable false         // @sand
 set ferraille false     // @scrap
 
 ressourceList = [
-    (1, cuivre, @copper), (2, plomb, @lead)]
+    (1, cuivre, @copper), (2, plomb, @lead), (3, silicium, @silicon),
+    (4, graphite, @graphite), (5, charbon, @coal), (6, verreTremp, @metaglass),
+    (7, titane, @titanium), (8, thorium, @thorium), (9, alliageSup, @surge-alloy),
+    (10, mélangeExplo, @blast-compound), (11, pyratite, @pyratite),
+    (12, tissuPhasé, @phase-fabric), (13, plastanium, @plastanium),
+    (14, spore, @spore-pod), (15, sable, @sand), (16, ferraille, @scrap),
+]
 
 
 // limite "enougth" at 100 (ps: max container is 300)
@@ -68,7 +76,8 @@ procId = idBots.genProcId()
 
 #ref noStore
 if store == null
-    print "[yellow] not linked to store\n [white] default: [grey] container1 \n [white] you can change it at starting variables"
+    print "[yellow] not linked to store\n [white] default: [grey] container1"
+    msg.printAndWait("\n [white] you can change it at starting variables", message)
     end // will execute again: `set store container1`
 
 
@@ -77,15 +86,14 @@ sensor storeX store @x
 sensor storeY store @y
 
 
-if message == null
-    end
-
-
 set toTake null
 set toTakeTimes 0
 set toTakeId 1
 
 set loopSearchingBots 0
+
+sensor botType @unit @type // get botType
+
 
 // --- Prog Loop ---
 #ref loop
@@ -111,8 +119,9 @@ if loopSearchingBots > 24
 ubind botType
 
 if @unit == null  // no bot of that type
-    print "[yellow] no bots of type: [grey]"
-    msg.printAndWait(botType, message)
+    print "[yellow] no bots of the choosen type, \n"
+    print "you can pick another kind of bot in the instruction 'ubind' at the begining of the programme"
+    msg.printAndWait("", message)
     jump loop
 
 

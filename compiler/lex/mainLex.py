@@ -45,7 +45,7 @@ def t_Number(t):
 
 
 def t_ArobasedInfo(t):
-    r'@\w+'
+    r'@[\w-]+'
     return t
 
 

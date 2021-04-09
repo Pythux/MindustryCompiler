@@ -75,6 +75,21 @@ You could check files [here](./tests/identicalCode) to see the difference from t
     time.wait(2)  // wait 2 secondes
     ```
 
+- static for loop:
+
+    ```plain
+    import msg
+
+    set message message1
+
+    for x, y in [(1, 2), (4, 3)]
+        if x > y
+            print "x : "
+            print x
+            print " higher than: "
+            msg.printAndWait(y, message)
+    ```
+
 ## coming soon
 
 - afectation `a = 1` and simple operation +, -, /, *, ...
