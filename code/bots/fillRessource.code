@@ -11,8 +11,8 @@ import idBots
 import msg
 
 
-set store container1
 set appro container2
+set store container1
 
 set switch switch1
 set message message1
