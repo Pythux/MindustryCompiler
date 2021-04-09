@@ -12,6 +12,8 @@ import msg
 
 
 set store container1
+set appro container2
+
 set switch switch1
 set message message1
 
@@ -67,6 +69,16 @@ else
 
 set coreX null
 set coreY null
+
+
+if appro != null
+    print "[green] appro not null, will replace core to take ressource from"
+    msg.printAndWait(appro, message)
+    // appro position, default to core if null
+    sensor coreX appro @x
+    sensor coreY appro @y
+    set core appro
+
 
 set botOwnedNb 0
 
