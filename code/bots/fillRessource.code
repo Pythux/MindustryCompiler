@@ -24,8 +24,8 @@ set botNb 3
 
 // which ressources to take ?
 // name in french, because it's easier for me to read it in game
-set cuivre true        // @copper
-set plomb true         // @lead
+set cuivre false        // @copper
+set plomb false         // @lead
 set silicium false      // @silicon
 set graphite false      // @graphite
 set charbon false       // @coal
@@ -70,7 +70,6 @@ set coreY null
 
 set botOwnedNb 0
 
-
 procId = idBots.genProcId()
 
 
@@ -92,8 +91,35 @@ set toTakeId 1
 
 set loopSearchingBots 0
 
+
+if @unit == null  // no bot of that type
+    print "[yellow] no bots of the choosen type, \n"
+    print "you can pick another kind of bot in the instruction 'ubind' at the begining of the programme"
+    msg.printAndWait("", message)
+    end
+
+
+// get core position
+#ref getCorePos
+// require to have a @unite
+if coreX == null
+    msg.printAndWait("looking for core, this is done once", message)
+    ulocate building core false @copper coreX coreY coreFound core
+    if coreFound == false
+        msg.printAndWait("[red] core not found, searching again", message)
+        msg.printAndWait(core, message)
+        msg.printAndWait(coreFound, message)
+        jump getCorePos
+    msg.printAndWait("[green] core found", message)
+
+
 sensor botType @unit @type // get botType
 
+if botNb > 6
+    msg.printAndWait("[red] can't take more than 6 bots\n change parameter 'botNb' to fix it", message)
+    end
+
+set currentOwnedId 1
 
 // --- Prog Loop ---
 #ref loop
@@ -108,54 +134,76 @@ if isOn != true
 
 op add loopSearchingBots loopSearchingBots 1
 if loopSearchingBots > 24
-    if botOwnedNb > 0
-        set botOwnedNb 0
-        set loopSearchingBots 0
-    else
-        print "[red] no bots of type: [grey]"
-        print botType
-        msg.printAndWait("[red] free to flag", message)
-
-ubind botType
-
-if @unit == null  // no bot of that type
-    print "[yellow] no bots of the choosen type, \n"
-    print "you can pick another kind of bot in the instruction 'ubind' at the begining of the programme"
-    msg.printAndWait("", message)
-    jump loop
+    print "[red] no bots of type: [grey]"
+    print botType
+    msg.printAndWait("[red] free", message)
 
 
-sensor flag @unit @flag
-isMyBot = idBots.isMyBotFlag(procId, flag)
-if isMyBot != true
-    if botOwnedNb < botNb  // need one ?
-        // msg.printAndWait("[yellow] searching fot bots", message)
-        if flag == 0 // is free
-            // msg.printAndWait("[green] found !", message)
-            op add botOwnedNb botOwnedNb 1  // botOwnedNb += 1
-            idBots.flagBot(procId, botOwnedNb)
-            jump okBot
-        // print "flagged ? "
-        // msg.printAndWait(flag, message)
-    jump loop
+// take bot if need more, else loop thought owned bots
+if botOwnedNb < botNb // need one ?
+    print "[white] need some more bots"
+    printflush message
+    ubind botType  // try to catch one
+    if @unit == null // we no longuer have that kind of bots
+        print "[yellow] no bots of the choosen type anymore, \n"
+        print "you can pick another kind of bot in the instruction 'ubind' at the begining of the programme"
+        msg.printAndWait("", message)
+        jump loop
+    // have an owner ?
+    sensor owner @unit @controller
+    sensor typeOfOwner owner @type
+    if typeOfOwner == botType  // is free
+        // ucontrol flag procId null null null null  // tag it
+        print "[green] free bot found !"
+        printflush message
+        op add botOwnedNb botOwnedNb 1  // botOwnedNb += 1
+        // save owned bot
+        for ownedBot in [bot1, bot2, bot3, bot4, bot5, bot6]
+            if ownedBot == null
+                set ownedBot @unit
+                jump endBotSave
 
+
+#ref endBotSave
+
+// take one owned bot at a time
+for ownedBot, ownedId in [(bot1, 1), (bot2, 2), (bot3, 3), (bot4, 4), (bot5, 5), (bot6, 6)]
+    if currentOwnedId == ownedId // the bot to process
+        // set @unit ownedBot // not working
+        ubind ownedBot
+        jump okBot
+
+// ownedId > botOwnedNb
+set currentOwnedId 1
+jump loop // to take opportunity to owne another bot
 
 #ref okBot
 
 set loopSearchingBots 0
+op add currentOwnedId currentOwnedId 1
 
-// get core position
-#ref getCorePos
-// require to have a @unite
-if coreX == null
-    msg.printAndWait("looking for core, this is done once", message)
-    ulocate building core false @copper coreX coreY coreFound core
-    if coreFound == false
-        msg.printAndWait("[red] core not found, searching again", message)
-        msg.printAndWait(core, message)
-        msg.printAndWait(coreFound, message)
-        jump getCorePos
-    msg.printAndWait("[green] core found", message)
+set haveToMoveLeft false
+
+sensor isDead @unit @dead
+if isDead == true
+    msg.printAndWait("unit is dead, [yellow] Reset", message)
+    end
+
+if @unit == null
+    msg.printAndWait("unit is null, [yellow] Reset", message)
+    end
+
+
+// move to the left existing bots after somes die
+//for ownedBotLeft, ownedBotRight in [(bot9, bot10), (bot8, bot9), (bot7, bot8), (bot6, bot7), (bot5, bot6), (bot4, bot5), (bot3, bot4), (bot2, bot3), (bot1, bot2)]
+//    sensor isDead ownedBotLeft @dead
+//    if isDead
+//        set ownedBotLeft null
+//    if ownedBotLeft == null
+//        if ownedBotRight != null
+//            set ownedBotLeft ownedBotRight
+//            set haveMovedLeft true
+//            jump toTheLeftToTheLeft
 
 
 // does we need to know what to take ?
