@@ -90,6 +90,8 @@ You could check files [here](./tests/identicalCode) to see the difference from t
             msg.printAndWait(y, message)
     ```
 
+- look file [fillRessource](./code/fillRessource.code) for a code exemple
+
 ## coming soon
 
 - afectation `a = 1` and simple operation +, -, /, *, ...
