@@ -209,18 +209,6 @@ if @unit == null
     end
 
 
-// move to the left existing bots after somes die
-//for ownedBotLeft, ownedBotRight in [(bot9, bot10), (bot8, bot9), (bot7, bot8), (bot6, bot7), (bot5, bot6), (bot4, bot5), (bot3, bot4), (bot2, bot3), (bot1, bot2)]
-//    sensor isDead ownedBotLeft @dead
-//    if isDead
-//        set ownedBotLeft null
-//    if ownedBotLeft == null
-//        if ownedBotRight != null
-//            set ownedBotLeft ownedBotRight
-//            set haveMovedLeft true
-//            jump toTheLeftToTheLeft
-
-
 // does we need to know what to take ?
 if toTakeTimes > 0
     print "to Take: [grey]"
