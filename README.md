@@ -90,7 +90,7 @@ You could check files [here](./tests/identicalCode) to see the difference from t
             msg.printAndWait(y, message)
     ```
 
-- look file [fillRessource](./code/fillRessource.code) for a code exemple
+- look file [fillRessource](./code/bots/fillRessource.code) for a code exemple
 
 ## coming soon
 
