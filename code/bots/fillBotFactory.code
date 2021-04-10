@@ -137,15 +137,46 @@ for ownedBot, botRessource, botFactoLink in listBotRessourceLink
     ubind ownedBot
     sensor payload @unit @totalItems
     if payload > 0
+        sensor actuallyTranportingRessource @unit botRessource
+        if actuallyTranportingRessource != payload // not transporting the desired ressource
+            msg.printAndWait("bot not transporting the good ressource", message)
+            ucontrol payDrop 0 0 0 0 0  // drop actual payload
         print "loaded with "
         msg.printAndWait(botRessource, message)
-        getlink facto factoLinkIndice
+        getlink facto botFactoLink
         if facto == null // end link list
-            set factoLinkIndice 0
+            set botFactoLink 0
             dropRessourceBackToStore(core, coreX, coreY)
         else
             sensor factoType facto @type
-            isGoodRessource(botRessource, factoType)
+            isGoodR = isGoodRessource(botRessource, factoType)
+            if isGoodR == true
+                isFactoNeedIt = isNeededRessource(botRessource, facto)
+                if isFactoNeedIt == true
+                    dropRessourceToFacto(facto, radiusApproche)
+            op add botFactoLink botFactoLink 1
+    else
+        // bot empty, choose a ressource
+        set linkIndex 0
+        #ref searchingRessource
+        getlink facto botFactoLink
+        ressourceNeeded = getNeededRessource(facto)
+        if ressourceNeeded != false
+            set botRessource ressourceNeeded
+
+            ucontrol approach coreX coreY radiusApproche null null
+            sensor coreStored core ressourceNeeded
+            if coreStored > 40 // take it
+                ucontrol itemTake core ressourceNeeded 800 null null
+            else
+                print "[yellow] not enouth of "
+                print ressourceNeeded
+                msg.printAndWait(" in base, will take something else", message)
+                jump startToTake // <--- will redo what need to be taken
+        else
+            op add linkIndex linkIndex 1
+            jump searchingRessource
+
 
 
 def isGoodRessource(botRessource, factoType)
@@ -163,61 +194,20 @@ def isGoodRessource(botRessource, factoType)
         for ressource in [@metaglass, @silicon]
 
 
-
-#ref linkingFacto
-// link stuff
-set passLink false
-getlink facto factoLinkIndice
-if facto == null // end link list
-    set factoLinkIndice 0
-    jump linkingFacto
-
-// check facto type
-sensor type facto @type
-if type == @message
-    set passLink true
-elif type == @ground-factory
-    for ressource in [@lead, @coal, @silicon]
-        doRessource(ressource)
-    doRessource
-    msg.printAndWait("is ground fact", message)
-    if ressourceGroundFact == true
-        msg.printAndWait("ressource ok for a ground factory", message)
-elif type == @air-factory
-    msg.printAndWait("is air fact", message)
-
-op add factoLinkIndice factoLinkIndice 1
-
-if passLink == true
-    jump linkingFacto
+def isNeededRessource(ressource, facto)
+    sensor maxCapacity facto @itemCapacity
+    sensor currentCapacity facto ressource
+    if currentCapacity < maxCapacity
+        return true
+    return false
 
 
-sensor factoX facto @x
-sensor factoY facto @y
-sensor maxCapacity facto @itemCapacity
-sensor currentCapacity facto ressource
-
-if currentCapacity == maxCapacity
-    msg.printAndWait("is full", message)
-
-
-// sensor on bot load
-sensor payload @unit @totalItems
-
-
-// to check if content a specific ressource:
-// sensor copperTranported @unit @copper
-// copperTranported will be equal to payload if unit tranport it, else null
-// need to check max ressource to know if we can unload it
-// sensor stored store loadType
-
-
-if payload > 0 // unload in store
-    sensor actuallyTranportingRessource @unit ressource
-    if actuallyTranportingRessource != payload // not transporting the desired ressource
-        ucontrol payDrop 0 0 0 0 0
+def dropRessourceToFacto(facto, radiusApproche)
+    sensor factoX facto @x
+    sensor factoY facto @y
     ucontrol approach factoX factoY radiusApproche null null
-    ucontrol itemDrop store 800 null null null
+    ucontrol itemDrop facto 800 null null null
+
 
 else // take some ressources
     ucontrol approach coreX coreY radiusApproche null null
