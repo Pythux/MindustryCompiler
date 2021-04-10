@@ -1,0 +1,22 @@
+// repare fighting bots when low on health, need on processor for each unit type
+// link it to processor position, need healthBot point around
+
+
+ubind @grosRobots
+
+if @unit == null
+    end
+
+sensor botType @unit @type // get botType
+sensor healthMax @unit @maxHealth
+op mul healthStop healthMax 0.75
+
+#ref loop
+
+ubind botType
+sensor health @unit @health
+
+if health < healthStop
+    ucontrol move @thisx @thisy 0 0 0
+
+jump loop

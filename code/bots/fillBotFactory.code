@@ -15,15 +15,20 @@ set appro container1
 
 set switch switch1
 set message message1
-set ressource @silicium
-sensor helper copyPast @silicon
-set copyHelper toRessource
+
 
 // which bot to use
 ubind @dagger  // let player choose with bot image the bind
 set botNb 3
 
 set radiusApproche 6 // max working radius: 8
+
+
+if @unit == null  // no bot of that type
+    print "[yellow] no bots of the choosen type, \n"
+    print "you can pick another kind of bot in the instruction 'ubind' at the begining of the programme"
+    msg.printAndWait("", message)
+    end
 
 
 set coreX null
@@ -37,21 +42,6 @@ if appro != null
     sensor coreX appro @x
     sensor coreY appro @y
     set core appro
-
-
-set botOwnedNb 0
-
-// procId = idBots.genProcId()
-
-
-set loopSearchingBots 0
-
-if @unit == null  // no bot of that type
-    print "[yellow] no bots of the choosen type, \n"
-    print "you can pick another kind of bot in the instruction 'ubind' at the begining of the programme"
-    msg.printAndWait("", message)
-    end
-
 
 // get core position
 #ref getCorePos
@@ -67,27 +57,33 @@ if coreX == null
     msg.printAndWait("[green] core found", message)
 
 
+procId = idBots.genProcId()
+
+set botOwnedNb 0
+
+set loopSearchingBots 0
+
+
+
 sensor botType @unit @type // get botType
 
-if botNb > 6
-    msg.printAndWait("[red] can't take more than 6 bots\n change parameter 'botNb' to fix it", message)
+if botNb > 4
+    msg.printAndWait("[red] can't take more than 4 bots\n change parameter 'botNb' to fix it", message)
     end
 
+listBotRessourceLink = [
+    (bot1, res1, link1), (bot2, res2, link2),
+    (bot3, res3, link3), (bot4, res4, link4)
+]
+
+// free memory
 // variable content is keep after end instruction, memory not free
-for ownedBot in [bot1, bot2, bot3, bot4, bot5, bot6]
+for ownedBot, botRessource, botFactoLink in listBotRessourceLink
     set ownedBot null
+    set botRessource null
+    set botFactoLink 0
 
 set currentOwnedId 1
-
-set factoLinkIndice 0
-
-
-set ressourceGroundFact false
-
-if ressource == @lead
-    set ressourceGroundFact true
-elif ressource == @silicon
-    set ressourceGroundFact true
 
 
 // --- Prog Loop ---
@@ -120,45 +116,52 @@ if botOwnedNb < botNb // need one ?
     // have an owner ?
     sensor owner @unit @controller
     sensor typeOfOwner owner @type
-    if typeOfOwner == botType  // is free
-        // ucontrol flag procId null null null null  // tag it
-        print "[green] free bot found !"
-        printflush message
-        op add botOwnedNb botOwnedNb 1  // botOwnedNb += 1
-        // save owned bot
-        for ownedBot in [bot1, bot2, bot3, bot4, bot5, bot6]
-            if ownedBot == null
-                set ownedBot @unit
-                jump endBotSave
+    sensor botFlag @unit @flag
+    if typeOfOwner == botType   // no owner
+        if botFlag == 0         // no flag
+            ucontrol flag procId null null null null  // tag it
+            print "[green] free bot found !"
+            printflush message
+            op add botOwnedNb botOwnedNb 1  // botOwnedNb += 1
+            // save owned bot
+            for ownedBot in [bot1, bot2, bot3, bot4]
+                if ownedBot == null
+                    set ownedBot @unit
+                    jump endBotSave
 
 
 #ref endBotSave
-
-// take one owned bot at a time
-for ownedBot, ownedId in [(bot1, 1), (bot2, 2), (bot3, 3), (bot4, 4), (bot5, 5), (bot6, 6)]
-    if currentOwnedId == ownedId // the bot to process
-        // set @unit ownedBot // not working
-        ubind ownedBot
-        jump okBot
-
-#ref okBot
-
-if currentOwnedId > botOwnedNb
-    set currentOwnedId 1
-    jump loop // to take opportunity to owne another bot
-
-op add currentOwnedId currentOwnedId 1
-
 set loopSearchingBots 0
 
-// sensor isNotDead @unit @dead // don't realy know what it return
-if isDead == true
-    msg.printAndWait("unit is dead, [yellow] Reset", message)
-    end
+for ownedBot, botRessource, botFactoLink in listBotRessourceLink
+    ubind ownedBot
+    sensor payload @unit @totalItems
+    if payload > 0
+        print "loaded with "
+        msg.printAndWait(botRessource, message)
+        getlink facto factoLinkIndice
+        if facto == null // end link list
+            set factoLinkIndice 0
+            dropRessourceBackToStore(core, coreX, coreY)
+        else
+            sensor factoType facto @type
+            isGoodRessource(botRessource, factoType)
 
-if @unit == null
-    msg.printAndWait("unit is null, [yellow] Reset", message)
-    end
+
+def isGoodRessource(botRessource, factoType)
+    if factoType == @ground-factory
+        for ressource in [@lead, @coal, @silicon, @titanium]
+            if botRessource == ressource
+                return true
+        return false
+    elif factoType == @air-factory
+        for ressource in [@lead, @silicon]
+            if botRessource == ressource
+                return true
+        return false
+    elif factoType == @naval-factory
+        for ressource in [@metaglass, @silicon]
+
 
 
 #ref linkingFacto
@@ -174,6 +177,9 @@ sensor type facto @type
 if type == @message
     set passLink true
 elif type == @ground-factory
+    for ressource in [@lead, @coal, @silicon]
+        doRessource(ressource)
+    doRessource
     msg.printAndWait("is ground fact", message)
     if ressourceGroundFact == true
         msg.printAndWait("ressource ok for a ground factory", message)
