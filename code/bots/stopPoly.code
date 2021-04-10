@@ -1,0 +1,13 @@
+
+// switch to stop poly from rebuilding
+
+
+sensor stop switch1 @enabled
+jump 0 notEqual stop true
+ubind @poly
+ucontrol approach @thisx @thisy 10 0 0
+ucontrol within @thisx @thisy 20 close 0
+jump 7 equal close true
+end
+ucontrol stop 0 0 0 0 0
+
