@@ -146,7 +146,8 @@ for ownedBot, botRessource, botFactoLink in listBotRessourceLink
             msg.printAndWait("bot not transporting the good ressource", message)
             ucontrol payDrop 0 0 0 0 0  // drop actual payload
         print "loaded with "
-        msg.printAndWait(botRessource, message)
+        set r botRessource
+        msg.printAndWait(r, message)
         getlink facto botFactoLink
         print "link: "
         printn botFactoLink
@@ -154,18 +155,61 @@ for ownedBot, botRessource, botFactoLink in listBotRessourceLink
         msg.printAndWait(facto, message)
         if facto == null // end link list
             set botFactoLink 0
-            dropRessourceBackToStore(core, coreX, coreY)
+            // dropRessourceBackToStore(core, coreX, coreY)
+            // drop if we can, else crash
+            // crash ressources
+            control payDrop 0 0 0 0 0
         else
             sensor factoType facto @type
-            isGoodR = isGoodRessource(botRessource, factoType)
+            // isGoodR = isGoodRessource(botRessource, factoType)
+
+            if factoType == @ground-factory
+                for ressource in [@lead, @coal, @silicon, @titanium]
+                    if botRessource == ressource
+                        set isGoodR true
+                        jump returnIsGoodRessource
+                set isGoodR false
+                jump returnIsGoodRessource
+            elif factoType == @air-factory
+                for ressource in [@lead, @silicon]
+                    if botRessource == ressource
+                        set isGoodR true
+                        jump returnIsGoodRessource
+                set isGoodR false
+                jump returnIsGoodRessource
+            elif factoType == @naval-factory
+                for ressource in [@metaglass, @silicon]
+                    if botRessource == ressource
+                        set isGoodR true
+                        jump returnIsGoodRessource
+                set isGoodR false
+                jump returnIsGoodRessource
+
+            set isGoodR false
+            #ref returnIsGoodRessource
+            // end FunCall isGoodRessource
+
             print "isGoodRessource "
             msg.printAndWait(isGoodR, message)
             if isGoodR == true
-                isFactoNeedIt = isNeededRessource(botRessource, facto)
+                // isFactoNeedIt = isNeededRessource(botRessource, facto)
+                sensor maxCapacity facto @itemCapacity
+                sensor currentCapacity facto botRessource
+                if currentCapacity < maxCapacity
+                    set isFactoNeedIt true
+                else
+                    set isFactoNeedIt false
+                // end FunCall isNeededRessource
+
                 print "isNeededRessource "
                 msg.printAndWait(isFactoNeedIt, message)
                 if isFactoNeedIt == true
-                    dropRessourceToFacto(facto, radiusApproche)
+                    // dropRessourceToFacto(facto, radiusApproche)
+                    sensor factoX facto @x
+                    sensor factoY facto @y
+                    ucontrol approach factoX factoY radiusApproche null null
+                    ucontrol itemDrop facto 800 null null null
+                    // end FunCall dropRessourceToFacto
             op add botFactoLink botFactoLink 1
     else
         msg.printAndWait("bot not loaded", message)
@@ -177,7 +221,36 @@ for ownedBot, botRessource, botFactoLink in listBotRessourceLink
             msg.printAndWait("end link list, search again", message)
             set linkIndex 0
             jump searchingRessource
-        ressourceNeeded = getNeededRessource(facto)
+        // ressourceNeeded = getNeededRessource(facto)
+
+        if factoType == @ground-factory
+            for ressource in [@lead, @coal, @silicon, @titanium]
+                sensor maxCapacity facto @itemCapacity
+                sensor currentCapacity facto ressource
+                if currentCapacity < maxCapacity
+                    set ressourceNeeded ressource
+                    jump returngetNeededRessource
+
+        elif factoType == @air-factory
+            for ressource in [@lead, @silicon]
+                sensor maxCapacity facto @itemCapacity
+                sensor currentCapacity facto ressource
+                if currentCapacity < maxCapacity
+                    set ressourceNeeded ressource
+                    jump returngetNeededRessource
+
+        elif factoType == @naval-factory
+            for ressource in [@metaglass, @silicon]
+                sensor maxCapacity facto @itemCapacity
+                sensor currentCapacity facto ressource
+                if currentCapacity < maxCapacity
+                    set ressourceNeeded ressource
+                    jump returngetNeededRessource
+
+        set ressourceNeeded false
+        #ref returngetNeededRessource
+
+        // end fun getNeededRessource
         print "facto: "
         print facto
         print " need ressource: "
@@ -192,7 +265,7 @@ for ownedBot, botRessource, botFactoLink in listBotRessourceLink
                 print "[yellow] not enouth of "
                 print ressourceNeeded
                 msg.printAndWait(" in base, will take something else", message)
-                jump startToTake // <--- will redo what need to be taken
+                // jump startToTake // <--- will redo what need to be taken
         else
             op add linkIndex linkIndex 1
             jump searchingRessource
@@ -201,7 +274,7 @@ for ownedBot, botRessource, botFactoLink in listBotRessourceLink
 jump loop
 
 
-def isGoodRessource(botRessource, factoType)
+isGoodRessource(botRessource, factoType)
     if factoType == @ground-factory
         for ressource in [@lead, @coal, @silicon, @titanium]
             if botRessource == ressource
@@ -212,11 +285,9 @@ def isGoodRessource(botRessource, factoType)
             if botRessource == ressource
                 return true
         return false
-    elif factoType == @naval-factory
-        for ressource in [@metaglass, @silicon]
 
 
-def isNeededRessource(ressource, facto)
+isNeededRessource(ressource, facto)
     sensor maxCapacity facto @itemCapacity
     sensor currentCapacity facto ressource
     if currentCapacity < maxCapacity
@@ -224,7 +295,7 @@ def isNeededRessource(ressource, facto)
     return false
 
 
-def dropRessourceToFacto(facto, radiusApproche)
+dropRessourceToFacto(facto, radiusApproche)
     sensor factoX facto @x
     sensor factoY facto @y
     ucontrol approach factoX factoY radiusApproche null null
