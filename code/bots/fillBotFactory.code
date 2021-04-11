@@ -19,7 +19,7 @@ set message message1
 
 // which bot to use
 ubind @flare  // let player choose with bot image the bind
-set botNb 1
+set botNb 2
 
 set radiusApproche 6 // max working radius: 8
 
