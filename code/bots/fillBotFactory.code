@@ -74,7 +74,7 @@ if botNb > 3
 
 listBotRessourceLink = [
     (bot1, link1), (bot2, link2),
-    (bot3, link3),
+    (bot3, link3), (bot4, link4)
 ]
 
 // free memory
@@ -128,7 +128,7 @@ if botOwnedNb < botNb // need one ?
             printflush message
             op add botOwnedNb botOwnedNb 1  // botOwnedNb += 1
             // save owned bot
-            for ownedBot in [bot1, bot2, bot3]
+            for ownedBot in [bot1, bot2, bot3, bot4]
                 if ownedBot == null
                     set ownedBot @unit
                     jump endBotSave  // kind of a break
@@ -214,6 +214,16 @@ for ownedBot, botFactoLink in listBotRessourceLink
                         if currentCapacity < 40
                             jump returnIsGoodRessource
 
+            elif factoType == @multiplicative-reconstructor
+                for ressource in [@silicon, @titanium, @metaglass]
+                    if transportedRessource == ressource
+                        sensor currentCapacity facto ressource
+                        set max 130
+                        if ressource == @metaglass
+                            set max 40
+                        if currentCapacity < max
+                            jump returnIsGoodRessource
+
             set isGoodR false
             jump returnIsNotGoodRessource
 
@@ -271,7 +281,6 @@ for ownedBot, botFactoLink in listBotRessourceLink
         elif factoType == @air-factory
             if selectedBotToBuild == @flare
                 for ressource in [@silicon]
-                    // sensor maxCapacity facto @itemCapacity
                     sensor currentCapacity facto ressource
                     if currentCapacity < 30  // we could say < 30 for every ressources for ground
                         set ressourceNeeded ressource
@@ -288,7 +297,6 @@ for ownedBot, botFactoLink in listBotRessourceLink
         elif factoType == @naval-factory
             if selectedBotToBuild == @risso
                 for ressource in [@silicon, @metaglass]
-                    // sensor maxCapacity facto @itemCapacity
                     sensor currentCapacity facto ressource
                     if currentCapacity < 40  // need 35 metaglass
                         set ressourceNeeded ressource
@@ -297,9 +305,18 @@ for ownedBot, botFactoLink in listBotRessourceLink
 
         elif factoType == @additive-reconstructor
             for ressource in [@graphite, @silicon]
-                sensor maxCapacity facto @itemCapacity
                 sensor currentCapacity facto ressource
                 if currentCapacity < 40
+                    set ressourceNeeded ressource
+                    jump returngetNeededRessource
+
+        elif factoType == @multiplicative-reconstructor
+            for ressource in [@silicon, @titanium, @metaglass]
+                sensor currentCapacity facto ressource
+                set max 130
+                if ressource == @metaglass
+                    set max 40
+                if currentCapacity < max
                     set ressourceNeeded ressource
                     jump returngetNeededRessource
 
@@ -325,34 +342,6 @@ for ownedBot, botFactoLink in listBotRessourceLink
 
 // end here
 jump loop
-
-
-isGoodRessource(botRessource, factoType)
-    if factoType == @ground-factory
-        for ressource in [@lead, @coal, @silicon, @titanium]
-            if botRessource == ressource
-                return true
-        return false
-    elif factoType == @air-factory
-        for ressource in [@lead, @silicon]
-            if botRessource == ressource
-                return true
-        return false
-
-
-isNeededRessource(ressource, facto)
-    sensor maxCapacity facto @itemCapacity
-    sensor currentCapacity facto ressource
-    if currentCapacity < maxCapacity
-        return true
-    return false
-
-
-dropRessourceToFacto(facto, radiusApproche)
-    sensor factoX facto @x
-    sensor factoY facto @y
-    ucontrol approach factoX factoY radiusApproche null null
-    ucontrol itemDrop facto 800 null null null
 
 
 // will need @counter for for/functions optimisation and stop copy/past it
