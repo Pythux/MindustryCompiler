@@ -36,6 +36,8 @@ set coreX null
 set coreY null
 
 
+// where to take ressource from, appro or core
+
 if appro != null
     print "[green] appro not null, will replace core to take ressource from"
     msg.printAndWait(appro, message)
@@ -58,12 +60,11 @@ if coreX == null
     msg.printAndWait("[green] core found", message)
 
 
+// to flag bots with
 procId = idBots.genProcId()
 
 set botOwnedNb 0
-
 set loopSearchingBots 0
-
 
 
 sensor botType @unit @type // get botType
@@ -73,19 +74,17 @@ if botNb > 4
     end
 
 listBotRessourceLink = [
-    (bot1, res1, link1), (bot2, res2, link2),
-    (bot3, res3, link3), (bot4, res4, link4)
+    (bot1, link1), (bot2, link2),
+    (bot3, link3), (bot4, link4)
 ]
 
 // free memory
 // variable content is keep after end instruction, memory not free
-for ownedBot, botRessource, botFactoLink in listBotRessourceLink
+for ownedBot, botFactoLink in listBotRessourceLink
     set ownedBot null
-    set botRessource null
     set botFactoLink 0
 
-set currentOwnedId 1
-
+set reset false
 
 // --- Prog Loop ---
 #ref loop
@@ -94,6 +93,10 @@ set currentOwnedId 1
 isOn = onOff.isOn(switch)
 if isOn != true
     msg.printAndWait("[yellow] process is turn off", message)
+    set reset true // will reset after switch On
+    jump loop
+
+if reset == true
     end // to reset procId and botOwnedNb
 
 
@@ -135,21 +138,16 @@ set loopSearchingBots 0
 
 
 
-for ownedBot, botRessource, botFactoLink in listBotRessourceLink
+for ownedBot, botFactoLink in listBotRessourceLink
     ubind ownedBot
     if @unit == null // no more owned bots
         jump loop
+
+    getlink facto botFactoLink
     sensor payload @unit @totalItems
     if payload > 0
-        sensor actuallyTranportingRessource @unit botRessource
-        // sensor hasType @unit @firstItem
-        if actuallyTranportingRessource != payload // not transporting the desired ressource
-            msg.printAndWait("bot not transporting the good ressource", message)
-            // ucontrol payDrop 0 0 0 0 0  // drop actual payload, not working q.q
-            ucontrol approach coreX coreY radiusApproche null null
-            ucontrol itemDrop core 800 null null null
+        sensor transportedRessource @unit @firstItem
 
-        getlink facto botFactoLink
         print "link: "
         printn botFactoLink
         print " -> "
@@ -167,62 +165,74 @@ for ownedBot, botRessource, botFactoLink in listBotRessourceLink
             sensor factoType facto @type
             // isGoodR = isGoodRessource(botRessource, factoType)
 
+            sensor factoType facto @type
+
             if factoType == @ground-factory
-                for ressource in [@lead, @coal, @silicon, @titanium]
-                    if botRessource == ressource
-                        set isGoodR true
-                        set maxCapacity 30
-                        jump returnIsGoodRessource
+                if selectedBotToBuild == @dagger
+                    for ressource in [@silicon, @lead]
+                        if transportedRessource == ressource
+                            sensor currentCapacity facto ressource
+                            if currentCapacity < 30  // we could say < 30 for every ressources for ground
+                                jump returnIsGoodRessource
+
+                elif selectedBotToBuild == @crawler
+                    for ressource in [@silicon, @coal]
+                        if transportedRessource == ressource
+                            sensor currentCapacity facto ressource
+                            if currentCapacity < 30  // we could say < 30 for every ressources for ground
+                                jump returnIsGoodRessource
+
+                elif selectedBotToBuild == @nova
+                    for ressource in [@silicon, @lead, @titanium]
+                        if transportedRessource == ressource
+                            sensor currentCapacity facto ressource
+                            if currentCapacity < 30  // we could say < 30 for every ressources for ground
+                                jump returnIsGoodRessource
+
             elif factoType == @air-factory
-                for ressource in [@lead, @silicon]
-                    if botRessource == ressource
-                        set isGoodR true
-                        set maxCapacity 30
-                        jump returnIsGoodRessource
+                if selectedBotToBuild == @flare
+                    for ressource in [@silicon]
+                        if transportedRessource == ressource
+                            sensor currentCapacity facto ressource
+                            if currentCapacity < 30  // we could say < 30 for every ressources for ground
+                                jump returnIsGoodRessource
+
+                elif selectedBotToBuild == @mono
+                    for ressource in [@silicon, @lead]
+                        if transportedRessource == ressource
+                            sensor currentCapacity facto ressource
+                            if currentCapacity < 30  // we could say < 30 for every ressources for ground
+                                jump returnIsGoodRessource
+
             elif factoType == @naval-factory
-                for ressource in [@metaglass, @silicon]
-                    if botRessource == ressource
-                        set isGoodR true
-                        jump returnIsGoodRessource
+                if selectedBotToBuild == @risso
+                    for ressource in [@silicon, @metaglass]
+                        if transportedRessource == ressource
+                            sensor currentCapacity facto ressource
+                            if currentCapacity < 40  // need 35 metaglass
+                                jump returnIsGoodRessource
 
             print " not good ressource "
             set isGoodR false
+            jump returnIsNotGoodRessource
+
             #ref returnIsGoodRessource
+            print " [green] good ressource [white] "
+            set isGoodR true
+
+            #ref returnIsNotGoodRessource
             // end FunCall isGoodRessource
 
-            if isGoodR == true
-                // isFactoNeedIt = isNeededRessource(botRessource, facto)
-                sensor maxCapacity facto @itemCapacity
-                sensor currentCapacity facto botRessource
-                if currentCapacity < maxCapacity
-                    set isFactoNeedIt true
-                else
-                    set isFactoNeedIt false
-                // end FunCall isNeededRessource
-
-                print "isNeededRessource "
-                msg.printAndWait(isFactoNeedIt, message)
-                if isFactoNeedIt == true
-                    // dropRessourceToFacto(facto, radiusApproche)
-                    sensor factoX facto @x
-                    sensor factoY facto @y
-                    ucontrol approach factoX factoY radiusApproche null null
-                    op sub quantityToDrop maxCapacity currentCapacity
-                    ucontrol itemDrop facto quantityToDrop null null null
-                    print " facto maxCapacity: "
-                    print maxCapacity
-                    print " facto currentCapacity: "
-                    print currentCapacity
-                    print " quantityToDrop: "
-                    print quantityToDrop
-                    time.wait(2)
-                    // end FunCall dropRessourceToFacto
-                else
-                    op add botFactoLink botFactoLink 1
+            if isGoodR == true  // dropRessourceToFacto
+                sensor factoX facto @x
+                sensor factoY facto @y
+                ucontrol approach factoX factoY radiusApproche null null
+                ucontrol itemDrop facto 800 null null null
             else
+                // go see next facto
                 op add botFactoLink botFactoLink 1
     else
-        // bot empty, choose a ressource
+        // payload == 0, choose a ressource
         set linkIndex 0
         #ref searchingRessource
         getlink facto botFactoLink
@@ -233,36 +243,64 @@ for ownedBot, botRessource, botFactoLink in listBotRessourceLink
 
         // ressourceNeeded = getNeededRessource(facto)
         sensor factoType facto @type
+        sensor selectedBotToBuild facto @config
+
         if factoType == @ground-factory
-            for ressource in [@lead, @coal, @silicon, @titanium]
-                sensor maxCapacity facto @itemCapacity
-                sensor currentCapacity facto ressource
-                if currentCapacity < maxCapacity
-                    msg.printAndWait("will take the ressource !", message)
-                    set ressourceNeeded ressource
-                    jump returngetNeededRessource
+            if selectedBotToBuild == @dagger
+                for ressource in [@silicon, @lead]
+                    // sensor maxCapacity facto @itemCapacity
+                    sensor currentCapacity facto ressource
+                    if currentCapacity < 30  // we could say < 30 for every ressources for ground
+                        set ressourceNeeded ressource
+                        jump returngetNeededRessource
+
+            elif selectedBotToBuild == @crawler
+                for ressource in [@silicon, @coal]
+                    sensor currentCapacity facto ressource
+                    if currentCapacity < 30  // we could say < 30 for every ressources for ground
+                        set ressourceNeeded ressource
+                        jump returngetNeededRessource
+
+            elif selectedBotToBuild == @nova
+                for ressource in [@silicon, @lead, @titanium]
+                    sensor currentCapacity facto ressource
+                    if currentCapacity < 30  // we could say < 30 for every ressources for ground
+                        set ressourceNeeded ressource
+                        jump returngetNeededRessource
+
 
         elif factoType == @air-factory
-            for ressource in [@lead, @silicon]
-                sensor maxCapacity facto @itemCapacity
-                sensor currentCapacity facto ressource
-                if currentCapacity < maxCapacity
-                    set ressourceNeeded ressource
-                    jump returngetNeededRessource
+            if selectedBotToBuild == @flare
+                for ressource in [@silicon]
+                    // sensor maxCapacity facto @itemCapacity
+                    sensor currentCapacity facto ressource
+                    if currentCapacity < 30  // we could say < 30 for every ressources for ground
+                        set ressourceNeeded ressource
+                        jump returngetNeededRessource
+
+            elif selectedBotToBuild == @mono
+                for ressource in [@silicon, @lead]
+                    sensor currentCapacity facto ressource
+                    if currentCapacity < 30  // we could say < 30 for every ressources for ground
+                        set ressourceNeeded ressource
+                        jump returngetNeededRessource
+
 
         elif factoType == @naval-factory
-            for ressource in [@metaglass, @silicon]
-                sensor maxCapacity facto @itemCapacity
-                sensor currentCapacity facto ressource
-                if currentCapacity < maxCapacity
-                    set ressourceNeeded ressource
-                    jump returngetNeededRessource
+            if selectedBotToBuild == @risso
+                for ressource in [@silicon, @metaglass]
+                    // sensor maxCapacity facto @itemCapacity
+                    sensor currentCapacity facto ressource
+                    if currentCapacity < 40  // need 35 metaglass
+                        set ressourceNeeded ressource
+                        jump returngetNeededRessource
+
 
         elif factoType == @additive-reconstructor
             for ressource in [@graphite, @silicon]
                 sensor maxCapacity facto @itemCapacity
                 sensor currentCapacity facto ressource
-                if currentCapacity < maxCapacity
+                if currentCapacity < 40
                     set ressourceNeeded ressource
                     jump returngetNeededRessource
 
@@ -284,7 +322,6 @@ for ownedBot, botRessource, botFactoLink in listBotRessourceLink
                 print "[yellow] not enouth of "
                 print ressourceNeeded
                 msg.printAndWait(" in base, will take something else", message)
-                // jump startToTake // <--- will redo what need to be taken
         else
             op add botFactoLink botFactoLink 1
             jump searchingRessource
@@ -321,449 +358,5 @@ dropRessourceToFacto(facto, radiusApproche)
     ucontrol itemDrop facto 800 null null null
 
 
-
-
-set author Quake
-jump 4 notEqual key 0
-op rand key 10000 b
-op ceil key key b
-jump 13 notEqual @unit null
-ubind @flare
-sensor flag @unit @flag
-op add binds binds 1
-jump 13 equal flag key
-jump 5 notEqual flag 0
-jump 5 lessThan binds 80
-ucontrol flag key corey 0 core 0
-end
-set binds 0
-ulocate building core false @copper corex corey found core
-ucontrol getBlock corex corey 0 core 0
-sensor facx factory1 @x
-sensor facy factory1 @y
-sensor avSil core @silicon
-sensor avLead core @lead
-sensor sil factory1 @silicon
-sensor lead factory1 @lead
-op sub wantSil 30 sil
-op sub wantLead 15 lead
-print "Wants: "
-print wantSil
-print " silicon, "
-print wantLead
-print " lead."
-print "\n Found core? "
-jump 32 notEqual core null
-print "No"
-jump 39 equal core null
-print "Yes"
-print "\nThere is "
-print avSil
-print " silicon and "
-print avLead
-print " lead in the core."
-printflush message1
-jump 43 greaterThan wantSil 0
-jump 43 greaterThan wantLead 0
-end
-sensor has @unit @totalItems
-sensor hasType @unit @firstItem
-jump 53 greaterThan has 0
-jump 50 greaterThanEq avSil 50
-jump 50 greaterThanEq avLead 50
-jump 50 equal core null
-end
-ucontrol approach corex corey 5 0 0
-ucontrol itemTake core @lead wantLead 0 0
-ucontrol itemTake core @silicon wantSil 0 0
-jump 61 equal has 0
-jump 59 equal hasType @lead
-jump 59 equal hasType @silicon
-ucontrol approach corex corey 5 0 0
-ucontrol itemDrop core 999 5 0 0
-end
-ucontrol approach facx facy 4 0 0
-ucontrol itemDrop factory1 999 5 0 0
-end
-
-
-
-
-printflush message1
-print "Detect Needed Orez"
-set targetamount 0
-sensor buildtype factory1 @config
-jump 13 notEqual buildtype @flare
-sensor qty factory1 @silicon
-jump 11 greaterThanEq qty 15
-printflush message1
-print "OK let's set for @silicon"
-set ore @silicon
-op sub targetamount 15 qty
-printflush message1
-print "Done detecting for @silicon"
-printflush message1
-print "Detection done for @flare"
-jump 32 notEqual buildtype @mono
-sensor qty factory1 @silicon
-jump 22 greaterThanEq qty 30
-printflush message1
-print "OK let's set for @silicon"
-set ore @silicon
-op sub targetamount 30 qty
-printflush message1
-print "Done detecting for @silicon"
-sensor qty factory1 @lead
-jump 30 greaterThanEq qty 15
-printflush message1
-print "OK let's set for @lead"
-set ore @lead
-op sub targetamount 15 qty
-printflush message1
-print "Done detecting for @lead"
-printflush message1
-print "Detection done for @mono"
-jump 38 greaterThan targetamount 0
-printflush message1
-print "No work to do, ending"
-end
-printflush message1
-print "Try to bind to unit"
-op rand myflag 1234567890 b
-op floor myflag myflag b
-set looper 0
-ubind @flare
-jump 48 notEqual @unit null
-printflush message1
-print "No units, aborting."
-end
-sensor hisflag @unit @flag
-printflush message1
-print "candidate unit has flag: "
-print hisflag
-print ","
-print looper
-op add looper looper 1
-jump 57 lessThan looper 50
-end
-jump 43 notEqual hisflag 0
-sensor hisflag @unit @flag
-jump 61 equal hisflag 0
-end
-ucontrol flag myflag 0 0 0 0
-printflush message1
-print "Act on unit"
-ulocate building core false @copper corex corey found core
-sensor cap @unit @itemCapacity
-printflush message1
-print "Move to core"
-sensor hisflag @unit @flag
-jump 71 equal hisflag myflag
-end
-ucontrol approach corex corey 1 0 0
-set looper 0
-ucontrol itemDrop core 9999 0 0 0
-sensor have @unit @totalItems
-printflush message1
-print "Looping to empty (1st): "
-print have
-print ","
-print looper
-op add looper looper 1
-jump 84 lessThan looper 200
-ucontrol flag 0 0 0 0 0
-end
-jump 73 greaterThan have 0
-print "Pick up"
-op min targetamount targetamount cap
-set looper 0
-ucontrol itemTake core ore targetamount 0 0
-sensor have @unit @totalItems
-printflush message1
-print "Looping to full: "
-print have
-print ","
-print looper
-op add looper looper 1
-jump 99 lessThan looper 200
-ucontrol flag 0 0 0 0 0
-end
-jump 88 lessThan have targetamount
-printflush message1
-print "Drop off"
-sensor rx factory1 @x
-sensor ry factory1 @y
-ucontrol approach rx ry 1 0 0
-set looper 0
-ucontrol itemDrop factory1 targetamount 0 0 0
-sensor have @unit @totalItems
-printflush message1
-print "Looping to empty(2nd): "
-print have
-print ","
-print looper
-op add looper looper 1
-jump 117 lessThan looper 200
-ucontrol flag 0 0 0 0 0
-end
-jump 106 notEqual have 0
-ucontrol flag 0 0 0 0 0
-
-
-
-
-
-jump 86 equal setupComplete true
-print "SETUP:\n"
-set useSorters false
-set unitOverride @flare
-set unitTypeCodeIndex 0
-set unitFlagIndex 1
-set primary @silicon
-set secondary @phase-fabric
-set tertiary null
-set limitPrimary 30
-set limitSecondary 30
-set limitTertiary 30
-set status message1
-set memory cell1
-jump 18 notEqual memory null
-print "No memory detected."
-printflush status
-set @counter 1
-jump 31 equal useSorters false
-jump 22 notEqual sorter1 null
-set invalidConfig true
-print "Missing: sorter1\n"
-jump 25 notEqual sorter2 null
-set invalidConfig true
-print "Missing: sorter2\n"
-jump 28 notEqual sorter3 null
-set invalidConfig true
-print "Missing: sorter3\n"
-jump 31 equal invalidConfig false
-printflush status
-end
-print "Control components confirmed.\n"
-read unitTypeCode memory unitTypeCodeIndex
-jump 37 equal unitOverride null
-op add rtnAddr @counter 1
-jump 206 always unitOverride null
-write overrideCode memory unitTypeCodeIndex
-jump 42 notEqual unitTypeCode 0
-print "Invalid unit type code: 0\n"
-print "Restarting..."
-printflush status
-set @counter 1
-op add rtnAddr @counter 1
-jump 225 always unitFlag 0
-print "Selected unit type: "
-print unitType
-print "\n"
-read unitFlag memory unitFlagIndex
-jump 51 notEqual unitFlag 0
-op rand unitFlag 99999999 b
-write unitFlag memory unitFlagIndex
-print "Unit flag assigned for task: "
-print unitFlag
-print "\n"
-print "Releasing previously-bound unit, "
-print "if required.\n"
-op add rtnAddr @counter 1
-jump 244 always @unit first
-print "Auto-detect delivery: "
-set deliveryPoint null
-set i 1
-getlink link i
-sensor linkType link @type
-jump 66 equal linkType @container
-jump 66 equal linkType @vault
-jump 68 always linkType @vault
-set deliveryPoint link
-jump 74 always linkType @vault
-op add i i 1
-jump 61 lessThan i @links
-print "null.\nNo container or vault "
-print "detected, restarting..."
-printflush status
-set @counter 0
-print deliveryPoint
-print "\n"
-print "Caching target coordinates: ("
-sensor dx deliveryPoint @x
-sensor dy deliveryPoint @y
-print dx
-print ", "
-print dy
-print ")\n"
-print "Setup completed."
-printflush status
-set setupComplete true
-read unitTypeTest memory unitTypeCodeIndex
-jump 93 equal unitTypeTest unitTypeCode
-set setupComplete false
-set unit null
-op add rtnAddr @counter 1
-jump 244 always unitTypeTest unitTypeCode
-set @counter 0
-jump 97 equal useSorters false
-sensor primary sorter1 @config
-sensor secondary sorter2 @config
-sensor tertiary sorter3 @config
-print "STATUS:\n"
-set limitOverride true
-jump 104 equal primary null
-sensor qty1 deliveryPoint primary
-op lessThan primaryRequired qty1 limitPrimary
-op equal test primaryRequired 0
-op land limitOverride limitOverride test
-jump 109 equal secondary null
-sensor qty2 deliveryPoint secondary
-op lessThan secondaryRequired qty2 limitSecondary
-op equal test secondaryRequired 0
-op land limitOverride limitOverride test
-jump 114 equal tertiary null
-sensor qty3 deliveryPoint tertiary
-op lessThan tertiaryRequired qty3 limitTertiary
-op equal test tertiaryRequired 0
-op land limitOverride limitOverride test
-jump 123 equal limitOverride false
-print "Delivery point at assigned "
-print "limit.\n"
-printflush status
-set unitRelease true
-set unitRequired false
-jump 122 equal unitReleased false
-set @counter 0
-jump 127 always unit null
-set unitRelease false
-op equal testA limitOverride false
-op equal testB unit null
-op land unitRequired testA testB
-jump 129 equal unitRequired false
-print "Attempting to assign unit.\n"
-set first null
-ubind unitType
-jump 138 notEqual @unit null
-print "No units of type: "
-print unitType
-print "\nContinuing to search until one "
-print "is created."
-printflush status
-set @counter 0
-jump 141 notEqual first null
-set first @unit
-jump 147 always first null
-jump 147 notEqual @unit first
-print "No units of type "
-print unitType
-print " available to be tasked."
-printflush status
-set @counter 0
-jump 162 equal @unit unit
-jump 130 notEqual unit null
-sensor flag @unit @flag
-op equal assignable flag 0
-op equal allocationRequired unit null
-op land assignUnit assignable allocationRequired
-jump 130 equal assignUnit false
-jump 161 equal unitRequired false
-ucontrol flag unitFlag capacity 0 0 0
-set unit @unit
-set unitReleased false
-print "Unit="
-print unit
-print "\n"
-ulocate building core false @copper coreX coreY found core
-jump 167 equal unitRelease false
-ucontrol flag 0 capacity 0 0 0
-set unit null
-set unitReleased true
-set @counter 0
-sensor capacity @unit @itemCapacity
-sensor currentLoad @unit @firstItem
-jump 171 equal currentLoad null
-jump 185 always currentLoad null
-print "Retrieving ore, priority="
-jump 175 equal primaryRequired false
-set targetOre primary
-jump 179 always secondaryRequired false
-jump 178 equal secondaryRequired false
-set targetOre secondary
-jump 179 always secondaryRequired false
-set targetOre tertiary
-print targetOre
-print "\n"
-printflush status
-ucontrol move coreX coreY 0 0 0
-ucontrol itemTake core targetOre capacity 0 0
-end
-op equal testA currentLoad primary
-op equal testB currentLoad secondary
-op equal testC currentLoad tertiary
-op or testD testA testB
-op or validDelivery testC testD
-jump 200 equal validDelivery true
-ucontrol move coreX coreY 0 0 0
-ucontrol itemDrop core capacity 0 0 0
-print "Newly assigned unit has existing "
-print "load of: "
-print currentLoad
-print "\nDelivering incorrect ore before "
-print "starting duty."
-printflush status
-end
-ucontrol move dx dy 0 0 0
-ucontrol itemDrop deliveryPoint capacity capacity 0 0
-print "Delivering requested ore: "
-print targetOre
-printflush status
-end
-op equal flareTest unitOverride @flare
-op equal horizonTest unitOverride @horizon
-op equal zenithTest unitOverride @zenith
-op equal monoTest unitOverride @mono
-op equal polyTest unitOverride @poly
-op equal megaTest unitOverride @mega
-jump 214 equal flareTest false
-set overrideCode 0b1
-jump 216 equal horizonTest false
-set overrideCode 0b10
-jump 218 equal zenithTest false
-set overrideCode 0b100
-jump 220 equal monoTest false
-set overrideCode 0b1000
-jump 222 equal polyTest false
-set overrideCode 0b10000
-jump 224 equal megaTest false
-set overrideCode 0b100000
-set @counter rtnAddr
-op and flareTest unitTypeCode 0b000001
-op and horizonTest unitTypeCode 0b000010
-op and zenithTest unitTypeCode 0b000100
-op and monoTest unitTypeCode 0b001000
-op and polyTest unitTypeCode 0b010000
-op and megaTest unitTypeCode 0b100000
-jump 233 equal flareTest false
-set unitType @flare
-jump 235 equal horizonTest false
-set unitType @horizon
-jump 237 equal zenithTest false
-set unitType @zenith
-jump 239 equal monoTest false
-set unitType @mono
-jump 241 equal polyTest false
-set unitType @poly
-jump 243 equal megaTest false
-set unitType @mega
-set @counter rtnAddr
-set first null
-ubind unitType
-jump 253 equal @unit first
-jump 249 notEqual first null
-set first @unit
-sensor flag @unit @flag
-jump 245 notEqual flag unitFlag
-ucontrol flag 0 capacity 0 0 0
-jump 245 always flag unitFlag
-set @counter rtnAddr
+// will need @counter for for/functions optimisation and stop copy/past it
+// set @counter rtnAddr
