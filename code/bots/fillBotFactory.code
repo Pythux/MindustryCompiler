@@ -211,17 +211,14 @@ for ownedBot, botFactoLink in listBotRessourceLink
                 for ressource in [@graphite, @silicon]
                     if transportedRessource == ressource
                         sensor currentCapacity facto ressource
-                        if currentCapacity < 40
+                        if currentCapacity < 80
                             jump returnIsGoodRessource
 
             elif factoType == @multiplicative-reconstructor
-                for ressource in [@silicon, @titanium, @metaglass]
+                for ressource, quatity in [(@silicon, 260), (@titanium, 160), (@metaglass, 80)]
                     if transportedRessource == ressource
                         sensor currentCapacity facto ressource
-                        set max 130
-                        if ressource == @metaglass
-                            set max 40
-                        if currentCapacity < max
+                        if currentCapacity < quatity
                             jump returnIsGoodRessource
 
             set isGoodR false
@@ -306,17 +303,14 @@ for ownedBot, botFactoLink in listBotRessourceLink
         elif factoType == @additive-reconstructor
             for ressource in [@graphite, @silicon]
                 sensor currentCapacity facto ressource
-                if currentCapacity < 40
+                if currentCapacity < 80
                     set ressourceNeeded ressource
                     jump returngetNeededRessource
 
         elif factoType == @multiplicative-reconstructor
-            for ressource in [@silicon, @titanium, @metaglass]
+            for ressource, quatity in [(@silicon, 260), (@titanium, 160), (@metaglass, 80)]
                 sensor currentCapacity facto ressource
-                set max 130
-                if ressource == @metaglass
-                    set max 40
-                if currentCapacity < max
+                if currentCapacity < quatity
                     set ressourceNeeded ressource
                     jump returngetNeededRessource
 
