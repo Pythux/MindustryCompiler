@@ -9,7 +9,6 @@
 import onOff
 import idBots
 import msg
-import time
 
 
 set appro container1
@@ -69,13 +68,13 @@ set loopSearchingBots 0
 
 sensor botType @unit @type // get botType
 
-if botNb > 4
-    msg.printAndWait("[red] can't take more than 4 bots\n change parameter 'botNb' to fix it", message)
+if botNb > 3
+    msg.printAndWait("[red] can't take more than 3 bots\n change parameter 'botNb' to fix it", message)
     end
 
 listBotRessourceLink = [
     (bot1, link1), (bot2, link2),
-    (bot3, link3), (bot4, link4)
+    (bot3, link3),
 ]
 
 // free memory
@@ -97,6 +96,7 @@ if isOn != true
     jump loop
 
 if reset == true
+    msg.printAndWait("reset prog", message)
     end // to reset procId and botOwnedNb
 
 
@@ -128,7 +128,7 @@ if botOwnedNb < botNb // need one ?
             printflush message
             op add botOwnedNb botOwnedNb 1  // botOwnedNb += 1
             // save owned bot
-            for ownedBot in [bot1, bot2, bot3, bot4]
+            for ownedBot in [bot1, bot2, bot3]
                 if ownedBot == null
                     set ownedBot @unit
                     jump endBotSave  // kind of a break
@@ -148,11 +148,6 @@ for ownedBot, botFactoLink in listBotRessourceLink
     if payload > 0
         sensor transportedRessource @unit @firstItem
 
-        print "link: "
-        printn botFactoLink
-        print " -> "
-        print facto
-        print ", "
         if facto == null // end link list
             set botFactoLink 0
             // dropRessourceBackToStore(core, coreX, coreY)
@@ -212,12 +207,17 @@ for ownedBot, botFactoLink in listBotRessourceLink
                             if currentCapacity < 40  // need 35 metaglass
                                 jump returnIsGoodRessource
 
-            print " not good ressource "
+            elif factoType == @additive-reconstructor
+                for ressource in [@graphite, @silicon]
+                    if transportedRessource == ressource
+                        sensor currentCapacity facto ressource
+                        if currentCapacity < 40
+                            jump returnIsGoodRessource
+
             set isGoodR false
             jump returnIsNotGoodRessource
 
             #ref returnIsGoodRessource
-            print " [green] good ressource [white] "
             set isGoodR true
 
             #ref returnIsNotGoodRessource
@@ -237,7 +237,6 @@ for ownedBot, botFactoLink in listBotRessourceLink
         #ref searchingRessource
         getlink facto botFactoLink
         if facto == null // end link list, search again
-            msg.printAndWait("end link list, search again", message)
             set botFactoLink 0
             jump searchingRessource
 
@@ -308,10 +307,7 @@ for ownedBot, botFactoLink in listBotRessourceLink
         #ref returngetNeededRessource
 
         // end fun getNeededRessource
-        print "facto: "
-        print facto
-        print " need ressource: "
-        msg.printAndWait(ressourceNeeded, message)
+
         if ressourceNeeded != false
             set botRessource ressourceNeeded
             ucontrol approach coreX coreY radiusApproche null null
@@ -322,6 +318,7 @@ for ownedBot, botFactoLink in listBotRessourceLink
                 print "[yellow] not enouth of "
                 print ressourceNeeded
                 msg.printAndWait(" in base, will take something else", message)
+                op add botFactoLink botFactoLink 1
         else
             op add botFactoLink botFactoLink 1
             jump searchingRessource
