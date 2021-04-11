@@ -59,8 +59,9 @@ if coreX == null
     msg.printAndWait("[green] core found", message)
 
 
-// to flag bots with
-procId = idBots.genProcId()
+// to flag bots with, done only once
+if procId == null
+    procId = idBots.genProcId()
 
 set botOwnedNb 0
 set loopSearchingBots 0
@@ -80,8 +81,13 @@ listBotRessourceLink = [
 // free memory
 // variable content is keep after end instruction, memory not free
 for ownedBot, botFactoLink in listBotRessourceLink
+    if ownedBot != null
+        sensor botFlag @unit @flag
+        if botFlag == procId
+            ucontrol flag 0 null null null null  // free it
     set ownedBot null
     set botFactoLink 0
+
 
 set reset false
 

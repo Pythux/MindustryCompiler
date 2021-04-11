@@ -49,13 +49,21 @@ if coreX == null
     msg.printAndWait("[green] core found", message)
 
 
+set reset false
+
+// --- Prog Loop ---
 #ref loop
 
 // switch to turn off
 isOn = onOff.isOn(switch)
 if isOn != true
     msg.printAndWait("[yellow] process is turn off", message)
-    end
+    set reset true // will reset after switch On
+    jump loop
+
+if reset == true
+    msg.printAndWait("reset prog", message)
+    end // to reset procId and botOwnedNb
 
 
 
@@ -63,15 +71,20 @@ for unit in [@flare, @horizon]
     ubind unit
     if @unit != null
         sensor botFlag @unit @flag
-        if flag == 0
+        if botFlag == 0
             ucontrol flag 666 null null null null
 
         sensor botFlag @unit @flag
-        if flag == 666
+        if botFlag == 666
             sensor payload @unit @totalItems
             if payload == 0
                 ucontrol approach coreX coreY radiusApproche null null
                 ucontrol itemTake core @blast-compound 800 null null
+            else
+                sensor transportedRessource @unit @firstItem
+                if transportedRessource != @blast-compound
+                    ucontrol approach coreX coreY radiusApproche null null
+                    ucontrol itemDrop core 800 null null null
 
 
 jump loop
