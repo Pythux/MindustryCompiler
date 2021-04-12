@@ -44,9 +44,9 @@ class Variable:
 
 
 class AsmInst:
-    def __init__(self, instruction: str, liValVar) -> None:
+    def __init__(self, instruction: str, liValVar=None) -> None:
         self.instruction = instruction
-        self.liValVar = liValVar
+        self.liValVar = liValVar if liValVar is not None else []
 
     # return list of ID
     def getVars(self):

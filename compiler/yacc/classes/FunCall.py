@@ -1,7 +1,8 @@
 
 
 from ..importsHandling import imports
-from .AsmInst import AsmInst
+from .AsmInst import AsmInst, Value, Variable
+from .RefAndJump import Jump
 
 
 class FunCall:
@@ -18,12 +19,18 @@ class FunCall:
             raise Exception("function '{}' does not exist, module {}, at line {}"
                             .format(self.name, self.module, self.line))
         fun = module[self.name]
+        if fun.jumpDefinition is None:  # first time call
+            fun.jumpDefinition = fun.context.genRef()
+            module.funCalled.append(fun)
         return self.toFunContent(fun)
 
     def toFunContent(self, fun):
         lines = []
         lines += setters(map(lambda a: fun.ids[a], fun.args), self.callArgs)
-        lines += fun.genContent()
+        lines.append(AsmInst('add', [Variable('returnAddress'), Value('@counter'), Value('1')]))
+        lines.append(Jump('jump to function {}'.format(self.name), fun.jumpDefinition))
+        # function returned
+        # set tmp to var return
         if self.returnTo:
             if len(self.returnTo) != len(fun.returns):
                 raise Exception('function “{}” return exactly {} values, {} is receved line {}'

@@ -1,0 +1,9 @@
+
+
+import msg
+
+//for x in [1, "yo"]
+
+msg.printAndWait("hi", message1)
+
+

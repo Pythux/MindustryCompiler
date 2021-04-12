@@ -42,7 +42,8 @@ def runYacc(content: str, debug=False, clearContext=False):
     if lines is None or len(lines) == 0:
         return ''
 
-    lines = fillFunCall(lines)
+    lines.append(AsmInst('end'))
+    lines += importsHandling.imports.generateFunctionDefinition()
 
     # last step, put ref to code line
     lines = consumeRefAndChangeJump(lines)
@@ -61,17 +62,6 @@ def runYacc(content: str, debug=False, clearContext=False):
 def runImports():
     for nextImpContent in importsHandling.nextImportContent():
         yaccParse(nextImpContent)
-
-
-def fillFunCall(lines):
-    lines = boa(lines)
-    if len(lines.filter(lambda el: isinstance(el, FunCall))) == 0:
-        return lines
-
-    def reducer(li, el):
-        return li + (el.toContent() if isinstance(el, FunCall) else [el])
-
-    return fillFunCall(lines.reduce(reducer, []))
 
 
 def checkExistingVars(content):

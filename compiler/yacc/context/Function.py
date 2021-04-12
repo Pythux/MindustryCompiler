@@ -1,5 +1,5 @@
 
-from ..classes import Jump, Ref, Variable
+from ..classes import Jump, Ref, AsmInst, Variable, Value
 
 
 class Fun:
@@ -13,6 +13,8 @@ class Fun:
         self.returnRef = None
         self.content = []
         self.context = context
+        self.jumpDefinition = None
+        self.defined = False
 
     def scopeId(self, identifier: Variable):
         if identifier not in self.ids:
@@ -31,8 +33,8 @@ class Fun:
             self.refs[ref] = self.context.genRef().id
         return self.refs[ref]
 
-    # change ref for multiple copie/paste
-    def genContent(self):
+    # change ref/var name for scope
+    def generateDefinition(self):
         newRef = {}
         lines = []
         for line in self.content:
@@ -54,4 +56,6 @@ class Fun:
             returnRef = self.context.genRef()
 
         lines.append(returnRef)
+        # jump to funCall
+        lines.append(AsmInst('set', [Value('@counter'), Variable('returnAddress')]))
         return lines
