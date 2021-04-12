@@ -5,13 +5,13 @@ class Imports:
         self.imported = {None: {}}  # None is main file
         self.toImports = []
         self.currentFile = None
-        self.funCalled = []  # will be function to define
+        self.linesFunDef = []
 
     def clear(self):
         self.imported = {None: {}}  # None is main file
         self.toImports = []
         self.currentFile = None
-        self.funCalled = []
+        self.linesFunDef = []
 
     # simple absolute import from lib/, one lvl
     def toImport(self, filesToImport):
@@ -44,12 +44,20 @@ class Imports:
             raise Exception("module {} is used but not imported".format(fileLib))
         return self.imported[fileLib]
 
-    def generateFunctionDefinition(self):
-        if len(self.funCalled) == 0:
-            return []
-        fun = self.funCalled.pop()
-        lines = fun.generateDefinition()
-        return lines + self.generateFunctionDefinition()
+    # once parsing over, all funDef are registered in module
+    def getFunCalled(self, moduleName, name, lineCall):
+        module = self.getModule(moduleName)
+        if name not in module:
+            raise Exception("function '{}' does not exist, module {}, at line {}"
+                            .format(name, moduleName, lineCall))
+        fun = module[name]
+        if not fun.defined:
+            self.linesFunDef += fun.generateDefinition()
+        return fun
+
+    # return lines of function definition
+    def getFunctionsDefinition(self):
+        return self.linesFunDef
 
 
 imports = Imports()

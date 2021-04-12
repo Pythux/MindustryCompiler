@@ -14,14 +14,7 @@ class FunCall:
         self.module = module if module else imports.currentFile
 
     def toContent(self):
-        module = imports.getModule(self.module)
-        if self.name not in module:
-            raise Exception("function '{}' does not exist, module {}, at line {}"
-                            .format(self.name, self.module, self.line))
-        fun = module[self.name]
-        if fun.jumpDefinition is None:  # first time call
-            fun.jumpDefinition = fun.context.genRef()
-            module.funCalled.append(fun)
+        fun = imports.getFunCalled(self.module, self.name, self.line)
         return self.toFunContent(fun)
 
     def toFunContent(self, fun):

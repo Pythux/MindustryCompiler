@@ -42,8 +42,9 @@ def runYacc(content: str, debug=False, clearContext=False):
     if lines is None or len(lines) == 0:
         return ''
 
+    lines = fillFunCall(lines)  # add args setters and jump to function
     lines.append(AsmInst('end'))
-    lines += importsHandling.imports.generateFunctionDefinition()
+    lines += importsHandling.imports.getFunctionsDefinition()  # add at the end all functions
 
     # last step, put ref to code line
     lines = consumeRefAndChangeJump(lines)
@@ -69,6 +70,17 @@ def checkExistingVars(content):
         boa(runLex(content))
         .filter(lambda tok: tok.type == 'ID')
         .map(lambda tok: Variable(tok.value))))
+
+
+def fillFunCall(lines):
+    lines = boa(lines)
+    if len(lines.filter(lambda el: isinstance(el, FunCall))):
+        def reducer(li, line):
+            if isinstance(line, FunCall):
+                return li + line.toContent()
+            return li + [line]
+
+        return fillFunCall(lines.reduce(reducer, []))
 
 
 # we only have at this moment str, Jump and Ref Objects in lines

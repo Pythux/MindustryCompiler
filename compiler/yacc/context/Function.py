@@ -35,27 +35,14 @@ class Fun:
 
     # change ref/var name for scope
     def generateDefinition(self):
-        newRef = {}
-        lines = []
-        for line in self.content:
-            if isinstance(line, Ref):
-                if line.id not in newRef:
-                    newRef[line.id] = self.context.genRef()
-                line = newRef[line.id]
-            elif isinstance(line, Jump):
-                if line.ref.id not in newRef:
-                    newRef[line.ref.id] = self.context.genRef()
-                j = Jump(line.line, newRef[line.ref.id])
-                j.asmCondition = line.asmCondition
-                line = j
-            lines.append(line)
+        if self.defined:
+            raise Exception("function {} is already defined".format(self.name))
+        self.defined = True
+        self.jumpDefinition = self.context.genRef()
+        lines = self.content
 
-        if self.returnRef.id in newRef:
-            returnRef = newRef[self.returnRef.id]
-        else:
-            returnRef = self.context.genRef()
-
-        lines.append(returnRef)
+        if self.returnRef:
+            lines.append(self.returnRef)
         # jump to funCall
         lines.append(AsmInst('set', [Value('@counter'), Variable('returnAddress')]))
         return lines
