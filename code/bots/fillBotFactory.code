@@ -75,7 +75,7 @@ if botNb > 3
 
 listBotRessourceLink = [
     (bot1, link1), (bot2, link2),
-    (bot3, link3), (bot4, link4)
+    (bot3, link3),
 ]
 
 // free memory
@@ -134,7 +134,7 @@ if botOwnedNb < botNb // need one ?
             printflush message
             op add botOwnedNb botOwnedNb 1  // botOwnedNb += 1
             // save owned bot
-            for ownedBot in [bot1, bot2, bot3, bot4]
+            for ownedBot, linkId in listBotRessourceLink
                 if ownedBot == null
                     set ownedBot @unit
                     jump endBotSave  // kind of a break
@@ -330,6 +330,11 @@ for ownedBot, botFactoLink in listBotRessourceLink
             ucontrol approach coreX coreY radiusApproche null null
             sensor coreStored core ressourceNeeded
             if coreStored > 40 // take it
+                print "take ressource for factory: "
+                print facto
+                print " id-"
+                print botFactoLink
+                printflush message
                 ucontrol itemTake core ressourceNeeded 800 null null
             else
                 print "[yellow] not enouth of "
@@ -338,6 +343,9 @@ for ownedBot, botFactoLink in listBotRessourceLink
                 op add botFactoLink botFactoLink 1
         else
             op add botFactoLink botFactoLink 1
+            print "go next factory, id: "
+            print botFactoLink
+            printflush message
             jump searchingRessource
 
 // end here
