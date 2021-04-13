@@ -4,6 +4,7 @@
 // if not false, it will be taken
 // can change who take it (here @flare)
 // the bot will take ressource to it's max transport capacity
+// max bot controled: 4
 
 
 import onOff
@@ -69,13 +70,13 @@ set loopSearchingBots 0
 
 sensor botType @unit @type // get botType
 
-if botNb > 3
-    msg.printAndWait("[red] can't take more than 3 bots\n change parameter 'botNb' to fix it", message)
+if botNb > 4
+    msg.printAndWait("[red] can't take more than 4 bots\n change parameter 'botNb' to fix it", message)
     end
 
 listBotRessourceLink = [
     (bot1, link1), (bot2, link2),
-    (bot3, link3),
+    (bot3, link3), (bot4, link4),
 ]
 
 // free memory
@@ -164,77 +165,7 @@ for ownedBot, botFactoLink in listBotRessourceLink
             // control payDrop 0 0 0 0 0  // not working
         else
             sensor factoType facto @type
-            // isGoodR = isGoodRessource(botRessource, factoType)
-
-            sensor factoType facto @type
-
-            if factoType == @ground-factory
-                if selectedBotToBuild == @dagger
-                    for ressource in [@silicon, @lead]
-                        if transportedRessource == ressource
-                            sensor currentCapacity facto ressource
-                            if currentCapacity < 30  // we could say < 30 for every ressources for ground
-                                jump returnIsGoodRessource
-
-                elif selectedBotToBuild == @crawler
-                    for ressource in [@silicon, @coal]
-                        if transportedRessource == ressource
-                            sensor currentCapacity facto ressource
-                            if currentCapacity < 30  // we could say < 30 for every ressources for ground
-                                jump returnIsGoodRessource
-
-                elif selectedBotToBuild == @nova
-                    for ressource in [@silicon, @lead, @titanium]
-                        if transportedRessource == ressource
-                            sensor currentCapacity facto ressource
-                            if currentCapacity < 30  // we could say < 30 for every ressources for ground
-                                jump returnIsGoodRessource
-
-            elif factoType == @air-factory
-                if selectedBotToBuild == @flare
-                    for ressource in [@silicon]
-                        if transportedRessource == ressource
-                            sensor currentCapacity facto ressource
-                            if currentCapacity < 30  // we could say < 30 for every ressources for ground
-                                jump returnIsGoodRessource
-
-                elif selectedBotToBuild == @mono
-                    for ressource in [@silicon, @lead]
-                        if transportedRessource == ressource
-                            sensor currentCapacity facto ressource
-                            if currentCapacity < 30  // we could say < 30 for every ressources for ground
-                                jump returnIsGoodRessource
-
-            elif factoType == @naval-factory
-                if selectedBotToBuild == @risso
-                    for ressource in [@silicon, @metaglass]
-                        if transportedRessource == ressource
-                            sensor currentCapacity facto ressource
-                            if currentCapacity < 40  // need 35 metaglass
-                                jump returnIsGoodRessource
-
-            elif factoType == @additive-reconstructor
-                for ressource in [@graphite, @silicon]
-                    if transportedRessource == ressource
-                        sensor currentCapacity facto ressource
-                        if currentCapacity < 80
-                            jump returnIsGoodRessource
-
-            elif factoType == @multiplicative-reconstructor
-                for ressource, quatity in [(@silicon, 260), (@titanium, 160), (@metaglass, 80)]
-                    if transportedRessource == ressource
-                        sensor currentCapacity facto ressource
-                        if currentCapacity < quatity
-                            jump returnIsGoodRessource
-
-            set isGoodR false
-            jump returnIsNotGoodRessource
-
-            #ref returnIsGoodRessource
-            set isGoodR true
-
-            #ref returnIsNotGoodRessource
-            // end FunCall isGoodRessource
+            isGoodR = isGoodRessource(transportedRessource, facto, message)
 
             if isGoodR == true  // dropRessourceToFacto
                 sensor factoX facto @x
@@ -253,77 +184,7 @@ for ownedBot, botFactoLink in listBotRessourceLink
             set botFactoLink 0
             jump searchingRessource
 
-        // ressourceNeeded = getNeededRessource(facto)
-        sensor factoType facto @type
-        sensor selectedBotToBuild facto @config
-
-        if factoType == @ground-factory
-            if selectedBotToBuild == @dagger
-                for ressource in [@silicon, @lead]
-                    // sensor maxCapacity facto @itemCapacity
-                    sensor currentCapacity facto ressource
-                    if currentCapacity < 30  // we could say < 30 for every ressources for ground
-                        set ressourceNeeded ressource
-                        jump returngetNeededRessource
-
-            elif selectedBotToBuild == @crawler
-                for ressource in [@silicon, @coal]
-                    sensor currentCapacity facto ressource
-                    if currentCapacity < 30  // we could say < 30 for every ressources for ground
-                        set ressourceNeeded ressource
-                        jump returngetNeededRessource
-
-            elif selectedBotToBuild == @nova
-                for ressource in [@silicon, @lead, @titanium]
-                    sensor currentCapacity facto ressource
-                    if currentCapacity < 30  // we could say < 30 for every ressources for ground
-                        set ressourceNeeded ressource
-                        jump returngetNeededRessource
-
-
-        elif factoType == @air-factory
-            if selectedBotToBuild == @flare
-                for ressource in [@silicon]
-                    sensor currentCapacity facto ressource
-                    if currentCapacity < 30  // we could say < 30 for every ressources for ground
-                        set ressourceNeeded ressource
-                        jump returngetNeededRessource
-
-            elif selectedBotToBuild == @mono
-                for ressource in [@silicon, @lead]
-                    sensor currentCapacity facto ressource
-                    if currentCapacity < 30  // we could say < 30 for every ressources for ground
-                        set ressourceNeeded ressource
-                        jump returngetNeededRessource
-
-
-        elif factoType == @naval-factory
-            if selectedBotToBuild == @risso
-                for ressource in [@silicon, @metaglass]
-                    sensor currentCapacity facto ressource
-                    if currentCapacity < 40  // need 35 metaglass
-                        set ressourceNeeded ressource
-                        jump returngetNeededRessource
-
-
-        elif factoType == @additive-reconstructor
-            for ressource in [@graphite, @silicon]
-                sensor currentCapacity facto ressource
-                if currentCapacity < 80
-                    set ressourceNeeded ressource
-                    jump returngetNeededRessource
-
-        elif factoType == @multiplicative-reconstructor
-            for ressource, quatity in [(@silicon, 260), (@titanium, 160), (@metaglass, 80)]
-                sensor currentCapacity facto ressource
-                if currentCapacity < quatity
-                    set ressourceNeeded ressource
-                    jump returngetNeededRessource
-
-        set ressourceNeeded false
-        #ref returngetNeededRessource
-
-        // end fun getNeededRessource
+        ressourceNeeded = getNeededRessource(facto)
 
         if ressourceNeeded != false
             set botRessource ressourceNeeded
@@ -352,5 +213,126 @@ for ownedBot, botFactoLink in listBotRessourceLink
 jump loop
 
 
-// will need @counter for for/functions optimisation and stop copy/past it
-// set @counter rtnAddr
+// will return ressourceType needed by factory or false if facto does not need any
+getNeededRessource(facto)
+    sensor factoType facto @type
+    sensor selectedBotToBuild facto @config
+
+    if factoType == @ground-factory
+        if selectedBotToBuild == @dagger
+            for ressource in [@silicon, @lead]
+                // sensor maxCapacity facto @itemCapacity
+                sensor currentCapacity facto ressource
+                if currentCapacity < 30  // we could say < 30 for every ressources for ground
+                    return ressource
+
+        elif selectedBotToBuild == @crawler
+            for ressource in [@silicon, @coal]
+                sensor currentCapacity facto ressource
+                if currentCapacity < 30  // we could say < 30 for every ressources for ground
+                    return ressource
+
+        elif selectedBotToBuild == @nova
+            for ressource in [@silicon, @lead, @titanium]
+                sensor currentCapacity facto ressource
+                if currentCapacity < 30  // we could say < 30 for every ressources for ground
+                    return ressource
+
+
+    elif factoType == @air-factory
+        if selectedBotToBuild == @flare
+            for ressource in [@silicon]
+                sensor currentCapacity facto ressource
+                if currentCapacity < 30  // we could say < 30 for every ressources for ground
+                    return ressource
+
+        elif selectedBotToBuild == @mono
+            for ressource in [@silicon, @lead]
+                sensor currentCapacity facto ressource
+                if currentCapacity < 30  // we could say < 30 for every ressources for ground
+                    return ressource
+
+
+    elif factoType == @naval-factory
+        if selectedBotToBuild == @risso
+            for ressource in [@silicon, @metaglass]
+                sensor currentCapacity facto ressource
+                if currentCapacity < 40  // need 35 metaglass
+                    return ressource
+
+    elif factoType == @additive-reconstructor
+        for ressource in [@graphite, @silicon]
+            sensor currentCapacity facto ressource
+            if currentCapacity < 80
+                return ressource
+
+    elif factoType == @multiplicative-reconstructor
+        for ressource, quatity in [(@silicon, 260), (@titanium, 160), (@metaglass, 80)]
+            sensor currentCapacity facto ressource
+            if currentCapacity < quatity
+                return ressource
+    return false
+
+
+isGoodRessource(transportedRessource, facto, message)
+    sensor factoType facto @type
+    sensor selectedBotToBuild facto @config
+    if factoType == @ground-factory
+        if selectedBotToBuild == @dagger
+            for ressource in [@silicon, @lead]
+                if transportedRessource == ressource
+                    sensor currentCapacity facto ressource
+                    if currentCapacity < 30  // we could say < 30 for every ressources for ground
+                        return true
+
+        elif selectedBotToBuild == @crawler
+            for ressource in [@silicon, @coal]
+                if transportedRessource == ressource
+                    sensor currentCapacity facto ressource
+                    if currentCapacity < 30  // we could say < 30 for every ressources for ground
+                        return true
+
+        elif selectedBotToBuild == @nova
+            for ressource in [@silicon, @lead, @titanium]
+                if transportedRessource == ressource
+                    sensor currentCapacity facto ressource
+                    if currentCapacity < 30  // we could say < 30 for every ressources for ground
+                        return true
+
+    elif factoType == @air-factory
+        if selectedBotToBuild == @flare
+            for ressource in [@silicon]
+                if transportedRessource == ressource
+                    sensor currentCapacity facto ressource
+                    if currentCapacity < 30  // we could say < 30 for every ressources for ground
+                        return true
+
+        elif selectedBotToBuild == @mono
+            for ressource in [@silicon, @lead]
+                if transportedRessource == ressource
+                    sensor currentCapacity facto ressource
+                    if currentCapacity < 30  // we could say < 30 for every ressources for ground
+                        return true
+
+    elif factoType == @naval-factory
+        if selectedBotToBuild == @risso
+            for ressource in [@silicon, @metaglass]
+                if transportedRessource == ressource
+                    sensor currentCapacity facto ressource
+                    if currentCapacity < 40  // need 35 metaglass
+                        return true
+
+    elif factoType == @additive-reconstructor
+        for ressource in [@graphite, @silicon]
+            if transportedRessource == ressource
+                sensor currentCapacity facto ressource
+                if currentCapacity < 80
+                    return true
+
+    elif factoType == @multiplicative-reconstructor
+        for ressource, quatity in [(@silicon, 260), (@titanium, 160), (@metaglass, 80)]
+            if transportedRessource == ressource
+                sensor currentCapacity facto ressource
+                if currentCapacity < quatity
+                    return true
+    return false
