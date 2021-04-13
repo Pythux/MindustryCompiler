@@ -3,7 +3,7 @@
 from compiler.yacc.classes.AsmInst import Variable
 from ._start import grammar, YaccProduction, context
 from boa import boa
-from ..classes import Ref, Jump, FunCall
+from ..classes import Ref, Jump
 
 
 # ressourceList = [(1, cuivre, @copper), (2, plomb, @lead)]
