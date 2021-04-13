@@ -1,5 +1,6 @@
 
 
+from compiler.yacc.classes.AsmInst import Variable
 from ._start import grammar, YaccProduction, context
 from boa import boa
 from ..classes import Ref, Jump, FunCall
@@ -55,7 +56,7 @@ def liNameOrList(p: YaccProduction):
     '''liNameOrList : ID
                     | list'''
     liNameOrList = p[1]
-    p[0] = liNameOrList if isinstance(liNameOrList, list) else context.staticVarsList[liNameOrList]
+    p[0] = liNameOrList if isinstance(liNameOrList, list) else context.staticVarsList[Variable(liNameOrList)]
 
 
 @grammar
