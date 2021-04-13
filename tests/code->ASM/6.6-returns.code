@@ -19,19 +19,29 @@ x = yo(true, message)
 set message message1
 set tmp1 true
 set tmp2 message
-jump 5 equal tmp1 true
-jump 16 always true true
+op add returnAddress-None-yo @counter 1
+jump 7 always true true
+set x tmp3
+end
+jump 9 equal tmp1 true
+jump 15 always true true
 set tmp4 "a is true"
 set tmp5 tmp2
+op add returnAddress-msg-printAndWait @counter 1
+jump 18 always true true
+set tmp3 true
+jump 17 always true true
+set tmp3 false
+jump 17 always true true
+set @counter returnAddress-None-yo
 print tmp4
 printflush tmp5
 set tmp7 2
+op add returnAddress-time-wait @counter 1
+jump 24 always true true
+set @counter returnAddress-msg-printAndWait
 set tmp6 @time
 op mul tmp7 tmp7 1000
 op add tmp8 tmp6 tmp7
-jump 13 greaterThanEq tmp8 @time
-set tmp3 true
-jump 18 always true true
-set tmp3 false
-jump 18 always true true
-set x tmp3
+jump 27 greaterThanEq tmp8 @time
+set @counter returnAddress-time-wait

@@ -43,8 +43,11 @@ def runYacc(content: str, debug=False, clearContext=False):
         return ''
 
     lines = fillFunCall(lines)  # add args setters and jump to function
-    lines.append(AsmInst('end'))
-    lines += importsHandling.imports.getFunctionsDefinition()  # add at the end all functions
+
+    functionCalled = importsHandling.imports.getFunctionsDefinition()  # add after end prog, function used
+    if len(functionCalled):
+        lines.append(AsmInst('end'))
+        lines += functionCalled
 
     while (lines.filter(lambda el: isinstance(el, FunCall))):
         lines = fillFunCall(lines)  # add args setters and jump to function

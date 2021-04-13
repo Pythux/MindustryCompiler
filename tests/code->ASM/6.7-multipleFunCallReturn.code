@@ -12,17 +12,17 @@ y = fun()
 ----------------------
 
 
-jump 2 equal true true
-jump 4 always true true
-set tmp1 true
-jump 6 always true true
-set tmp1 false
-jump 6 always true true
+op add returnAddress-None-fun @counter 1
+jump 7 always true true
 set x tmp1
+op add returnAddress-None-fun @counter 1
+jump 7 always true true
+set y tmp1
+end
 jump 9 equal true true
 jump 11 always true true
 set tmp1 true
 jump 13 always true true
 set tmp1 false
 jump 13 always true true
-set y tmp1
+set @counter returnAddress-None-fun
