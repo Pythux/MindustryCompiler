@@ -19,7 +19,7 @@ set message message1
 
 
 // which bot to use
-ubind @dagger  // let player choose with bot image the bind
+ubind @flare  // let player choose with bot image the bind
 set botNb 3
 
 
@@ -55,7 +55,6 @@ ressourceList = [
 
 // limite "enougth" at 100 (ps: max container is 300)
 set storeStopQuantity 100
-set storeMaxQuantity 300
 
 
 // need to go closer if more bots, don't know why

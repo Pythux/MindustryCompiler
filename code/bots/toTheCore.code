@@ -1,0 +1,69 @@
+
+// put all ressource in store to core or move it to loader
+
+import onOff
+import idBots
+import msg
+import store
+
+
+set unload container1
+set loader container2
+
+set switch switch1
+set message message1
+
+// which bot to use
+ubind @dagger  // let player choose with bot image the bind
+set botNb 3
+
+coreX, coreY, core = store.getCoreOr(loader)
+
+
+// to flag bots with, done only once
+if procId == null
+    procId = idBots.genProcId()
+
+set botOwnedNb 0
+set loopSearchingBots 0
+
+
+sensor botType @unit @type // get botType
+
+set reset false
+
+// --- Prog Loop ---
+#ref loop
+
+// switch to turn off
+isOn = onOff.isOn(switch)
+if isOn != true
+    msg.printAndWait("[yellow] process is turn off", message)
+    set reset true // will reset after switch On
+    jump loop
+
+if reset == true
+    msg.printAndWait("reset prog", message)
+    end // to reset procId and botOwnedNb
+
+
+listBotRessourceLink = [
+    bot1, bot2, bot3, bot4, bot5, bot6, bot7, bot8,
+]
+
+// free bot list memory
+// variable content is keep after end instruction, memory not free
+for ownedBot in listBotRessourceLink
+    if ownedBot != null
+        sensor botFlag @unit @flag
+        if botFlag == procId
+            ucontrol flag 0 null null null null  // free it
+    set ownedBot null
+
+
+
+
+set v vault1
+sensor r v @firstItem
+print r
+printflush message1
