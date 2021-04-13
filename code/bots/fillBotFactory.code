@@ -20,7 +20,7 @@ set message message1
 
 // which bot to use
 ubind @flare  // let player choose with bot image the bind
-set botNb 5
+set botNb 4
 
 set radiusApproche 6 // max working radius: 8
 
@@ -74,14 +74,13 @@ set loopSearchingBots 0
 
 sensor botType @unit @type // get botType
 
-if botNb > 8
+if botNb > 4
     msg.printAndWait("[red] can't take more than 4 bots\n change parameter 'botNb' to fix it", message)
     end
 
 listBotRessourceLink = [
     (bot1, link1), (bot2, link2),
-    (bot3, link3), (bot4, link4),
-    (bot5, link5),
+    (bot3, link3), (bot4, link4), (bot5, link5),
 ]
 
 // free memory
@@ -142,6 +141,8 @@ if botOwnedNb < botNb // need one ?
             // save owned bot
             for ownedBot, linkId in listBotRessourceLink
                 if ownedBot == null
+                    print "new bot saved !"
+                    printflush message
                     set ownedBot @unit
                     jump endBotSave  // kind of a break
 
@@ -149,9 +150,11 @@ if botOwnedNb < botNb // need one ?
 set loopSearchingBots 0
 
 
+set count 0
 
 for ownedBot, botFactoLink in listBotRessourceLink
     ubind ownedBot
+    op add count count 1
     if @unit == null // no more owned bots
         jump loop
 
@@ -180,7 +183,7 @@ moveBotToFillFactoInNeed(botFactoLink, coreX, coreY, core, message)
             else
                 // go see next facto
                 op add botFactoLink botFactoLink 1
-    else
+    else  // empty
         set linkIndex 0  // reset searching list
         #ref searchingRessource
         getlink facto botFactoLink
@@ -212,7 +215,7 @@ moveBotToFillFactoInNeed(botFactoLink, coreX, coreY, core, message)
             printflush message
             jump searchingRessource
 
-        return botFactoLink
+    return botFactoLink
 
 // end here
 jump loop
