@@ -20,7 +20,7 @@ set message message1
 
 // which bot to use
 ubind @flare  // let player choose with bot image the bind
-set botNb 4
+set botNb 5
 
 set radiusApproche 6 // max working radius: 8
 
@@ -57,7 +57,11 @@ if coreX == null
         msg.printAndWait(core, message)
         msg.printAndWait(coreFound, message)
         jump getCorePos
-    msg.printAndWait("[green] core found", message)
+    print "[green] core found at "
+    print coreX
+    print " "
+    print coreY
+    msg.printAndWait("", message)
 
 
 // to flag bots with, done only once
@@ -70,13 +74,14 @@ set loopSearchingBots 0
 
 sensor botType @unit @type // get botType
 
-if botNb > 4
+if botNb > 8
     msg.printAndWait("[red] can't take more than 4 bots\n change parameter 'botNb' to fix it", message)
     end
 
 listBotRessourceLink = [
     (bot1, link1), (bot2, link2),
     (bot3, link3), (bot4, link4),
+    (bot5, link5),
 ]
 
 // free memory
@@ -150,14 +155,10 @@ for ownedBot, botFactoLink in listBotRessourceLink
     if @unit == null // no more owned bots
         jump loop
 
-    print "botFactoLink: "
-    msg.printAndWait(botFactoLink, message)
-    botFactoLink = moveBotToFillFactoInNeed(botFactoLink, message)
-    print "and now: "
-    msg.printAndWait(botFactoLink, message)
+    botFactoLink = moveBotToFillFactoInNeed(botFactoLink, coreX, coreY, core, message)
 
 
-moveBotToFillFactoInNeed(botFactoLink, message)
+moveBotToFillFactoInNeed(botFactoLink, coreX, coreY, core, message)
     getlink facto botFactoLink
     sensor payload @unit @totalItems
     if payload > 0
@@ -169,7 +170,7 @@ moveBotToFillFactoInNeed(botFactoLink, message)
             set botFactoLink 0
         else
             sensor factoType facto @type
-            isGoodR = isGoodRessource(transportedRessource, facto, message)
+            isGoodR = isGoodRessource(transportedRessource, facto)
 
             if isGoodR == true  // dropRessourceToFacto
                 sensor factoX facto @x
@@ -180,18 +181,14 @@ moveBotToFillFactoInNeed(botFactoLink, message)
                 // go see next facto
                 op add botFactoLink botFactoLink 1
     else
-        // payload == 0, choose a ressource
-        set linkIndex 0
+        set linkIndex 0  // reset searching list
         #ref searchingRessource
         getlink facto botFactoLink
         if facto == null // end link list, search again
             set botFactoLink 0
             jump searchingRessource
 
-        print "facto good ? "
-        msg.printAndWait(facto, message)
         ressourceNeeded = getNeededRessource(facto, message)
-
         if ressourceNeeded != false
             set botRessource ressourceNeeded
             ucontrol approach coreX coreY radiusApproche null null
@@ -209,10 +206,6 @@ moveBotToFillFactoInNeed(botFactoLink, message)
                 msg.printAndWait(" in base, will take something else", message)
                 op add botFactoLink botFactoLink 1
         else
-            print "facto: "
-            print facto
-            print " does not need ressource: "
-            msg.printAndWait(ressourceNeeded, message)
             op add botFactoLink botFactoLink 1
             print "go next factory, id: "
             print botFactoLink
@@ -229,7 +222,6 @@ jump loop
 getNeededRessource(facto, message)
     sensor factoType facto @type
     sensor selectedBotToBuild facto @config
-    msg.printAndWait("yo ???", message)
 
     if factoType == @ground-factory
         if selectedBotToBuild == @dagger
@@ -299,7 +291,7 @@ getNeededRessource(facto, message)
     return false
 
 
-isGoodRessource(transportedRessource, facto, message)
+isGoodRessource(transportedRessource, facto)
     sensor factoType facto @type
     sensor selectedBotToBuild facto @config
     if factoType == @ground-factory
