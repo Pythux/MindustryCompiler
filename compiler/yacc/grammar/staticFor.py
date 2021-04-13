@@ -32,7 +32,7 @@ def staticFor(p: YaccProduction):
     lines = []
 
     for tuple in li:
-        copiedLines = [el.copy() if not isinstance(el, FunCall) else el for el in originalLines]
+        copiedLines = [el.copy() for el in originalLines]
         for k in refDict.keys():  # new refs
             refDict[k] = context.genRef()
         for line in copiedLines:
@@ -43,8 +43,6 @@ def staticFor(p: YaccProduction):
                     line.changeRef(refDict[line.ref])
                 for toReplace, toReplaceBy in zip(decompose, tuple):
                     line.replace(toReplace, toReplaceBy)
-            elif isinstance(line, FunCall):
-                pass
             else:
                 for toReplace, toReplaceBy in zip(decompose, tuple):
                     line.replace(toReplace, toReplaceBy)

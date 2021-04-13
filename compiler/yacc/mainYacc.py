@@ -46,6 +46,10 @@ def runYacc(content: str, debug=False, clearContext=False):
     lines.append(AsmInst('end'))
     lines += importsHandling.imports.getFunctionsDefinition()  # add at the end all functions
 
+    while (lines.filter(lambda el: isinstance(el, FunCall))):
+        lines = fillFunCall(lines)  # add args setters and jump to function
+        lines += importsHandling.imports.getFunctionsDefinition()  # add at the end all functions
+
     # last step, put ref to code line
     lines = consumeRefAndChangeJump(lines)
 
@@ -81,6 +85,7 @@ def fillFunCall(lines):
             return li + [line]
 
         return fillFunCall(lines.reduce(reducer, []))
+    return lines
 
 
 # we only have at this moment str, Jump and Ref Objects in lines
