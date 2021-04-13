@@ -20,7 +20,7 @@ set message message1
 
 // which bot to use
 ubind @flare  // let player choose with bot image the bind
-set botNb 4
+set botNb 8
 
 set radiusApproche 6 // max working radius: 8
 
@@ -74,13 +74,15 @@ set loopSearchingBots 0
 
 sensor botType @unit @type // get botType
 
-if botNb > 4
-    msg.printAndWait("[red] can't take more than 4 bots\n change parameter 'botNb' to fix it", message)
+if botNb > 8
+    msg.printAndWait("[red] can't take more than 8 bots\n change parameter 'botNb' to fix it", message)
     end
 
 listBotRessourceLink = [
     (bot1, link1), (bot2, link2),
-    (bot3, link3), (bot4, link4), (bot5, link5),
+    (bot3, link3), (bot4, link4),
+    (bot5, link5), (bot6, link6),
+    (bot7, link7), (bot8, link8),
 ]
 
 // free memory
@@ -291,6 +293,18 @@ getNeededRessource(facto, message)
             sensor currentCapacity facto ressource
             if currentCapacity < quatity
                 return ressource
+
+    elif factoType == @overdrive-projector
+        for ressource in [@phase-fabric]
+            sensor currentCapacity facto ressource
+            if currentCapacity < 3
+                return ressource
+
+    elif factoType == @overdrive-dome
+        for ressource in [@phase-fabric, @silicon]
+            sensor currentCapacity facto ressource
+            if currentCapacity < 3
+                return ressource
     return false
 
 
@@ -368,5 +382,19 @@ isGoodRessource(transportedRessource, facto)
             if transportedRessource == ressource
                 sensor currentCapacity facto ressource
                 if currentCapacity < quatity
+                    return true
+
+    elif factoType == @overdrive-projector
+        for ressource in [@phase-fabric]
+            if transportedRessource == ressource
+                sensor currentCapacity facto ressource
+                if currentCapacity < 3
+                    return true
+
+    elif factoType == @overdrive-dome
+        for ressource in [@phase-fabric, @silicon]
+            if transportedRessource == ressource
+                sensor currentCapacity facto ressource
+                if currentCapacity < 3
                     return true
     return false
