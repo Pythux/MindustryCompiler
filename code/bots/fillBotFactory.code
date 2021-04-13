@@ -20,7 +20,7 @@ set message message1
 
 // which bot to use
 ubind @flare  // let player choose with bot image the bind
-set botNb 2
+set botNb 4
 
 set radiusApproche 6 // max working radius: 8
 
@@ -150,19 +150,23 @@ for ownedBot, botFactoLink in listBotRessourceLink
     if @unit == null // no more owned bots
         jump loop
 
+    print "botFactoLink: "
+    msg.printAndWait(botFactoLink, message)
+    botFactoLink = moveBotToFillFactoInNeed(botFactoLink, message)
+    print "and now: "
+    msg.printAndWait(botFactoLink, message)
+
+
+moveBotToFillFactoInNeed(botFactoLink, message)
     getlink facto botFactoLink
     sensor payload @unit @totalItems
     if payload > 0
         sensor transportedRessource @unit @firstItem
 
         if facto == null // end link list
-            set botFactoLink 0
-            // dropRessourceBackToStore(core, coreX, coreY)
-            // drop if we can, else crash
-            // crash ressources
             ucontrol approach coreX coreY radiusApproche null null
             ucontrol itemDrop core 800 null null null
-            // control payDrop 0 0 0 0 0  // not working
+            set botFactoLink 0
         else
             sensor factoType facto @type
             isGoodR = isGoodRessource(transportedRessource, facto, message)
@@ -184,7 +188,9 @@ for ownedBot, botFactoLink in listBotRessourceLink
             set botFactoLink 0
             jump searchingRessource
 
-        ressourceNeeded = getNeededRessource(facto)
+        print "facto good ? "
+        msg.printAndWait(facto, message)
+        ressourceNeeded = getNeededRessource(facto, message)
 
         if ressourceNeeded != false
             set botRessource ressourceNeeded
@@ -203,20 +209,27 @@ for ownedBot, botFactoLink in listBotRessourceLink
                 msg.printAndWait(" in base, will take something else", message)
                 op add botFactoLink botFactoLink 1
         else
+            print "facto: "
+            print facto
+            print " does not need ressource: "
+            msg.printAndWait(ressourceNeeded, message)
             op add botFactoLink botFactoLink 1
             print "go next factory, id: "
             print botFactoLink
             printflush message
             jump searchingRessource
 
+        return botFactoLink
+
 // end here
 jump loop
 
 
 // will return ressourceType needed by factory or false if facto does not need any
-getNeededRessource(facto)
+getNeededRessource(facto, message)
     sensor factoType facto @type
     sensor selectedBotToBuild facto @config
+    msg.printAndWait("yo ???", message)
 
     if factoType == @ground-factory
         if selectedBotToBuild == @dagger
@@ -268,6 +281,18 @@ getNeededRessource(facto)
 
     elif factoType == @multiplicative-reconstructor
         for ressource, quatity in [(@silicon, 260), (@titanium, 160), (@metaglass, 80)]
+            sensor currentCapacity facto ressource
+            if currentCapacity < quatity
+                return ressource
+
+    elif factoType == @exponential-reconstructor
+        for ressource, quatity in [(@silicon, 1700), (@titanium, 1500), (@plastanium, 1300)]
+            sensor currentCapacity facto ressource
+            if currentCapacity < quatity
+                return ressource
+
+    elif factoType == @tetrative-reconstructor
+        for ressource, quatity in [(@silicon, 2000), (@plastanium, 1200), (@surge-alloy, 1000), (@phase-fabric, 700)]
             sensor currentCapacity facto ressource
             if currentCapacity < quatity
                 return ressource
@@ -331,6 +356,20 @@ isGoodRessource(transportedRessource, facto, message)
 
     elif factoType == @multiplicative-reconstructor
         for ressource, quatity in [(@silicon, 260), (@titanium, 160), (@metaglass, 80)]
+            if transportedRessource == ressource
+                sensor currentCapacity facto ressource
+                if currentCapacity < quatity
+                    return true
+
+    elif factoType == @exponential-reconstructor
+        for ressource, quatity in [(@silicon, 1700), (@titanium, 1500), (@plastanium, 1300)]
+            if transportedRessource == ressource
+                sensor currentCapacity facto ressource
+                if currentCapacity < quatity
+                    return true
+
+    elif factoType == @tetrative-reconstructor
+        for ressource, quatity in [(@silicon, 2000), (@plastanium, 1200), (@surge-alloy, 1000), (@phase-fabric, 700)]
             if transportedRessource == ressource
                 sensor currentCapacity facto ressource
                 if currentCapacity < quatity
