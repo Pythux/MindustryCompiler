@@ -19,3 +19,9 @@ def args_one(p: YaccProduction):
 def args_many(p: YaccProduction):
     '''arguments : arguments Comma info'''
     p[0] = p[1] + [p[3]]
+
+
+@grammar
+def args_oneComma(p: YaccProduction):
+    '''arguments : arguments Comma'''
+    p[0] = p[1]
