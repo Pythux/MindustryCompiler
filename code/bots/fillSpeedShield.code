@@ -8,6 +8,7 @@ import onOff
 set store container1
 set message message1
 ubind @flare
+set turret hail1
 
 
 if @unit == null
@@ -33,14 +34,17 @@ set listFactoLoop 0
 set reset false
 
 
+
 #ref freeMyBot
 if myBot != null
     ubind myBot
     ucontrol flag 0 null null null null
     set myBot null
 
+
 // --- Prog Loop ---
 #ref loop
+
 
 // switch to turn off
 isOn = onOff.isOn(switch)
@@ -54,8 +58,17 @@ if reset == true
     end // to reset procId and botOwnedNb
 
 
-// does we have stuff to fill ?
+// check turret to turn shield on if no radars
+sensor isDead turret @dead
+if isDead == true
+    set turret null
 
+if turret == null
+    if hail1 != null
+        set turret hail1
+
+
+// does we have stuff to fill ?
 
 getlink facto botFactoLink
 sensor factoType facto @type
@@ -64,6 +77,41 @@ if facto == null // end link list
     op add listFactoLoop listFactoLoop 1
     set needToFreeBot false
     jump loop
+
+
+// if turret, list all force-projector to turn it on/off if needed
+if turret != null
+    set aTurretWasHere true
+    radar enemy any any distance turret 1 spotted
+    set linkId 0
+    #ref loopProjector
+    getlink projector linkId
+    if projector == null
+        jump endLoopProjector
+    sensor projectorType projector @type
+    if projectorType == @force-projector
+        control enabled projector spotted null null null
+    op add linkId linkId 1
+    jump loopProjector
+#ref endLoopProjector
+
+
+// if the radar turret is disconnected, enable all shield
+if turret == null
+    if aTurretWasHere == true
+        set aTurretWasHere false
+        set linkId 0
+        #ref loopProjectorActivate
+        getlink projector linkId
+        if projector == null
+            jump endLoopProjectorActivate
+        sensor projectorType projector @type
+        if projectorType == @force-projector
+            control enabled projector true null null null
+        op add linkId linkId 1
+        jump loopProjectorActivate
+#ref endLoopProjectorActivate
+
 
 ressourceNeeded = getNeededRessource(facto, message)
 if ressourceNeeded == false
@@ -109,6 +157,10 @@ else // payload empty
 
 
 jump loop
+
+// to get it when given latter
+if hail1 != null
+    set turret hail1
 
 
 // will return ressourceType needed by factory or false if facto does not need any
@@ -160,4 +212,3 @@ isGoodRessource(transportedRessource, facto)
                 if currentCapacity < 4
                     return true
     return false
-
