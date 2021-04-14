@@ -1,0 +1,150 @@
+
+import msg
+import store
+import idBots
+import onOff
+
+
+set store container1
+set message message1
+ubind @flare
+
+
+if @unit == null
+    msg.printAndWait("[yellow] no unit of choosen type", message)
+    end
+
+
+coreX, coreY, core = store.getCoreOr(store)
+
+
+// to flag bots with, done only once
+if procId == null
+    procId = idBots.genProcId()
+
+
+set botFactoLink 0
+
+sensor botType @unit @type // get botType
+
+set myBot null
+set listFactoLoop 0
+
+set reset false
+
+
+#ref freeMyBot
+if myBot != null
+    ubind myBot
+    ucontrol flag 0 null null null null
+    set myBot null
+
+// --- Prog Loop ---
+#ref loop
+
+// switch to turn off
+isOn = onOff.isOn(switch)
+if isOn != true
+    msg.printAndWait("[yellow] process is turn off", message)
+    set reset true // will reset after switch On
+    jump loop
+
+if reset == true
+    msg.printAndWait("reset prog", message)
+    end // to reset procId and botOwnedNb
+
+
+// does we have stuff to fill ?
+
+
+getlink facto botFactoLink
+sensor factoType facto @type
+if facto == null // end link list
+    set botFactoLink 0
+    op add listFactoLoop listFactoLoop 1
+    set needToFreeBot false
+    jump loop
+
+ressourceNeeded = getNeededRessource(facto, message)
+if ressourceNeeded == false
+    op add botFactoLink botFactoLink 1
+    if listFactoLoop > 2
+        jump freeMyBot
+    else
+        jump loop
+
+set listFactoLoop 0
+
+sensor coreStored core ressourceNeeded
+if coreStored < 10
+    msg.printAndWait("[yellow] not enougth ressource in core/store", message)
+    jump freeMyBot
+
+// get a bot
+if myBot == null
+    set botId 1
+    haveBot = idBots.getFreeBotAndFlagIt(botType, procId, botId, message)
+    if haveBot == false
+        jump loop
+    else
+        set myBot @unit
+
+ubind myBot
+
+sensor payload @unit @totalItems
+if payload > 0
+    sensor transportedRessource @unit @firstItem
+    isGoodR = isGoodRessource(transportedRessource, facto)
+    if isGoodR == true  // dropRessourceToFacto
+        sensor factoX facto @x
+        sensor factoY facto @y
+        ucontrol approach factoX factoY radiusApproche null null
+        ucontrol itemDrop facto 800 null null null
+    else
+        ucontrol approach coreX coreY radiusApproche null null
+        ucontrol itemDrop core 800 null null null
+else // payload empty
+    ucontrol approach coreX coreY radiusApproche null null
+    ucontrol itemTake core ressourceNeeded 800 null null
+
+
+jump loop
+
+
+// will return ressourceType needed by factory or false if facto does not need any
+getNeededRessource(facto, message)
+    sensor factoType facto @type
+    sensor selectedBotToBuild facto @config
+
+    if factoType == @overdrive-projector
+        for ressource in [@phase-fabric]
+            sensor currentCapacity facto ressource
+            if currentCapacity < 3
+                return ressource
+
+    elif factoType == @overdrive-dome
+        for ressource in [@phase-fabric, @silicon]
+            sensor currentCapacity facto ressource
+            if currentCapacity < 3
+                return ressource
+    return false
+
+
+isGoodRessource(transportedRessource, facto)
+    sensor factoType facto @type
+    sensor selectedBotToBuild facto @config
+    if factoType == @overdrive-projector
+        for ressource in [@phase-fabric]
+            if transportedRessource == ressource
+                sensor currentCapacity facto ressource
+                if currentCapacity < 3
+                    return true
+
+    elif factoType == @overdrive-dome
+        for ressource in [@phase-fabric, @silicon]
+            if transportedRessource == ressource
+                sensor currentCapacity facto ressource
+                if currentCapacity < 3
+                    return true
+    return false
+
