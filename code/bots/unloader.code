@@ -7,7 +7,7 @@ import msg
 import store
 
 
-set unload container1
+set unloader container1
 set loader container2
 
 set switch switch1
@@ -23,12 +23,12 @@ if @unit == null
     end
 
 
-if unload == null
-    msg.printAndWait("[yellow] unloader store selected", message)
+if unloader == null
+    msg.printAndWait("[yellow] unloader store not selected", message)
     end
 
-sensor unloadX unload @x
-sensor unloadY unload @y
+sensor unloaderX unloader @x
+sensor unloaderY unloader @y
 
 
 coreX, coreY, core = store.getCoreOr(loader)
@@ -58,6 +58,10 @@ for ownedBot in botList
 
 sensor botType @unit @type // get botType
 
+// set a default ressource
+set toUnload @copper
+
+
 set reset false
 
 // --- Prog Loop ---
@@ -74,13 +78,40 @@ if reset == true
     msg.printAndWait("reset prog", message)
     end // to reset procId and botOwnedNb
 
-sensor ressource unload @firstItem
-print "ressource: "
-print ressource
-printflush message
-if ressource != null
-    // have stuff to unload
 
+// sensor ressource unloader @firstItem
+// it prevent others to unload if low but continuously comming
+
+// will do a random on ressource list
+ressourceList = [
+    @copper, @lead, @silicon,
+    @graphite, @coal, @metaglass,
+    @titanium, @thorium, @surge-alloy,
+    @blast-compound, @pyratite,
+    @phase-fabric, @plastanium,
+    @spore-pod, @sand, @scrap,
+]
+
+sensor content unloader toUnload
+if content > 40
+    jump noRessourceChange
+
+// will set the best ressource
+set bestContent 0
+for ressource in ressourceList
+    sensor contentChallenger unloader ressource
+    if contentChallenger > bestContent
+        set bestContent contentChallenger
+        set toUnload ressource
+
+#ref noRessourceChange
+
+sensor content unloader toUnload
+if content < 40
+    // need to free some bots
+    msg.printAndWait("store practicaly empty, will free some bots", message)
+
+if content > 200
     // try take another bot
     if botOwnedNb < botNb  // need one ?
         haveNewBot = idBots.tryTakeOneMoreBot(procId, botType, message)
@@ -92,23 +123,25 @@ if ressource != null
                     jump endBotSave
             #ref endBotSave
 
-    for ownedBot in botList
-        if ownedBot == null
-            jump loop
-        ubind ownedBot
-        unloadRessource(unload, unloadX, unloadY, core, coreX, coreY, message)
-else
-    msg.printAndWait("no more ressource to unload", message)
-    // no more stuff to unload
-    // try free last bot in list
+
+print "ressource: "
+print toUnload
+printflush message
+
+for ownedBot in botList
+    if ownedBot == null
+        jump loop
+    ubind ownedBot
+    unloadRessource(toUnload, unloader, unloaderX, unloaderY, core, coreX, coreY, message)
+
 jump loop
 
-unloadRessource(unload, unloadX, unloadY, core, coreX, coreY, message)
-    sensor ressourceToUnnload unload @firstItem
+unloadRessource(toUnload, unloader, unloaderX, unloaderY, core, coreX, coreY, message)
+    // sensor ressourceToUnload unloader @firstItem
     sensor payload @unit @totalItems
     if payload > 0
         ucontrol approach coreX coreY 5 null null
         ucontrol itemDrop core 800 null null null
     else
-        ucontrol approach unloadX unloadY 5 null null
-        ucontrol itemTake unload ressourceToUnnload 800 null null
+        ucontrol approach unloaderX unloaderY 5 null null
+        ucontrol itemTake unloader toUnload 800 null null
