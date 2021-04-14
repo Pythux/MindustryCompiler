@@ -195,7 +195,6 @@ moveBotToFillFactoInNeed(botFactoLink, coreX, coreY, core, message)
 
         ressourceNeeded = getNeededRessource(facto, message)
         if ressourceNeeded != false
-            set botRessource ressourceNeeded
             ucontrol approach coreX coreY radiusApproche null null
             sensor coreStored core ressourceNeeded
             if coreStored > 40 // take it
