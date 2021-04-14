@@ -14,8 +14,22 @@ set switch switch1
 set message message1
 
 // which bot to use
-ubind @dagger  // let player choose with bot image the bind
+ubind @flare  // let player choose with bot image the bind
 set botNb 3
+
+
+if @unit == null
+    msg.printAndWait("[yellow] no unit of choosen type", message)
+    end
+
+
+if unload == null
+    msg.printAndWait("[yellow] unloader store selected", message)
+    end
+
+sensor unloadX unload @x
+sensor unloadY unload @y
+
 
 coreX, coreY, core = store.getCoreOr(loader)
 
@@ -26,6 +40,20 @@ if procId == null
 
 set botOwnedNb 0
 set loopSearchingBots 0
+
+botList = [
+    bot1, bot2, bot3, bot4,
+    bot5, bot6, bot7, bot8,
+]
+
+// free bot list memory
+// variable content is keep after end instruction, memory not free
+for ownedBot in botList
+    if ownedBot != null
+        sensor botFlag @unit @flag
+        if botFlag == procId
+            ucontrol flag 0 null null null null  // free it
+    set ownedBot null
 
 
 sensor botType @unit @type // get botType
@@ -46,24 +74,41 @@ if reset == true
     msg.printAndWait("reset prog", message)
     end // to reset procId and botOwnedNb
 
+sensor ressource unload @firstItem
+print "ressource: "
+print ressource
+printflush message
+if ressource != null
+    // have stuff to unload
 
-listBotRessourceLink = [
-    bot1, bot2, bot3, bot4, bot5, bot6, bot7, bot8,
-]
+    // try take another bot
+    if botOwnedNb < botNb  // need one ?
+        haveNewBot = idBots.tryTakeOneMoreBot(procId, botType, message)
+        if haveNewBot == true
+            op add botOwnedNb botOwnedNb 1
+            for ownedBot in botList
+                if ownedBot == null
+                    set ownedBot @unit
+                    jump endBotSave
+            #ref endBotSave
 
-// free bot list memory
-// variable content is keep after end instruction, memory not free
-for ownedBot in listBotRessourceLink
-    if ownedBot != null
-        sensor botFlag @unit @flag
-        if botFlag == procId
-            ucontrol flag 0 null null null null  // free it
-    set ownedBot null
+    for ownedBot in botList
+        if ownedBot == null
+            jump loop
+        ubind ownedBot
+        unloadRessource(unload, unloadX, unloadY, core, coreX, coreY, message)
+else
+    msg.printAndWait("no more ressource to unload", message)
+    // no more stuff to unload
+    // try free last bot in list
+jump loop
 
-
-
-
-set v vault1
-sensor r v @firstItem
-print r
-printflush message1
+unloadRessource(unload, unloadX, unloadY, core, coreX, coreY, message)
+    sensor ressourceToUnnload unload @firstItem
+    sensor payload @unit @totalItems
+    if payload > 0
+        ucontrol approach coreX coreY 5 null null
+        ucontrol itemDrop core 800 null null null
+    else
+        ucontrol approach unloadX unloadY 5 null null
+        ucontrol itemTake unload ressourceToUnnload 800 null null
