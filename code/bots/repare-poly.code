@@ -17,6 +17,10 @@ ubind botType
 sensor health @unit @health
 
 if health < healthMax
-    ucontrol move @thisx @thisy 0 0 0
+    ulocate building repair false null repairX repairY found building
+    if found == true
+        ucontrol move repairX repairY 0 0 0
+    else
+        ucontrol move @thisx @thisy 0 0 0
 
 jump loop

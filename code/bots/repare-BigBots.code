@@ -3,13 +3,15 @@
 
 
 ubind @grosRobots
+set percent 75
 
 if @unit == null
     end
 
 sensor botType @unit @type // get botType
 sensor healthMax @unit @maxHealth
-op mul healthStop healthMax 0.75
+op div percent percent 100
+op mul healthStop healthMax percent
 
 #ref loop
 
@@ -17,6 +19,10 @@ ubind botType
 sensor health @unit @health
 
 if health < healthStop
-    ucontrol move @thisx @thisy 0 0 0
+    ulocate building repair false null repairX repairY found building
+    if found == true
+        ucontrol move repairX repairY 0 0 0
+    else
+        ucontrol move @thisx @thisy 0 0 0
 
 jump loop
