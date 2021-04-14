@@ -119,13 +119,19 @@ getNeededRessource(facto, message)
     if factoType == @overdrive-projector
         for ressource in [@phase-fabric]
             sensor currentCapacity facto ressource
-            if currentCapacity < 3
+            if currentCapacity < 4
                 return ressource
 
     elif factoType == @overdrive-dome
         for ressource in [@phase-fabric, @silicon]
             sensor currentCapacity facto ressource
-            if currentCapacity < 3
+            if currentCapacity < 4
+                return ressource
+
+    elif factoType == @force-projector
+        for ressource in [@phase-fabric]
+            sensor currentCapacity facto ressource
+            if currentCapacity < 4
                 return ressource
     return false
 
@@ -137,14 +143,21 @@ isGoodRessource(transportedRessource, facto)
         for ressource in [@phase-fabric]
             if transportedRessource == ressource
                 sensor currentCapacity facto ressource
-                if currentCapacity < 3
+                if currentCapacity < 4
                     return true
 
     elif factoType == @overdrive-dome
         for ressource in [@phase-fabric, @silicon]
             if transportedRessource == ressource
                 sensor currentCapacity facto ressource
-                if currentCapacity < 3
+                if currentCapacity < 4
+                    return true
+
+    elif factoType == @force-projector
+        for ressource in [@phase-fabric]
+            if transportedRessource == ressource
+                sensor currentCapacity facto ressource
+                if currentCapacity < 4
                     return true
     return false
 
