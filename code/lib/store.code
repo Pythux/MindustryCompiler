@@ -5,7 +5,7 @@
 getCoreOr(appro, message)
     // appro will replace core if exist
     if appro != null
-        print "[green] replacement for core not null, will replace core with it"
+        print "[green] replacement for core not null, will replace core with: "
         msg.printAndWait(appro, message)
         sensor coreX appro @x
         sensor coreY appro @y

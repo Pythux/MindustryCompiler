@@ -107,3 +107,25 @@ getMyBot(procId, botType)
     if isMine == true
         return true
     jump loopMyBot
+
+
+// return bot if need more and the new botOwnedNb
+tryTakeOneMoreBot(procId, botType, message)
+    print "[white] need some more bots"
+    printflush message
+    ubind botType  // try to catch one
+    if @unit == null // we no longuer have that kind of bots
+        print "[yellow] no bots of the choosen type anymore, \n"
+        print "you can pick another kind of bot in the instruction 'ubind' at the begining of the programme"
+        msg.printAndWait("", message)
+        return null
+    // have an owner ?
+    sensor owner @unit @controller
+    sensor typeOfOwner owner @type
+    sensor botFlag @unit @flag
+    if typeOfOwner == botType  // is free
+        if botFlag == 0
+            ucontrol flag procId null null null null  // tag it
+            print "[green] free bot found !"
+            printflush message
+            return @unit

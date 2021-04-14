@@ -81,7 +81,9 @@ if appro != null
 
 set botOwnedNb 0
 
-procId = idBots.genProcId()
+// to flag bots with, done only once
+if procId == null
+    procId = idBots.genProcId()
 
 
 #ref noStore
@@ -132,18 +134,26 @@ if botNb > 6
 
 // variable content is keep after end instruction, memory not free
 for ownedBot in [bot1, bot2, bot3, bot4, bot5, bot6]
+    if ownedBot != null
+        ucontrol flag 0 null null null null  // tag it
     set ownedBot null
 
 set currentOwnedId 1
 
+set reset false
+
 // --- Prog Loop ---
 #ref loop
-
 
 // switch to turn off
 isOn = onOff.isOn(switch)
 if isOn != true
     msg.printAndWait("[yellow] process is turn off", message)
+    set reset true // will reset after switch On
+    jump loop
+
+if reset == true
+    msg.printAndWait("reset prog", message)
     end // to reset procId and botOwnedNb
 
 
