@@ -14,7 +14,7 @@ set botNb 2
 
 
 if @unit == null
-    msg.printAndWait("no unit of choosen type", message)
+    msg.printAndWait("[yellow] no unit of choosen type", message)
     end
 
 
@@ -83,17 +83,14 @@ if reset == true
 
 
 if botOwnedNb < botNb  // need one ?
-    set haveNewBot false
     haveNewBot = idBots.tryTakeOneMoreBot(procId, botType, message)
     if haveNewBot == true
-        print "new bot !"
-        printflush message
         op add botOwnedNb botOwnedNb 1
         for ownedBot in botList
             if ownedBot == null
                 set ownedBot @unit
                 jump endBotSave
-    #ref endBotSave
+        #ref endBotSave
 
 for ownedBot in botList
     if ownedBot == null
