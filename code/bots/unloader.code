@@ -122,6 +122,7 @@ if content < 40
             ubind ownedBot
             ucontrol flag 0 null null null null
             set ownedBot null
+            op sub botOwnedNb botOwnedNb 1
             jump haveFreeOneBot
     #ref haveFreeOneBot
 
