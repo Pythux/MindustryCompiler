@@ -6,10 +6,12 @@ import onOff
 
 
 set store container1
+
+set switch switch1
 set message message1
 ubind @mono
 set oreType @scrap
-set botNb 2
+set botNb 12
 
 
 
@@ -42,7 +44,6 @@ print " "
 print oreY
 msg.printAndWait("", message)
 
-set botOwnedNb 0
 
 // to flag bots with, done only once
 if procId == null
@@ -52,17 +53,23 @@ if procId == null
 sensor botType @unit @type // get botType
 
 
-if botNb > 6
-    msg.printAndWait("[red] can't take more than 6 bots\n change parameter 'botNb' to fix it", message)
+if botNb > 12
+    msg.printAndWait("[red] can't take more than 12 bots\n change parameter 'botNb' to fix it", message)
     end
 
-botList = [bot1, bot2, bot3, bot4, bot5, bot6]
+botList = [bot1, bot2, bot3, bot4, bot5, bot6, bot7, bot8, bot9, bot10, bot11, bot12]
+
+
+#ref freeBots
+
+set botOwnedNb 0
 
 // variable content is keep after end instruction, memory not free
 for ownedBot in botList
     if ownedBot != null
+        ubind ownedBot
         ucontrol flag 0 null null null null  // tag it
-    set ownedBot null
+        set ownedBot null
 
 
 set reset false
@@ -75,7 +82,7 @@ isOn = onOff.isOn(switch)
 if isOn != true
     msg.printAndWait("[yellow] process is turn off", message)
     set reset true // will reset after switch On
-    jump loop
+    jump freeBots
 
 if reset == true
     msg.printAndWait("reset prog", message)
