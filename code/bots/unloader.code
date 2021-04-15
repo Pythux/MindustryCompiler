@@ -15,7 +15,7 @@ set message message1
 
 // which bot to use
 ubind @flare  // let player choose with bot image the bind
-set botNb 3
+set botNb 12  // run on 8 bots fluid with a small processor
 
 
 if @unit == null
@@ -44,6 +44,12 @@ set loopSearchingBots 0
 botList = [
     bot1, bot2, bot3, bot4,
     bot5, bot6, bot7, bot8,
+    bot9, bot10, bot11, bot12,
+]
+reverseBotList = [
+    bot12, bot11, bot10, bot9,
+    bot8, bot7, bot6, bot5,
+    bot4, bot3, bot2, bot1,
 ]
 
 // free bot list memory
@@ -109,7 +115,15 @@ for ressource in ressourceList
 sensor content unloader toUnload
 if content < 40
     // need to free some bots
-    msg.printAndWait("store practicaly empty, will free some bots", message)
+    print "store practicaly empty, will free some bots"
+    printflush message
+    for ownedBot in reverseBotList
+        if ownedBot != null  // free it
+            ubind ownedBot
+            ucontrol flag 0 null null null null
+            set ownedBot null
+            jump haveFreeOneBot
+    #ref haveFreeOneBot
 
 if content > 200
     // try take another bot
