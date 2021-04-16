@@ -161,7 +161,7 @@ for ownedBot, linkId in listBotRessourceLink
         jump endBotSave
 #ref endBotSave
 #ref passSave
-op yolo
+
 for ownedBot, botFactoLink in listBotRessourceLink
     ubind ownedBot
     if @unit == null // no more owned bots
