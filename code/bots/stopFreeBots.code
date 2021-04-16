@@ -1,0 +1,56 @@
+
+// switch to stop flare, horizon, zenith and co (bots that could move ressources)
+// is kind of a command center for bots
+
+// ubind @flare // flying transport 20x speed 3
+// ubind @horizon // slower 30x speed 1.7
+// ubind @zenith // super 80x speed 1.8
+
+import onOff
+import msg
+
+set switch switch1
+set message message1
+set botType @flare
+set count 0
+
+#ref loop
+
+// switch to turn off
+isOn = onOff.isOn(switch)
+if isOn != true
+    msg.printAndWait("[yellow] process is turn off", message)
+    jump loop
+
+
+print "botType: "
+print botType
+print " count: "
+print count
+printflush message
+
+if count > 24
+    set count 0
+    jump nextBot
+
+op add count count 1
+
+ubind botType
+if @unit == null
+    jump nextBot
+
+sensor botFlag @unit @flag
+if botFlag == 0
+    ucontrol approach @thisx @thisy 6 null null
+
+jump loop
+
+#ref nextBot
+if botType == @flare
+    set botType @horizon
+elif botType == @horizon
+    set botType @zenith
+elif botType == @zenith
+    set botType @flare
+
+jump loop

@@ -135,11 +135,15 @@ if botNb > 6
 botList = [bot1, bot2, bot3, bot4, bot5, bot6]
 reverseBotList = [bot6, bot5, bot4, bot3, bot2, bot1]
 
+
+#ref freeBots
+set botOwnedNb 0
 // variable content is keep after end instruction, memory not free
 for ownedBot in botList
     if ownedBot != null
+        ubind ownedBot
         ucontrol flag 0 null null null null  // tag it
-    set ownedBot null
+        set ownedBot null
 
 set currentOwnedId 1
 
@@ -153,7 +157,7 @@ isOn = onOff.isOn(switch)
 if isOn != true
     msg.printAndWait("[yellow] process is turn off", message)
     set reset true // will reset after switch On
-    jump loop
+    jump freeBots
 
 if reset == true
     msg.printAndWait("reset prog", message)

@@ -87,15 +87,16 @@ listBotRessourceLink = [
 ]
 reverseBotList = [bot8, bot7, bot6, bot5, bot4, bot3, bot2, bot1]
 
-// free memory
+// free bot memory
+#ref freeBots
+set botOwnedNb 0
 // variable content is keep after end instruction, memory not free
 for ownedBot, botFactoLink in listBotRessourceLink
     if ownedBot != null
-        sensor botFlag @unit @flag
-        if botFlag == procId
-            ucontrol flag 0 null null null null  // free it
-    set ownedBot null
-    set botFactoLink 0
+        ubind ownedBot
+        ucontrol flag 0 null null null null  // free it
+        set ownedBot null
+        set botFactoLink 0
 
 set needToFreeBot false
 
@@ -105,11 +106,14 @@ set reset false
 #ref loop
 
 // switch to turn off
-isOn = onOff.isOn(switch)
+set isOn true
+if switch != null
+    sensor isOn switch @enabled
+
 if isOn != true
     msg.printAndWait("[yellow] process is turn off", message)
     set reset true // will reset after switch On
-    jump loop
+    jump freeBots
 
 if reset == true
     msg.printAndWait("reset prog", message)
@@ -120,7 +124,7 @@ if reset == true
 
 if haveFreeBots == true
     set haveFreeBots false
-    sef factoIndex 0
+    set factoIndex 0
     #ref loopFacto
     getlink facto factoIndex
     if facto == null // end link list, no facto need ressources
@@ -135,35 +139,15 @@ if haveFreeBots == true
 #ref continueProg
 
 
-// take bot if need more, else loop thought owned bots
-if botOwnedNb < botNb // need one ?
-    print "[white] need some more bots"
-    printflush message
-    ubind botType  // try to catch one
-    if @unit == null // we no longuer have that kind of bots
-        print "[yellow] no bots of the choosen type anymore, \n"
-        print "you can pick another kind of bot in the instruction 'ubind' at the begining of the programme"
-        msg.printAndWait("", message)
-        jump loop
-    // have an owner ?
-    sensor owner @unit @controller
-    sensor typeOfOwner owner @type
-    sensor botFlag @unit @flag
-    if typeOfOwner == botType   // no owner
-        if botFlag == 0         // no flag
-            ucontrol flag procId null null null null  // tag it
-            print "[green] free bot found !"
-            printflush message
-            op add botOwnedNb botOwnedNb 1  // botOwnedNb += 1
-            // save owned bot
-            for ownedBot, linkId in listBotRessourceLink
-                if ownedBot == null
-                    print "new bot saved !"
-                    printflush message
-                    set ownedBot @unit
-                    jump endBotSave  // kind of a break
-
-#ref endBotSave
+if botOwnedNb < botNb  // need one ?
+    haveNewBot = idBots.tryTakeOneMoreBot(procId, botType, message)
+    if haveNewBot == true
+        op add botOwnedNb botOwnedNb 1
+        for ownedBot, linkId in listBotRessourceLink
+            if ownedBot == null
+                set ownedBot @unit
+                jump endBotSave
+        #ref endBotSave
 
 
 for ownedBot, botFactoLink in listBotRessourceLink
@@ -173,6 +157,7 @@ for ownedBot, botFactoLink in listBotRessourceLink
 
     botFactoLink, needToFreeBot = moveBotToFillFactoInNeed(botFactoLink, coreX, coreY, core, message)
     if needToFreeBot == true
+        set botFactoLink 0
         jump freeSomeBots
 
 // end here
@@ -230,11 +215,6 @@ moveBotToFillFactoInNeed(botFactoLink, coreX, coreY, core, message)
             ucontrol approach coreX coreY radiusApproche null null
             sensor coreStored core ressourceNeeded
             if coreStored > 40 // take it
-                print "take ressource for factory: "
-                print facto
-                print " id-"
-                print botFactoLink
-                printflush message
                 ucontrol itemTake core ressourceNeeded 800 null null
             else
                 print "[yellow] not enouth of "
@@ -243,9 +223,6 @@ moveBotToFillFactoInNeed(botFactoLink, coreX, coreY, core, message)
                 op add botFactoLink botFactoLink 1
         else
             op add botFactoLink botFactoLink 1
-            print "go next factory, id: "
-            print botFactoLink
-            printflush message
             if nothingToDo > 3
                 return botFactoLink, true
             jump searchingRessource
