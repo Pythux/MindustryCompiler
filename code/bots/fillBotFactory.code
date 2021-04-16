@@ -91,11 +91,9 @@ reverseBotList = [bot8, bot7, bot6, bot5, bot4, bot3, bot2, bot1]
 // variable content is keep after end instruction, memory not free
 for ownedBot, botFactoLink in listBotRessourceLink
     if ownedBot != null
-        sensor botFlag @unit @flag
-        if botFlag == procId
-            ucontrol flag 0 null null null null  // free it
-    set ownedBot null
-    set botFactoLink 0
+        ucontrol flag 0 null null null null  // free it
+        set ownedBot null
+        set botFactoLink 0
 
 set needToFreeBot false
 
@@ -173,6 +171,7 @@ for ownedBot, botFactoLink in listBotRessourceLink
 
     botFactoLink, needToFreeBot = moveBotToFillFactoInNeed(botFactoLink, coreX, coreY, core, message)
     if needToFreeBot == true
+        set botFactoLink 0
         jump freeSomeBots
 
 // end here
