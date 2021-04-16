@@ -115,6 +115,25 @@ if reset == true
     end // to reset procId and botOwnedNb
 
 
+// check facto need ressource
+
+if haveFreeBots == true
+    set haveFreeBots false
+    sef factoIndex 0
+    #ref loopFacto
+    getlink facto factoIndex
+    if facto == null // end link list, no facto need ressources
+        jump freeSomeBots
+
+    ressourceNeeded = getNeededRessource(facto, message)
+    if ressourceNeeded != false
+        jump continueProg
+    op add factoIndex factoIndex 1
+    jump loopFacto
+
+#ref continueProg
+
+
 // take bot if need more, else loop thought owned bots
 if botOwnedNb < botNb // need one ?
     print "[white] need some more bots"
@@ -169,6 +188,7 @@ for ownedBot in reverseBotList
         op sub botOwnedNb botOwnedNb 1
         jump haveFreeOneBot
 #ref haveFreeOneBot
+set haveFreeBots true
 
 jump loop
 
@@ -196,7 +216,6 @@ moveBotToFillFactoInNeed(botFactoLink, coreX, coreY, core, message)
                 // go see next facto
                 op add botFactoLink botFactoLink 1
     else  // empty
-        set linkIndex 0  // reset searching list
         set nothingToDo 0
         #ref searchingRessource
         op add nothingToDo nothingToDo 1
