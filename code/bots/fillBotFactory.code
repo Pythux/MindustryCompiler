@@ -1,0 +1,429 @@
+
+// this code fill all linked bot factory (and overdrive-projector/dome), with bots
+
+// ressource will be picked from core of "appro" if specified, default to container1
+
+// can change who take it (here @flare)
+// the bot will take ressource to it's max transport capacity
+// max bot controled: botNb
+
+
+import onOff
+import idBots
+import msg
+
+
+set appro container1
+
+set switch switch1
+set message message1
+
+
+// which bot to use
+ubind @flare  // let player choose with bot image the bind
+set botNb 8
+
+set radiusApproche 6 // max working radius: 8
+
+
+if @unit == null  // no bot of that type
+    print "[yellow] no bots of the choosen type, \n"
+    print "you can pick another kind of bot in the instruction 'ubind' at the begining of the programme"
+    msg.printAndWait("", message)
+    end
+
+
+set coreX null
+set coreY null
+
+
+// where to take ressource from, appro or core
+
+if appro != null
+    print "[green] appro not null, will replace core to take ressource from"
+    msg.printAndWait(appro, message)
+    // appro position, default to core if null
+    sensor coreX appro @x
+    sensor coreY appro @y
+    set core appro
+
+// get core position
+#ref getCorePos
+// require to have a @unite
+if coreX == null
+    msg.printAndWait("looking for core, this is done once", message)
+    ulocate building core false @copper coreX coreY coreFound core
+    if coreFound == false
+        msg.printAndWait("[red] core not found, searching again", message)
+        msg.printAndWait(core, message)
+        msg.printAndWait(coreFound, message)
+        jump getCorePos
+    print "[green] core found at "
+    print coreX
+    print " "
+    print coreY
+    msg.printAndWait("", message)
+
+
+// to flag bots with, done only once
+if procId == null
+    procId = idBots.genProcId()
+
+set botOwnedNb 0
+set loopSearchingBots 0
+
+
+sensor botType @unit @type // get botType
+
+if botNb > 8
+    msg.printAndWait("[red] can't take more than 8 bots\n change parameter 'botNb' to fix it", message)
+    end
+
+listBotRessourceLink = [
+    (bot1, link1), (bot2, link2),
+    (bot3, link3), (bot4, link4),
+    (bot5, link5), (bot6, link6),
+    (bot7, link7), (bot8, link8),
+]
+reverseBotList = [bot8, bot7, bot6, bot5, bot4, bot3, bot2, bot1]
+
+// free memory
+// variable content is keep after end instruction, memory not free
+for ownedBot, botFactoLink in listBotRessourceLink
+    if ownedBot != null
+        sensor botFlag @unit @flag
+        if botFlag == procId
+            ucontrol flag 0 null null null null  // free it
+    set ownedBot null
+    set botFactoLink 0
+
+set needToFreeBot false
+
+set reset false
+
+// --- Prog Loop ---
+#ref loop
+
+// switch to turn off
+isOn = onOff.isOn(switch)
+if isOn != true
+    msg.printAndWait("[yellow] process is turn off", message)
+    set reset true // will reset after switch On
+    jump loop
+
+if reset == true
+    msg.printAndWait("reset prog", message)
+    end // to reset procId and botOwnedNb
+
+
+// check facto need ressource
+
+if haveFreeBots == true
+    set haveFreeBots false
+    sef factoIndex 0
+    #ref loopFacto
+    getlink facto factoIndex
+    if facto == null // end link list, no facto need ressources
+        jump freeSomeBots
+
+    ressourceNeeded = getNeededRessource(facto, message)
+    if ressourceNeeded != false
+        jump continueProg
+    op add factoIndex factoIndex 1
+    jump loopFacto
+
+#ref continueProg
+
+
+// take bot if need more, else loop thought owned bots
+if botOwnedNb < botNb // need one ?
+    print "[white] need some more bots"
+    printflush message
+    ubind botType  // try to catch one
+    if @unit == null // we no longuer have that kind of bots
+        print "[yellow] no bots of the choosen type anymore, \n"
+        print "you can pick another kind of bot in the instruction 'ubind' at the begining of the programme"
+        msg.printAndWait("", message)
+        jump loop
+    // have an owner ?
+    sensor owner @unit @controller
+    sensor typeOfOwner owner @type
+    sensor botFlag @unit @flag
+    if typeOfOwner == botType   // no owner
+        if botFlag == 0         // no flag
+            ucontrol flag procId null null null null  // tag it
+            print "[green] free bot found !"
+            printflush message
+            op add botOwnedNb botOwnedNb 1  // botOwnedNb += 1
+            // save owned bot
+            for ownedBot, linkId in listBotRessourceLink
+                if ownedBot == null
+                    print "new bot saved !"
+                    printflush message
+                    set ownedBot @unit
+                    jump endBotSave  // kind of a break
+
+#ref endBotSave
+
+
+for ownedBot, botFactoLink in listBotRessourceLink
+    ubind ownedBot
+    if @unit == null // no more owned bots
+        jump loop
+
+    botFactoLink, needToFreeBot = moveBotToFillFactoInNeed(botFactoLink, coreX, coreY, core, message)
+    if needToFreeBot == true
+        jump freeSomeBots
+
+// end here
+jump loop
+
+
+#ref freeSomeBots
+// free some bots
+for ownedBot in reverseBotList
+    if ownedBot != null  // free it
+        ubind ownedBot
+        ucontrol flag 0 null null null null
+        set ownedBot null
+        op sub botOwnedNb botOwnedNb 1
+        jump haveFreeOneBot
+#ref haveFreeOneBot
+set haveFreeBots true
+
+jump loop
+
+
+moveBotToFillFactoInNeed(botFactoLink, coreX, coreY, core, message)
+    getlink facto botFactoLink
+    sensor payload @unit @totalItems
+    if payload > 0
+        sensor transportedRessource @unit @firstItem
+
+        if facto == null // end link list
+            ucontrol approach coreX coreY radiusApproche null null
+            ucontrol itemDrop core 800 null null null
+            set botFactoLink 0
+        else
+            sensor factoType facto @type
+            isGoodR = isGoodRessource(transportedRessource, facto)
+
+            if isGoodR == true  // dropRessourceToFacto
+                sensor factoX facto @x
+                sensor factoY facto @y
+                ucontrol approach factoX factoY radiusApproche null null
+                ucontrol itemDrop facto 800 null null null
+            else
+                // go see next facto
+                op add botFactoLink botFactoLink 1
+    else  // empty
+        set nothingToDo 0
+        #ref searchingRessource
+        op add nothingToDo nothingToDo 1
+        getlink facto botFactoLink
+        if facto == null // end link list, search again
+            set botFactoLink 0
+            jump searchingRessource
+
+        ressourceNeeded = getNeededRessource(facto, message)
+        if ressourceNeeded != false
+            ucontrol approach coreX coreY radiusApproche null null
+            sensor coreStored core ressourceNeeded
+            if coreStored > 40 // take it
+                print "take ressource for factory: "
+                print facto
+                print " id-"
+                print botFactoLink
+                printflush message
+                ucontrol itemTake core ressourceNeeded 800 null null
+            else
+                print "[yellow] not enouth of "
+                print ressourceNeeded
+                msg.printAndWait(" in base, will take something else", message)
+                op add botFactoLink botFactoLink 1
+        else
+            op add botFactoLink botFactoLink 1
+            print "go next factory, id: "
+            print botFactoLink
+            printflush message
+            if nothingToDo > 3
+                return botFactoLink, true
+            jump searchingRessource
+    return botFactoLink, false
+
+
+// will return ressourceType needed by factory or false if facto does not need any
+getNeededRessource(facto, message)
+    sensor factoType facto @type
+    sensor selectedBotToBuild facto @config
+
+    if factoType == @ground-factory
+        if selectedBotToBuild == @dagger
+            for ressource in [@silicon, @lead]
+                // sensor maxCapacity facto @itemCapacity
+                sensor currentCapacity facto ressource
+                if currentCapacity < 30  // we could say < 30 for every ressources for ground
+                    return ressource
+
+        elif selectedBotToBuild == @crawler
+            for ressource in [@silicon, @coal]
+                sensor currentCapacity facto ressource
+                if currentCapacity < 30  // we could say < 30 for every ressources for ground
+                    return ressource
+
+        elif selectedBotToBuild == @nova
+            for ressource in [@silicon, @lead, @titanium]
+                sensor currentCapacity facto ressource
+                if currentCapacity < 30  // we could say < 30 for every ressources for ground
+                    return ressource
+
+
+    elif factoType == @air-factory
+        if selectedBotToBuild == @flare
+            for ressource in [@silicon]
+                sensor currentCapacity facto ressource
+                if currentCapacity < 30  // we could say < 30 for every ressources for ground
+                    return ressource
+
+        elif selectedBotToBuild == @mono
+            for ressource in [@silicon, @lead]
+                sensor currentCapacity facto ressource
+                if currentCapacity < 30  // we could say < 30 for every ressources for ground
+                    return ressource
+
+
+    elif factoType == @naval-factory
+        if selectedBotToBuild == @risso
+            for ressource in [@silicon, @metaglass]
+                sensor currentCapacity facto ressource
+                if currentCapacity < 40  // need 35 metaglass
+                    return ressource
+
+    elif factoType == @additive-reconstructor
+        for ressource in [@graphite, @silicon]
+            sensor currentCapacity facto ressource
+            if currentCapacity < 80
+                return ressource
+
+    elif factoType == @multiplicative-reconstructor
+        for ressource, quatity in [(@silicon, 260), (@titanium, 160), (@metaglass, 80)]
+            sensor currentCapacity facto ressource
+            if currentCapacity < quatity
+                return ressource
+
+    elif factoType == @exponential-reconstructor
+        for ressource, quatity in [(@silicon, 1700), (@titanium, 1500), (@plastanium, 1300)]
+            sensor currentCapacity facto ressource
+            if currentCapacity < quatity
+                return ressource
+
+    elif factoType == @tetrative-reconstructor
+        for ressource, quatity in [(@silicon, 2000), (@plastanium, 1200), (@surge-alloy, 1000), (@phase-fabric, 700)]
+            sensor currentCapacity facto ressource
+            if currentCapacity < quatity
+                return ressource
+
+    elif factoType == @overdrive-projector
+        for ressource in [@phase-fabric]
+            sensor currentCapacity facto ressource
+            if currentCapacity < 3
+                return ressource
+
+    elif factoType == @overdrive-dome
+        for ressource in [@phase-fabric, @silicon]
+            sensor currentCapacity facto ressource
+            if currentCapacity < 3
+                return ressource
+    return false
+
+
+isGoodRessource(transportedRessource, facto)
+    sensor factoType facto @type
+    sensor selectedBotToBuild facto @config
+    if factoType == @ground-factory
+        if selectedBotToBuild == @dagger
+            for ressource in [@silicon, @lead]
+                if transportedRessource == ressource
+                    sensor currentCapacity facto ressource
+                    if currentCapacity < 30  // we could say < 30 for every ressources for ground
+                        return true
+
+        elif selectedBotToBuild == @crawler
+            for ressource in [@silicon, @coal]
+                if transportedRessource == ressource
+                    sensor currentCapacity facto ressource
+                    if currentCapacity < 30  // we could say < 30 for every ressources for ground
+                        return true
+
+        elif selectedBotToBuild == @nova
+            for ressource in [@silicon, @lead, @titanium]
+                if transportedRessource == ressource
+                    sensor currentCapacity facto ressource
+                    if currentCapacity < 30  // we could say < 30 for every ressources for ground
+                        return true
+
+    elif factoType == @air-factory
+        if selectedBotToBuild == @flare
+            for ressource in [@silicon]
+                if transportedRessource == ressource
+                    sensor currentCapacity facto ressource
+                    if currentCapacity < 30  // we could say < 30 for every ressources for ground
+                        return true
+
+        elif selectedBotToBuild == @mono
+            for ressource in [@silicon, @lead]
+                if transportedRessource == ressource
+                    sensor currentCapacity facto ressource
+                    if currentCapacity < 30  // we could say < 30 for every ressources for ground
+                        return true
+
+    elif factoType == @naval-factory
+        if selectedBotToBuild == @risso
+            for ressource in [@silicon, @metaglass]
+                if transportedRessource == ressource
+                    sensor currentCapacity facto ressource
+                    if currentCapacity < 40  // need 35 metaglass
+                        return true
+
+    elif factoType == @additive-reconstructor
+        for ressource in [@graphite, @silicon]
+            if transportedRessource == ressource
+                sensor currentCapacity facto ressource
+                if currentCapacity < 80
+                    return true
+
+    elif factoType == @multiplicative-reconstructor
+        for ressource, quatity in [(@silicon, 260), (@titanium, 160), (@metaglass, 80)]
+            if transportedRessource == ressource
+                sensor currentCapacity facto ressource
+                if currentCapacity < quatity
+                    return true
+
+    elif factoType == @exponential-reconstructor
+        for ressource, quatity in [(@silicon, 1700), (@titanium, 1500), (@plastanium, 1300)]
+            if transportedRessource == ressource
+                sensor currentCapacity facto ressource
+                if currentCapacity < quatity
+                    return true
+
+    elif factoType == @tetrative-reconstructor
+        for ressource, quatity in [(@silicon, 2000), (@plastanium, 1200), (@surge-alloy, 1000), (@phase-fabric, 700)]
+            if transportedRessource == ressource
+                sensor currentCapacity facto ressource
+                if currentCapacity < quatity
+                    return true
+
+    elif factoType == @overdrive-projector
+        for ressource in [@phase-fabric]
+            if transportedRessource == ressource
+                sensor currentCapacity facto ressource
+                if currentCapacity < 3
+                    return true
+
+    elif factoType == @overdrive-dome
+        for ressource in [@phase-fabric, @silicon]
+            if transportedRessource == ressource
+                sensor currentCapacity facto ressource
+                if currentCapacity < 3
+                    return true
+    return false

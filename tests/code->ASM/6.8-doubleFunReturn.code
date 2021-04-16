@@ -1,0 +1,31 @@
+
+
+funA(a)
+    b = funB(a)
+    return b
+
+funB(b)
+    return b
+
+
+x = funA(4)
+
+
+----------------------
+
+
+set tmp1 4
+op add returnAddress-None-funA @counter 1
+jump 5 always true true
+set x tmp3
+end
+set tmp4 tmp1
+op add returnAddress-None-funB @counter 1
+jump 12 always true true
+set tmp2 tmp5
+set tmp3 tmp2
+jump 11 always true true
+set @counter returnAddress-None-funA
+set tmp5 tmp4
+jump 14 always true true
+set @counter returnAddress-None-funB

@@ -16,9 +16,15 @@ yo()
 
 
 set tmp2 2
+op add returnAddress-time-wait @counter 1
+jump 6 always true true
+op add returnAddress-None-yo @counter 1
+jump 11 always true true
+end
 set tmp1 @time
 op mul tmp2 tmp2 1000
 op add tmp3 tmp1 tmp2
-jump 4 greaterThanEq tmp3 @time
+jump 9 greaterThanEq tmp3 @time
+set @counter returnAddress-time-wait
 print "hey"
-end
+set @counter returnAddress-None-yo

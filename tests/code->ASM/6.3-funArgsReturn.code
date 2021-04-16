@@ -13,8 +13,12 @@ print b
 
 
 set tmp1 4
-op add tmp1 tmp1 1
-set tmp2 tmp1
-jump 4 always true true
+op add returnAddress-None-plusOne @counter 1
+jump 6 always true true
 set b tmp2
 print b
+end
+op add tmp1 tmp1 1
+set tmp2 tmp1
+jump 9 always true true
+set @counter returnAddress-None-plusOne

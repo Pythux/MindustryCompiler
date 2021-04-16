@@ -1,0 +1,30 @@
+// repare fighting bots when low on health, need on processor for each unit type
+// will go to the nearest heal point
+
+// can specified the health percent to go back to heal
+
+
+ubind @grosRobots
+set percent 75
+
+if @unit == null
+    end
+
+sensor botType @unit @type // get botType
+sensor healthMax @unit @maxHealth
+op div percent percent 100
+op mul healthStop healthMax percent
+
+#ref loop
+
+ubind botType
+sensor health @unit @health
+
+if health < healthStop
+    ulocate building repair false null repairX repairY found building
+    if found == true
+        ucontrol move repairX repairY 0 0 0
+    else
+        ucontrol move @thisx @thisy 0 0 0
+
+jump loop

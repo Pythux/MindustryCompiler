@@ -1,0 +1,132 @@
+
+
+// ask bots to mine close to the core or specified "store" the specified ressource "oreType"
+
+
+import msg
+import store
+import idBots
+import onOff
+
+
+set store container1
+
+set switch switch1
+set message message1
+ubind @mono
+set oreType @scrap
+set botNb 12
+
+
+
+if @unit == null
+    msg.printAndWait("[yellow] no unit of choosen type", message)
+    end
+
+
+storeX, storeY, store = store.getCoreOr(store)
+
+msg.printAndWait("go to store", message)
+
+#ref loopGoStore
+ucontrol move storeX storeY 0 0 0
+ucontrol within storeX storeY 5 isWithin null
+if isWithin != true
+    jump loopGoStore
+
+msg.printAndWait("we are to store, locate ore", message)
+
+ulocate ore core true oreType oreX oreY found building
+
+if found == false
+    msg.printAndWait("ore not found", message)
+    end
+
+print "or found at: "
+print oreX
+print " "
+print oreY
+msg.printAndWait("", message)
+
+
+// to flag bots with, done only once
+if procId == null
+    procId = idBots.genProcId()
+
+
+sensor botType @unit @type // get botType
+
+
+if botNb > 12
+    msg.printAndWait("[red] can't take more than 12 bots\n change parameter 'botNb' to fix it", message)
+    end
+
+botList = [bot1, bot2, bot3, bot4, bot5, bot6, bot7, bot8, bot9, bot10, bot11, bot12]
+
+
+#ref freeBots
+
+set botOwnedNb 0
+
+// variable content is keep after end instruction, memory not free
+for ownedBot in botList
+    if ownedBot != null
+        ubind ownedBot
+        ucontrol flag 0 null null null null  // tag it
+        set ownedBot null
+
+
+set reset false
+
+// --- Prog Loop ---
+#ref loop
+
+// switch to turn off
+isOn = onOff.isOn(switch)
+if isOn != true
+    msg.printAndWait("[yellow] process is turn off", message)
+    set reset true // will reset after switch On
+    jump freeBots
+
+if reset == true
+    msg.printAndWait("reset prog", message)
+    end // to reset procId and botOwnedNb
+
+
+if botOwnedNb < botNb  // need one ?
+    haveNewBot = idBots.tryTakeOneMoreBot(procId, botType, message)
+    if haveNewBot == true
+        op add botOwnedNb botOwnedNb 1
+        for ownedBot in botList
+            if ownedBot == null
+                set ownedBot @unit
+                jump endBotSave
+        #ref endBotSave
+
+for ownedBot in botList
+    if ownedBot == null
+        jump loop
+    ubind ownedBot
+    mineWith(oreType, oreX, oreY, storeX, storeY, store)
+
+jump loop
+
+
+mineWith(oreType, oreX, oreY, storeX, storeY, store)
+    sensor payload @unit @totalItems
+    sensor maxCapacity @unit @itemCapacity
+
+    if payload == 0
+        ucontrol approach oreX oreY 6 null null
+        ucontrol mine oreX oreY 0 0 0
+    else
+        sensor transportedRessource @unit @firstItem
+        if transportedRessource != oreType
+            ucontrol approach storeX storeY 6 null null
+            ucontrol itemDrop store 800 null null null
+        elif payload < maxCapacity
+            ucontrol approach oreX oreY 6 null null
+            ucontrol mine oreX oreY 0 0 0
+        else
+            ucontrol approach storeX storeY 6 null null
+            ucontrol itemDrop store 800 null null null

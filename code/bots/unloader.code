@@ -1,0 +1,162 @@
+
+// put all ressource in store to core or "loader" if specified
+
+import onOff
+import idBots
+import msg
+import store
+
+
+set unloader container1
+set loader container2
+
+set switch switch1
+set message message1
+
+// which bot to use
+ubind @flare  // let player choose with bot image the bind
+set botNb 12  // run on 8 bots fluid with a small processor
+
+
+if @unit == null
+    msg.printAndWait("[yellow] no unit of choosen type", message)
+    end
+
+
+if unloader == null
+    msg.printAndWait("[yellow] unloader store not selected", message)
+    end
+
+sensor unloaderX unloader @x
+sensor unloaderY unloader @y
+
+
+coreX, coreY, core = store.getCoreOr(loader)
+
+
+// to flag bots with, done only once
+if procId == null
+    procId = idBots.genProcId()
+
+set botOwnedNb 0
+set loopSearchingBots 0
+
+botList = [
+    bot1, bot2, bot3, bot4,
+    bot5, bot6, bot7, bot8,
+    bot9, bot10, bot11, bot12,
+]
+reverseBotList = [
+    bot12, bot11, bot10, bot9,
+    bot8, bot7, bot6, bot5,
+    bot4, bot3, bot2, bot1,
+]
+
+// free bot list memory
+// variable content is keep after end instruction, memory not free
+for ownedBot in botList
+    if ownedBot != null
+        sensor botFlag @unit @flag
+        if botFlag == procId
+            ucontrol flag 0 null null null null  // free it
+    set ownedBot null
+
+
+sensor botType @unit @type // get botType
+
+// set a default ressource
+set toUnload @copper
+
+
+set reset false
+
+// --- Prog Loop ---
+#ref loop
+
+// switch to turn off
+isOn = onOff.isOn(switch)
+if isOn != true
+    msg.printAndWait("[yellow] process is turn off", message)
+    set reset true // will reset after switch On
+    jump loop
+
+if reset == true
+    msg.printAndWait("reset prog", message)
+    end // to reset procId and botOwnedNb
+
+
+// sensor ressource unloader @firstItem
+// it prevent others to unload if low but continuously comming
+
+// will do a random on ressource list
+ressourceList = [
+    @copper, @lead, @silicon,
+    @graphite, @coal, @metaglass,
+    @titanium, @thorium, @surge-alloy,
+    @blast-compound, @pyratite,
+    @phase-fabric, @plastanium,
+    @spore-pod, @sand, @scrap,
+]
+
+sensor content unloader toUnload
+if content > 40
+    jump noRessourceChange
+
+// will set the best ressource
+set bestContent 0
+for ressource in ressourceList
+    sensor contentChallenger unloader ressource
+    if contentChallenger > bestContent
+        set bestContent contentChallenger
+        set toUnload ressource
+
+#ref noRessourceChange
+
+sensor content unloader toUnload
+if content < 40
+    // need to free some bots
+    print "store practicaly empty, will free some bots"
+    printflush message
+    for ownedBot in reverseBotList
+        if ownedBot != null  // free it
+            ubind ownedBot
+            ucontrol flag 0 null null null null
+            set ownedBot null
+            op sub botOwnedNb botOwnedNb 1
+            jump haveFreeOneBot
+    #ref haveFreeOneBot
+
+if content > 200
+    // try take another bot
+    if botOwnedNb < botNb  // need one ?
+        haveNewBot = idBots.tryTakeOneMoreBot(procId, botType, message)
+        if haveNewBot == true
+            op add botOwnedNb botOwnedNb 1
+            for ownedBot in botList
+                if ownedBot == null
+                    set ownedBot @unit
+                    jump endBotSave
+            #ref endBotSave
+
+
+print "ressource: "
+print toUnload
+printflush message
+
+for ownedBot in botList
+    if ownedBot == null
+        jump loop
+    ubind ownedBot
+    unloadRessource(toUnload, unloader, unloaderX, unloaderY, core, coreX, coreY, message)
+
+jump loop
+
+unloadRessource(toUnload, unloader, unloaderX, unloaderY, core, coreX, coreY, message)
+    // sensor ressourceToUnload unloader @firstItem
+    sensor payload @unit @totalItems
+    if payload > 0
+        ucontrol approach coreX coreY 5 null null
+        ucontrol itemDrop core 800 null null null
+    else
+        ucontrol approach unloaderX unloaderY 5 null null
+        ucontrol itemTake unloader toUnload 800 null null

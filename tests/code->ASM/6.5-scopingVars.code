@@ -15,5 +15,8 @@ set tmp2 1
 set tmp4 tmp2
 set tmp5 2
 set tmp3 3
-print tmp3
+op add returnAddress-None-show @counter 1
+jump 7 always true true
 end
+print tmp3
+set @counter returnAddress-None-show

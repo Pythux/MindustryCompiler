@@ -18,12 +18,16 @@ print bot
 set a 1
 set tmp1 4
 set tmp2 a
-op add tmp1 tmp1 tmp2
-radar ally enemy boss distance empty 1 tmp3
-set tmp4 tmp1
-set tmp5 tmp3
-jump 8 always true true
+op add returnAddress-None-plusAndGetBot @counter 1
+jump 10 always true true
 set nb tmp4
 set bot tmp5
 print nb
 print bot
+end
+op add tmp1 tmp1 tmp2
+radar ally enemy boss distance empty 1 tmp3
+set tmp4 tmp1
+set tmp5 tmp3
+jump 15 always true true
+set @counter returnAddress-None-plusAndGetBot

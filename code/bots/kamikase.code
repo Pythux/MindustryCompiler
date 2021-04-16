@@ -1,0 +1,92 @@
+
+// will fill all flare with explosive ressources
+
+
+
+import onOff
+import idBots
+import msg
+
+
+set appro container1
+set switch switch1
+set message message1
+
+
+set radiusApproche 6 // max working radius: 8
+
+ubind @flare
+
+if @unit == null  // no bot of that type
+    print "[yellow] no bots of the choosen type, \n"
+    print "you can pick another kind of bot in the instruction 'ubind' at the begining of the programme"
+    msg.printAndWait("", message)
+    end
+
+set coreX null
+set coreY null
+
+// where to take ressource from, appro or core
+
+if appro != null
+    print "[green] appro not null, will replace core to take ressource from"
+    msg.printAndWait(appro, message)
+    // appro position, default to core if null
+    sensor coreX appro @x
+    sensor coreY appro @y
+    set core appro
+
+
+// get core position
+#ref getCorePos
+// require to have a @unite
+if coreX == null
+    msg.printAndWait("looking for core, this is done once", message)
+    ulocate building core false @copper coreX coreY coreFound core
+    if coreFound == false
+        msg.printAndWait("[red] core not found, searching again", message)
+        msg.printAndWait(core, message)
+        msg.printAndWait(coreFound, message)
+        jump getCorePos
+    msg.printAndWait("[green] core found", message)
+
+
+set reset false
+
+// --- Prog Loop ---
+#ref loop
+
+// switch to turn off
+isOn = onOff.isOn(switch)
+if isOn != true
+    msg.printAndWait("[yellow] process is turn off", message)
+    set reset true // will reset after switch On
+    jump loop
+
+if reset == true
+    msg.printAndWait("reset prog", message)
+    end // to reset procId and botOwnedNb
+
+
+
+for unit in [@flare, @horizon]
+    ubind unit
+    if @unit != null
+        sensor botFlag @unit @flag
+        if botFlag == 0
+            ucontrol flag 666 null null null null
+
+        sensor botFlag @unit @flag
+        if botFlag == 666
+            sensor payload @unit @totalItems
+            if payload == 0
+                ucontrol approach coreX coreY radiusApproche null null
+                ucontrol itemTake core @blast-compound 800 null null
+            else
+                sensor transportedRessource @unit @firstItem
+                if transportedRessource != @blast-compound
+                    ucontrol approach coreX coreY radiusApproche null null
+                    ucontrol itemDrop core 800 null null null
+
+
+jump loop

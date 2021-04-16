@@ -5,11 +5,13 @@ class Imports:
         self.imported = {None: {}}  # None is main file
         self.toImports = []
         self.currentFile = None
+        self.linesFunDef = []
 
     def clear(self):
         self.imported = {None: {}}  # None is main file
         self.toImports = []
         self.currentFile = None
+        self.linesFunDef = []
 
     # simple absolute import from lib/, one lvl
     def toImport(self, filesToImport):
@@ -28,19 +30,31 @@ class Imports:
 
     def addFunToModule(self, funDef):
         if funDef.name in self.imported[self.currentFile]:
-            raise Exception("function/macro {} already defined".format(funDef.name))
+            raise Exception("function {} already defined".format(funDef.name))
         self.imported[self.currentFile][funDef.name] = funDef
-
-    def addMacroToModule(self, macroDef):
-        if macroDef.name in self.imported[self.currentFile]:
-            raise Exception("function/macro {} already defined".format(macroDef.name))
-        self.imported[self.currentFile][macroDef.name] = macroDef
 
     # called at the verry end, once everything is imported
     def getModule(self, fileLib):
         if fileLib not in self.imported:
             raise Exception("module {} is used but not imported".format(fileLib))
         return self.imported[fileLib]
+
+    # once parsing over, all funDef are registered in module
+    def getFunCalled(self, moduleName, name, lineCall):
+        module = self.getModule(moduleName)
+        if name not in module:
+            raise Exception("function '{}' does not exist, module {}, at line {}"
+                            .format(name, moduleName, lineCall))
+        fun = module[name]
+        if not fun.defined:
+            self.linesFunDef += fun.generateDefinition(moduleName)
+        return fun
+
+    # return lines of function definition
+    def getFunctionsDefinition(self):
+        lines = self.linesFunDef
+        self.linesFunDef = []
+        return lines
 
 
 imports = Imports()

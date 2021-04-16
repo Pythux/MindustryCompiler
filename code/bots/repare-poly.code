@@ -1,0 +1,26 @@
+// repare poly / mega when low on health, need on processor for each unit type
+// will go to the nearest heal point
+
+
+ubind @poly
+// ubind @mega
+
+if @unit == null
+    end
+
+sensor botType @unit @type // get botType
+sensor healthMax @unit @maxHealth
+
+#ref loop
+
+ubind botType
+sensor health @unit @health
+
+if health < healthMax
+    ulocate building repair false null repairX repairY found building
+    if found == true
+        ucontrol move repairX repairY 0 0 0
+    else
+        ucontrol move @thisx @thisy 0 0 0
+
+jump loop

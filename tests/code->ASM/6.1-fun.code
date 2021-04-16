@@ -10,5 +10,8 @@ show()
 ----------------------
 
 
-print "yo"
+op add returnAddress-None-show @counter 1
+jump 3 always true true
 end
+print "yo"
+set @counter returnAddress-None-show

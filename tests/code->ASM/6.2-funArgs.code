@@ -11,5 +11,8 @@ show(data)
 
 
 set tmp1 data
-print tmp1
+op add returnAddress-None-show @counter 1
+jump 4 always true true
 end
+print tmp1
+set @counter returnAddress-None-show

@@ -1,0 +1,29 @@
+
+
+
+// get core or the replacement storage if exist
+getCoreOr(appro, message)
+    // appro will replace core if exist
+    if appro != null
+        print "[green] replacement for core not null, will replace core with: "
+        msg.printAndWait(appro, message)
+        sensor coreX appro @x
+        sensor coreY appro @y
+        set core appro
+    else
+        // get core position
+        #ref getCorePos
+        // require to have a @unite
+        msg.printAndWait("looking for core, this is done once", message)
+        ulocate building core false @copper coreX coreY coreFound core
+        if coreFound == false
+            msg.printAndWait("[red] core not found, searching again", message)
+            msg.printAndWait(core, message)
+            msg.printAndWait(coreFound, message)
+            jump getCorePos
+        print "[green] core found at "
+        print coreX
+        print " "
+        print coreY
+        msg.printAndWait("", message)
+    return coreX, coreY, core

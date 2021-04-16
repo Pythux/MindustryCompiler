@@ -42,7 +42,16 @@ def runYacc(content: str, debug=False, clearContext=False):
     if lines is None or len(lines) == 0:
         return ''
 
-    lines = fillFunCall(lines)
+    lines = fillFunCall(lines)  # add args setters and jump to function
+
+    functionCalled = importsHandling.imports.getFunctionsDefinition()  # add after end prog, function used
+    if len(functionCalled):
+        lines.append(AsmInst('end'))
+        lines += functionCalled
+
+    while (lines.filter(lambda el: isinstance(el, FunCall))):
+        lines = fillFunCall(lines)  # add args setters and jump to function
+        lines += importsHandling.imports.getFunctionsDefinition()  # add at the end all functions
 
     # last step, put ref to code line
     lines = consumeRefAndChangeJump(lines)
@@ -63,22 +72,23 @@ def runImports():
         yaccParse(nextImpContent)
 
 
-def fillFunCall(lines):
-    lines = boa(lines)
-    if len(lines.filter(lambda el: isinstance(el, FunCall))) == 0:
-        return lines
-
-    def reducer(li, el):
-        return li + (el.toContent() if isinstance(el, FunCall) else [el])
-
-    return fillFunCall(lines.reduce(reducer, []))
-
-
 def checkExistingVars(content):
     context.existingVars = set((
         boa(runLex(content))
         .filter(lambda tok: tok.type == 'ID')
         .map(lambda tok: Variable(tok.value))))
+
+
+def fillFunCall(lines):
+    lines = boa(lines)
+    if len(lines.filter(lambda el: isinstance(el, FunCall))):
+        def reducer(li, line):
+            if isinstance(line, FunCall):
+                return li + line.toContent()
+            return li + [line]
+
+        return fillFunCall(lines.reduce(reducer, []))
+    return lines
 
 
 # we only have at this moment str, Jump and Ref Objects in lines
