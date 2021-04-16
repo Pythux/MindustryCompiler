@@ -119,13 +119,9 @@ tryTakeOneMoreBot(procId, botType, message)
         print "you can pick another kind of bot in the instruction 'ubind' at the begining of the programme"
         msg.printAndWait("", message)
         return null
-    // have an owner ?
-    sensor owner @unit @controller
-    sensor typeOfOwner owner @type
     sensor botFlag @unit @flag
-    if typeOfOwner == botType  // is free
-        if botFlag == 0
-            ucontrol flag procId null null null null  // tag it
-            print "[green] free bot found !"
-            printflush message
-            return @unit
+    if botFlag == 0   // is free
+        ucontrol flag procId null null null null  // tag it
+        print "[green] free bot found !"
+        printflush message
+        return @unit
