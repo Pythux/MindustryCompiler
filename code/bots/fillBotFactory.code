@@ -216,12 +216,11 @@ moveBotToFillFactoInNeed(botFactoLink, coreX, coreY, core, radiusApproche, messa
     else  // empty
         set nothingToDo 0
         #ref searchingRessource
-        op add nothingToDo nothingToDo 1
         getlink facto botFactoLink
         if facto == null // end link list, search again
             set botFactoLink 0
+            op add nothingToDo nothingToDo 1
             jump searchingRessource
-
         ressourceNeeded = getNeededRessource(facto, message)
         if ressourceNeeded != false
             ucontrol approach coreX coreY radiusApproche null null
@@ -231,7 +230,8 @@ moveBotToFillFactoInNeed(botFactoLink, coreX, coreY, core, radiusApproche, messa
             else
                 print "[yellow] not enouth of "
                 print ressourceNeeded
-                msg.printAndWait(" in base, will take something else", message)
+                print " in base, will take something else"
+                printflush message
                 op add botFactoLink botFactoLink 1
         else
             op add botFactoLink botFactoLink 1
