@@ -84,6 +84,7 @@ listBotRessourceLink = [
     (bot5, link5), (bot6, link6),
     (bot7, link7), (bot8, link8),
 ]
+reverseBotList = [bot8, bot7, bot6, bot5, bot4, bot3, bot2, bot1]
 
 // free memory
 // variable content is keep after end instruction, memory not free
@@ -95,6 +96,7 @@ for ownedBot, botFactoLink in listBotRessourceLink
     set ownedBot null
     set botFactoLink 0
 
+set needToFreeBot false
 
 set reset false
 
@@ -111,13 +113,6 @@ if isOn != true
 if reset == true
     msg.printAndWait("reset prog", message)
     end // to reset procId and botOwnedNb
-
-
-op add loopSearchingBots loopSearchingBots 1
-if loopSearchingBots > 24
-    print "[red] no bots of type: [grey]"
-    print botType
-    msg.printAndWait("[red] free", message)
 
 
 // take bot if need more, else loop thought owned bots
@@ -149,18 +144,33 @@ if botOwnedNb < botNb // need one ?
                     jump endBotSave  // kind of a break
 
 #ref endBotSave
-set loopSearchingBots 0
 
-
-set count 0
 
 for ownedBot, botFactoLink in listBotRessourceLink
     ubind ownedBot
-    op add count count 1
     if @unit == null // no more owned bots
         jump loop
 
-    botFactoLink = moveBotToFillFactoInNeed(botFactoLink, coreX, coreY, core, message)
+    botFactoLink, needToFreeBot = moveBotToFillFactoInNeed(botFactoLink, coreX, coreY, core, message)
+    if needToFreeBot == true
+        jump freeSomeBots
+
+// end here
+jump loop
+
+
+#ref freeSomeBots
+// free some bots
+for ownedBot in reverseBotList
+    if ownedBot != null  // free it
+        ubind ownedBot
+        ucontrol flag 0 null null null null
+        set ownedBot null
+        op sub botOwnedNb botOwnedNb 1
+        jump haveFreeOneBot
+#ref haveFreeOneBot
+
+jump loop
 
 
 moveBotToFillFactoInNeed(botFactoLink, coreX, coreY, core, message)
@@ -187,7 +197,9 @@ moveBotToFillFactoInNeed(botFactoLink, coreX, coreY, core, message)
                 op add botFactoLink botFactoLink 1
     else  // empty
         set linkIndex 0  // reset searching list
+        set nothingToDo 0
         #ref searchingRessource
+        op add nothingToDo nothingToDo 1
         getlink facto botFactoLink
         if facto == null // end link list, search again
             set botFactoLink 0
@@ -214,12 +226,10 @@ moveBotToFillFactoInNeed(botFactoLink, coreX, coreY, core, message)
             print "go next factory, id: "
             print botFactoLink
             printflush message
+            if nothingToDo > 3
+                return botFactoLink, true
             jump searchingRessource
-
-    return botFactoLink
-
-// end here
-jump loop
+    return botFactoLink, false
 
 
 // will return ressourceType needed by factory or false if facto does not need any
