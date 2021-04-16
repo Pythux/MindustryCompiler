@@ -75,6 +75,9 @@ set loopSearchingBots 0
 
 sensor botType @unit @type // get botType
 
+// bot to take, in order of priority to transport ressource
+botTypeList = [@zenith, @horizon, @flare]
+
 if botNb > 8
     msg.printAndWait("[red] can't take more than 8 bots\n change parameter 'botNb' to fix it", message)
     end
@@ -140,16 +143,25 @@ if haveFreeBots == true
 
 
 if botOwnedNb < botNb  // need one ?
+    if botType == @flare // is the default bot, will try to take better
+        for listedBotType in botTypeList
+            haveNewBot = idBots.getFreeBotAndFlagIt(listedBotType, procId, message)
+            if haveNewBot == true
+                jump saveNewBot
     haveNewBot = idBots.tryTakeOneMoreBot(procId, botType, message)
     if haveNewBot == true
-        op add botOwnedNb botOwnedNb 1
-        for ownedBot, linkId in listBotRessourceLink
-            if ownedBot == null
-                set ownedBot @unit
-                jump endBotSave
-        #ref endBotSave
+        jump saveNewBot
 
-
+jump passSave
+#ref saveNewBot
+op add botOwnedNb botOwnedNb 1
+for ownedBot, linkId in listBotRessourceLink
+    if ownedBot == null
+        set ownedBot @unit
+        jump endBotSave
+#ref endBotSave
+#ref passSave
+op yolo
 for ownedBot, botFactoLink in listBotRessourceLink
     ubind ownedBot
     if @unit == null // no more owned bots
