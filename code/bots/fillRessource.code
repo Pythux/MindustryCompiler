@@ -1,7 +1,6 @@
 
 
 // select all the ressources to take into a container
-// if not false, it will be taken
 // can change who take it (here @flare)
 // the bot will take ressource to it's max transport capacity
 

@@ -1,4 +1,8 @@
 
+
+// will fill with one bot all linked overdrive and shield
+// if turret given, will desactivate shield when no ennemies around
+
 import msg
 import store
 import idBots

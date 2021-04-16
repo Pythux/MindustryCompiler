@@ -1,4 +1,8 @@
 
+
+// ask bots to mine close to the core or specified "store" the specified ressource "oreType"
+
+
 import msg
 import store
 import idBots

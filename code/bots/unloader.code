@@ -1,5 +1,5 @@
 
-// put all ressource in store to core or move it to loader
+// put all ressource in store to core or "loader" if specified
 
 import onOff
 import idBots

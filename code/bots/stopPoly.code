@@ -1,5 +1,5 @@
 
-// switch to stop poly from rebuilding
+// switch to stop poly from rebuilding or doing anything
 
 
 sensor stop switch1 @enabled

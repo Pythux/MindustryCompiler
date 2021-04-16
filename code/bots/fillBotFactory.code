@@ -1,10 +1,11 @@
 
+// this code fill all linked bot factory (and overdrive-projector/dome), with bots
 
-// select all the ressources to take into a container
-// if not false, it will be taken
+// ressource will be picked from core of "appro" if specified, default to container1
+
 // can change who take it (here @flare)
 // the bot will take ressource to it's max transport capacity
-// max bot controled: 4
+// max bot controled: botNb
 
 
 import onOff

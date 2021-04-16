@@ -1,5 +1,7 @@
 // repare fighting bots when low on health, need on processor for each unit type
-// link it to processor position, need healthBot point around
+// will go to the nearest heal point
+
+// can specified the health percent to go back to heal
 
 
 ubind @grosRobots
