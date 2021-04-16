@@ -155,7 +155,7 @@ for ownedBot, botFactoLink in listBotRessourceLink
     if @unit == null // no more owned bots
         jump loop
 
-    botFactoLink, needToFreeBot = moveBotToFillFactoInNeed(botFactoLink, coreX, coreY, core, message)
+    botFactoLink, needToFreeBot = moveBotToFillFactoInNeed(botFactoLink, coreX, coreY, core, radiusApproche, message)
     if needToFreeBot == true
         set botFactoLink 0
         jump freeSomeBots
@@ -179,7 +179,7 @@ set haveFreeBots true
 jump loop
 
 
-moveBotToFillFactoInNeed(botFactoLink, coreX, coreY, core, message)
+moveBotToFillFactoInNeed(botFactoLink, coreX, coreY, core, radiusApproche, message)
     getlink facto botFactoLink
     sensor payload @unit @totalItems
     if payload > 0
