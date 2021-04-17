@@ -95,6 +95,10 @@ if turret != null
     sensor projectorType projector @type
     if projectorType == @force-projector
         control enabled projector spotted null null null
+    elif projectorType == @overdrive-dome
+        control enabled projector spotted null null null
+    elif projectorType == @overdrive-projector
+        control enabled projector spotted null null null
     op add linkId linkId 1
     jump loopProjector
 #ref endLoopProjector
@@ -111,6 +115,10 @@ if turret == null
             jump endLoopProjectorActivate
         sensor projectorType projector @type
         if projectorType == @force-projector
+            control enabled projector true null null null
+        elif projectorType == @overdrive-dome
+            control enabled projector true null null null
+        elif projectorType == @overdrive-projector
             control enabled projector true null null null
         op add linkId linkId 1
         jump loopProjectorActivate
