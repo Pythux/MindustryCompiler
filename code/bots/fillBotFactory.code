@@ -230,15 +230,17 @@ moveBotToFillFactoInNeed(botFactoLink, coreX, coreY, core, radiusApproche, messa
             else
                 print "[yellow] not enouth of "
                 print ressourceNeeded
-                print " in base, will take something else"
+                print " in base, will fill another factory"
                 printflush message
-                op add botFactoLink botFactoLink 1
+                jump toSearchingR
         else
-            op add botFactoLink botFactoLink 1
-            if nothingToDo > 3
-                return botFactoLink, true
-            jump searchingRessource
+            jump toSearchingR
     return botFactoLink, false
+    #ref toSearchingR
+    op add botFactoLink botFactoLink 1
+    if nothingToDo > 3
+        return botFactoLink, true
+    jump searchingRessource
 
 
 // will return ressourceType needed by factory or false if facto does not need any
