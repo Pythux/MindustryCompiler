@@ -11,18 +11,11 @@ import onOff
 
 set store container1
 set message message1
-ubind @flare
+set switch switch1
 set turret hail1
 
-set radiusApproche 6
 
-
-if @unit == null
-    msg.printAndWait("[yellow] no unit of choosen type", message)
-    end
-
-
-coreX, coreY, core = store.getCoreOr(store)
+coreX, coreY, core = store.getCoreOr(store, message)
 
 
 // to flag bots with, done only once
@@ -30,22 +23,7 @@ if procId == null
     procId = idBots.genProcId()
 
 
-set botFactoLink 0
-
-sensor botType @unit @type // get botType
-
-set myBot null
-set listFactoLoop 0
-
 set reset false
-
-
-
-#ref freeMyBot
-if myBot != null
-    ubind myBot
-    ucontrol flag 0 null null null null
-    set myBot null
 
 
 // --- Prog Loop ---
@@ -72,17 +50,6 @@ if isDead == true
 if turret == null
     if hail1 != null
         set turret hail1
-
-
-// does we have stuff to fill ?
-
-getlink facto botFactoLink
-sensor factoType facto @type
-if facto == null // end link list
-    set botFactoLink 0
-    op add listFactoLoop listFactoLoop 1
-    set needToFreeBot false
-    jump loop
 
 
 // if turret, list all force-projector to turn it on/off if needed
@@ -135,58 +102,209 @@ if turret == null
 #ref endLoopProjectorActivate
 
 
-ressourceNeeded = getNeededRessource(facto, message)
-if ressourceNeeded == false
-    op add botFactoLink botFactoLink 1
-    if listFactoLoop > 2
-        jump freeMyBot
+msg.printAndWait("yo", message)
+
+// if we have a unit
+if @unit != null  // @unit is myBot
+    msg.printAndWait("we have a unit ?!", message)
+    sensor payload @unit @totalItems
+    if payload > 0 // with ressource, check first if we could need the ressource
+        sensor transportedRessource @unit @firstItem
+        facto = getFactoThatNeedThisRessource(transportedRessource)
+        if facto != null // a facto need this ressource
+            fillFacto(facto, transportedRessource, core, procId, message)
+            jump loop
+
+    // will maybe not use the bot, ask him to go to the base
+    ucontrol approach coreX coreY 5 null null
+
+
+    // check facto that need another ressource:
+    facto, ressource = getFactoNeededRessource()
+    if facto != null
+        fillFacto(facto, ressource, core, procId, message)
     else
-        jump loop
+        // free bot
+        ucontrol flag 0 null null null null
+    jump loop
 
-set listFactoLoop 0
-
-sensor coreStored core ressourceNeeded
-if coreStored < 10
-    msg.printAndWait("[yellow] not enougth ressource in core/store", message)
-    jump freeMyBot
-
-// get a bot
-if myBot == null
-    set botId 1
-    haveBot = idBots.getFreeBotAndFlagIt(botType, procId, message)
-    if haveBot == false
-        jump loop
-    else
-        set myBot @unit
-
-ubind myBot
-
-sensor payload @unit @totalItems
-if payload > 0
-    sensor transportedRessource @unit @firstItem
-    isGoodR = isGoodRessource(transportedRessource, facto)
-    if isGoodR == true  // dropRessourceToFacto
-        sensor factoX facto @x
-        sensor factoY facto @y
-        ucontrol approach factoX factoY radiusApproche null null
-        ucontrol itemDrop facto 800 null null null
-    else
-        ucontrol approach coreX coreY radiusApproche null null
-        ucontrol itemDrop core 800 null null null
-else // payload empty
-    ucontrol approach coreX coreY radiusApproche null null
-    ucontrol itemTake core ressourceNeeded 800 null null
-
+// we don't have a bot, do we need one ?
+facto, ressource = getFactoNeededRessource()
+print "no bots, need something ? "
+print facto
+print " need: "
+print ressource
+msg.printAndWait("", message)
+if facto != null
+    fillFacto(facto, ressource, core, procId, message)
 
 jump loop
 
-// to get it when given latter
-if hail1 != null
-    set turret hail1
+// given a facto and the needed ressource, will use a bot to fill it
+fillFacto(facto, ressource, core, procId, message)
+    print "facto: "
+    print facto
+    print " need to be filled with ressource: "
+    msg.printAndWait(ressource, message)
+    sensor coreStored core ressource
+    if coreStored < 10
+        print "[yellow] not enougth of "
+        print ressource
+        msg.printAndWait(" in core/store", message)
+
+    if @unit != null  // free old unit
+        ucontrol flag 0 null null null null // free it
+        ubind null
+
+    succeed = bindBotWithPreferenceRessource(ressource, procId)
+    if succeed == true
+        print "we have a good bot"
+        msg.printAndWait("", message)
+        sensor payload @unit @totalItems
+        if payload > 0
+            sensor transportedRessource @unit @firstItem
+            if transportedRessource == ressource
+                giveRessourceToFacto(facto)
+            else
+                throwRessource(core)
+        else
+            getRessourceInCore(ressource, core)
+
+
+// will ubind a bot that have the needed ressource or is empty or at last have an incorrect ressource
+bindBotWithPreferenceRessource(ressource, procId)
+    if @unit != null
+        sensor payload @unit @totalItems
+        if payload > 0
+            sensor transportedRessource @unit @firstItem
+            if transportedRessource == ressource
+                return true  // we already have the bot
+        ucontrol flag 0 null null null null // free it
+    // here, we don't have a good bot, will search for one
+    found = searchBotTransportingRessource(ressource)
+    if found == true
+        ucontrol flag procId null null null null // tag it
+        return true
+    found = searchEmptyBot()
+    if found == true
+        ucontrol flag procId null null null null // tag it
+        return true
+    found = getFreeBot()
+    if found == true
+        return true
+    ubind null // clear unsucess last bind
+    return false
+
+
+searchBotTransportingRessource(ressource)
+    ubind @flare
+    set firstBot @unit
+    #ref loopSearchingBetterBot
+    ubind @flare
+    if @unit == null // no bot of that botType
+        return false
+    sensor flag @unit @flag
+    if flag == 0  // bot is free
+        sensor payload @unit @totalItems
+        if payload > 0
+            sensor transportedRessource @unit @firstItem
+            if transportedRessource == ressource
+                return true  // best bot found, he already have the ressource
+
+    if @unit == firstBot
+        return false
+    jump loopSearchingBetterBot
+
+
+searchEmptyBot()
+    ubind @flare
+    set firstBot @unit
+    #ref loopSearchingBetterBot
+    ubind @flare
+    if @unit == null // no bot of that botType
+        return false
+    sensor flag @unit @flag
+    if flag == 0  // bot is free
+        sensor payload @unit @totalItems
+        if payload == 0
+            return true  // best bot found, he already have the ressource
+
+    if @unit == firstBot
+        return false
+    jump loopSearchingBetterBot
+
+
+getFreeBot()
+    ubind @flare
+    set firstBot @unit
+    #ref loopSearchingBetterBot
+    ubind @flare
+    if @unit == null // no bot of that botType
+        return false
+    sensor flag @unit @flag
+    if flag == 0  // bot is free
+        return true
+
+    if @unit == firstBot
+        return false
+    jump loopSearchingBetterBot
+
+
+
+giveRessourceToFacto(facto)
+    sensor factoX facto @x
+    sensor factoY facto @y
+    ucontrol approach factoX factoY 5 null null
+    ucontrol itemDrop facto 800 null null null
+
+
+getRessourceInCore(ressource, core)
+    sensor coreX core @x
+    sensor coreY core @y
+    ucontrol approach coreX coreY 5 null null
+    ucontrol itemTake core ressource 800 null null
+
+
+throwRessource(core)
+    sensor coreX core @x
+    sensor coreY core @y
+    ucontrol approach coreX coreY 5 null null
+    ucontrol itemDrop core 800 null null null
+
+
+// return facto and the ressource needed if need it, else null/false
+getFactoNeededRessource()
+    set factoId -1
+    #ref searching
+    op add factoId factoId 1
+    getlink facto factoId
+    if facto == null
+        return null, false
+    needed = getNeededRessource(facto)
+    if needed != false
+        return facto, needed
+    jump searching
+
+
+// return facto if exist that need the ressource, else false
+getFactoThatNeedThisRessource(transportedRessource)
+    set factoId -1
+    #ref searching
+    op add factoId factoId 1
+    getlink facto factoId
+    if facto == null
+        return false
+
+    isGood = isGoodRessource(transportedRessource, facto)
+    if isGood == true
+        return facto
+    else
+        jump searching
+
 
 
 // will return ressourceType needed by factory or false if facto does not need any
-getNeededRessource(facto, message)
+getNeededRessource(facto)
     sensor factoType facto @type
     sensor selectedBotToBuild facto @config
 
