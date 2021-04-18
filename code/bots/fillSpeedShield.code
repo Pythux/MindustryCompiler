@@ -114,7 +114,13 @@ if @unit != null  // @unit is myBot
         facto = getFactoThatNeedThisRessource(transportedRessource)
         if facto != null // a facto need this ressource
             fillFacto(facto, transportedRessource, core, procId, message)
+            we have the best bot here
+            set haveTryGetBetterBot false
             jump loop
+
+    if haveTryGetBetterBot == false
+        set haveTryGetBetterBot true
+        jump freebotAndLoop
 
     // check facto that need another ressource:
     facto, ressource = getFactoNeededRessource()
@@ -122,12 +128,8 @@ if @unit != null  // @unit is myBot
         fillFacto(facto, ressource, core, procId, message)
         jump loop
     else
-        // free bot
-        // ask him to go to the base
-        ucontrol approach coreX coreY 5 null null
-        ucontrol flag 0 null null null null
-        ubind null
-        jump loop
+        jump freebotAndLoop
+
 
 // we don't have a bot, do we need one ?
 facto, ressource = getFactoNeededRessource()
@@ -139,6 +141,14 @@ printflush message
 if facto != null
     fillFacto(facto, ressource, core, procId, message)
 
+jump loop
+
+#ref freebotAndLoop
+// free bot
+// ask him to go to the base
+ucontrol approach coreX coreY 5 null null
+ucontrol flag 0 null null null null
+ubind null
 jump loop
 
 // given a facto and the needed ressource, will use a bot to fill it
