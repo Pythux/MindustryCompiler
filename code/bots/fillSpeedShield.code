@@ -25,6 +25,7 @@ if procId == null
 
 set reset false
 
+set haveTryGetBetterBot false
 
 // --- Prog Loop ---
 #ref loop
@@ -35,6 +36,9 @@ isOn = onOff.isOn(switch)
 if isOn != true
     msg.printAndWait("[yellow] process is turn off", message)
     set reset true // will reset after switch On
+    if @unit != null
+        ucontrol flag 0 null null null null
+        ubind null
     jump loop
 
 if reset == true
@@ -102,11 +106,8 @@ if turret == null
 #ref endLoopProjectorActivate
 
 
-msg.printAndWait("yo", message)
-
 // if we have a unit
 if @unit != null  // @unit is myBot
-    msg.printAndWait("we have a unit ?!", message)
     sensor payload @unit @totalItems
     if payload > 0 // with ressource, check first if we could need the ressource
         sensor transportedRessource @unit @firstItem
@@ -115,18 +116,18 @@ if @unit != null  // @unit is myBot
             fillFacto(facto, transportedRessource, core, procId, message)
             jump loop
 
-    // will maybe not use the bot, ask him to go to the base
-    ucontrol approach coreX coreY 5 null null
-
-
     // check facto that need another ressource:
     facto, ressource = getFactoNeededRessource()
     if facto != null
         fillFacto(facto, ressource, core, procId, message)
+        jump loop
     else
         // free bot
+        // ask him to go to the base
+        ucontrol approach coreX coreY 5 null null
         ucontrol flag 0 null null null null
-    jump loop
+        ubind null
+        jump loop
 
 // we don't have a bot, do we need one ?
 facto, ressource = getFactoNeededRessource()
@@ -134,7 +135,7 @@ print "no bots, need something ? "
 print facto
 print " need: "
 print ressource
-msg.printAndWait("", message)
+printflush message
 if facto != null
     fillFacto(facto, ressource, core, procId, message)
 
@@ -145,30 +146,32 @@ fillFacto(facto, ressource, core, procId, message)
     print "facto: "
     print facto
     print " need to be filled with ressource: "
-    msg.printAndWait(ressource, message)
+    print ressource
+    printflush message
     sensor coreStored core ressource
     if coreStored < 10
         print "[yellow] not enougth of "
         print ressource
         msg.printAndWait(" in core/store", message)
+        return false
 
-    if @unit != null  // free old unit
-        ucontrol flag 0 null null null null // free it
-        ubind null
-
-    succeed = bindBotWithPreferenceRessource(ressource, procId)
-    if succeed == true
-        print "we have a good bot"
-        msg.printAndWait("", message)
-        sensor payload @unit @totalItems
-        if payload > 0
-            sensor transportedRessource @unit @firstItem
-            if transportedRessource == ressource
-                giveRessourceToFacto(facto)
-            else
-                throwRessource(core)
+    if @unit == null  // will need a unit
+        succeed = bindBotWithPreferenceRessource(ressource, procId)
+        if succeed == true
+            print "we have a good bot"
+            printflush message
         else
-            getRessourceInCore(ressource, core)
+            return false
+
+    sensor payload @unit @totalItems
+    if payload > 0
+        sensor transportedRessource @unit @firstItem
+        if transportedRessource == ressource
+            giveRessourceToFacto(facto)
+        else
+            throwRessource(core)
+    else
+        getRessourceInCore(ressource, core)
 
 
 // will ubind a bot that have the needed ressource or is empty or at last have an incorrect ressource
