@@ -25,8 +25,13 @@ def test_identicalCode():
         assert runYacc(getContent(filePath), clearContext=True) == asm
 
 
-def test_codeResult():
-    folderPath = PurePath(os.path.dirname(__file__), 'code->ASM')
+def testCodeAsm():
+    codeResult('code->ASM')
+    codeResult('webExemples')
+
+
+def codeResult(folder):
+    folderPath = PurePath(os.path.dirname(__file__), folder)
     (boa(os.listdir(folderPath))
         .filter(lambda file: file.split('.')[-1] == 'code')
         .sort()
