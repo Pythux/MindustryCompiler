@@ -11,7 +11,9 @@ op sub net in out
 op floor net net out // floor number to be always humain readable
 print "power: "
 print net
-printflush message1 // put all printed message ("power: " + net) in message1 (need a message box liked to processor to read it)
+printflush message1
+// put all printed message ("power: " + net) in message1
+// (need a message box liked to processor to see it)
 
 // color to corresponding power produced:
 
