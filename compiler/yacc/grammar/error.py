@@ -1,5 +1,5 @@
 
-
+from compiler import CompilationException
 from ._start import grammar, LexToken
 
 
@@ -8,7 +8,5 @@ from ._start import grammar, LexToken
 def error(t: LexToken):
     print("Syntax error in input!")
     if t is not None:
-        print("at line: {}, wasn't expecting: {}".format(t.lineno, t.type))
-        print("for more information, it's value is: {}".format(t.value))
-        raise SystemExit()
-    raise SystemExit("end of line reached")
+        raise CompilationException("at line: {}, wasn't expecting: {}".format(t.lineno, t.type))
+    raise CompilationException("end of line reached")

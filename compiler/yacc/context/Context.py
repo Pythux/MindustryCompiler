@@ -1,5 +1,5 @@
 
-
+from compiler import CompilationException
 from ..classes import Ref
 from .Function import Fun
 
@@ -33,7 +33,7 @@ class Context:
 
     def addRef(self, ref, index):
         if ref.id in self.refDict:
-            raise Exception('ref {} already declared'.format(ref.id))
+            raise CompilationException('ref {} already declared'.format(ref.id))
         self.refDict[ref.id] = index
 
     def genRef(self):

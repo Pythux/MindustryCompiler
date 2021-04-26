@@ -1,5 +1,5 @@
 
-
+from compiler import CompilationException
 from ..importsHandling import imports
 from .AsmInst import AsmInst, Value, Variable
 from .RefAndJump import Jump
@@ -20,7 +20,7 @@ class FunCall:
     def toFunContent(self, fun):
         lines = []
         if len(fun.args) != len(self.callArgs):
-            raise Exception('function “{}” takes exactly {} arguments, {} is receved line {}'
+            raise CompilationException('function “{}” takes exactly {} arguments, {} is receved line {}'
                             .format(fun.name, fun.args, self.callArgs, self.line))
         lines += setters(map(lambda a: fun.ids[a], fun.args), self.callArgs)
         lines.append(AsmInst('op', [Value('add'), fun.returnAddress, Value('@counter'), Value('1')]))
@@ -29,7 +29,7 @@ class FunCall:
         # set tmp to var return
         if len(self.returnTo):
             if len(self.returnTo) != len(fun.returns):
-                raise Exception('function “{}” return exactly {} values, {} is receved line {}'
+                raise CompilationException('function “{}” return exactly {} values, {} is receved line {}'
                                 .format(fun.name, len(fun.returns), len(self.returnTo), self.line))
             lines += setters(self.returnTo, fun.returns)
         return lines

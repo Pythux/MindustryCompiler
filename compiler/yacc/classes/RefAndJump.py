@@ -1,4 +1,5 @@
 
+from compiler import CompilationException
 from .AsmInst import Value
 
 
@@ -6,7 +7,7 @@ class Ref:
     def __init__(self, ref: str) -> None:
         if not isinstance(ref, str):
             if not isinstance(ref, int):
-                raise Exception("error")
+                raise CompilationException("error")
         self.id = ref
 
     def __repr__(self) -> str:
@@ -41,9 +42,7 @@ class Jump:
 
     def refToLine(self, refDict):
         if self.ref.id not in refDict:
-            print("for jump at line: {}".format(self.line))
-            print("ref {} does not exist".format(self.ref.id))
-            raise SystemExit()
+            raise CompilationException("for jump at line: {}, ref {} does not exist".format(self.line, self.ref.id))
         self.refLine = refDict[self.ref.id]
 
     def toStr(self):
