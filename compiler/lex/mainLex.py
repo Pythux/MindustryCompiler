@@ -10,6 +10,8 @@ from ply import lex
 from ply.lex import Lexer
 from boa import boa
 
+from compiler import CompilationException
+
 
 class LexToken:
     lexer: Lexer
@@ -123,7 +125,7 @@ def redoToken(t):
 def handleIndent(t: LexToken):
     nb = len(t.value[1:])
     if nb / endLineContext.indentNb != nb // endLineContext.indentNb:
-        raise SystemExit('line {}, indentation incorrect to previous lines in file'.format(t.lineno))
+        raise CompilationException('line {}, indentation incorrect to previous lines in file'.format(t.lineno))
     indentLvl = len(t.value[1:]) // endLineContext.indentNb
 
     if indentLvl > endLineContext.previousIndentationLvl:
@@ -139,7 +141,7 @@ def handleIndent(t: LexToken):
 
 def indentUp(t: LexToken, indentLvl):
     if indentLvl > endLineContext.previousIndentationLvl + 1:
-        raise SystemExit('too much indentation line {}'.format(t.lineno))
+        raise CompilationException('too much indentation line {}'.format(t.lineno))
     t.type = 'OpenCurlyBracket'
     endLineContext.previousIndentationLvl = indentLvl
     t.lexer.lineno += 1  # inc line number to track lines
@@ -258,9 +260,7 @@ def t_error(t: LexToken):
     if t.value[0] == ' ':
         t.lexer.skip(1)
     else:
-        print("Illegal character '%s'" % t.value[0])
-        print("line: {}".format(t.lineno))
-        raise SystemExit()
+        raise CompilationException("Illegal character '{}', line: {}".format(t.value[0], t.lineno))
 
 
 # make a list of unique tokens
