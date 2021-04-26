@@ -1,0 +1,7 @@
+
+import msg
+
+set message message1
+
+msg.printAndWait("hey !", message)
+msg.printAndWait("do you read this ?", message)
