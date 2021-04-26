@@ -1,0 +1,54 @@
+
+import idBots
+
+set message message1
+
+// which bot to use
+ubind @flare  // let player choose botType with an image select
+
+if @unit == null
+    end
+
+sensor botType @unit @type // get botType
+
+// procId is a random number, to flag bots with, done only once
+if procId == null
+    procId = idBots.genProcId()
+
+
+// let's say we want to have two bots max to do some stuff
+botList = [
+    bot1, bot2,
+]
+
+// code to try to take a bot
+jump endBotSave
+#ref getABot
+haveNewBot = idBots.tryTakeOneMoreBot(procId, botType, message)
+if haveNewBot == true
+    for ownedBot in botList
+        if ownedBot == null
+            set ownedBot @unit
+            jump endBotSave
+#ref endBotSave
+
+// ---- LOOP ---
+#ref loop
+
+
+set radiusApproche 5
+
+for bot in botList
+    if bot == null
+        jump getABot
+    ubind bot  // we take our bot
+    // we do stuff with our binded bot:
+    ucontrol approach @thisx @thisy radiusApproche null null
+
+// end programme, will loop forever to avoir executing all the initiating
+jump loop
+
+
+// this way, we don't need to list all bots (out of 24 max) of a kind to use our two bots, we just loop over our botList
+// take a look a my programme "fillBotFactory", "fillSpeedShield", etc
+// to see some real code that use all that stuff

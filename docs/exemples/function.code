@@ -1,0 +1,35 @@
+
+set message message1
+
+print "hi !, what is the value of x and y ?"
+printflush message
+wait(1.6) // wait 1.6 secondes
+
+set x @thisx
+set y @thisy
+print "x:"
+print x
+print " y:"
+print y
+printAndWait("\n and now we will wait two secondes", message)
+
+printAndWait("2s have passed !", message)
+
+set tmp2 "we could also use tmpX variables freely"
+printAndWait(tmp2, message)
+
+
+printAndWait(msg, messageX)
+    print msg
+    printflush messageX
+    wait(2)
+
+
+wait(secondes)
+    set timestamps @time
+    op mul secondes secondes 1000
+    op add timestampsToWait timestamps secondes
+
+    // can jump on himself, not possible on game UI
+    #ref waiting
+    jump waiting timestampsToWait >= @time
