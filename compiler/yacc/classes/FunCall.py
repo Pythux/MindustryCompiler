@@ -21,7 +21,7 @@ class FunCall:
         lines = []
         if len(fun.args) != len(self.callArgs):
             raise CompilationException('function “{}” takes exactly {} arguments, {} is receved line {}'
-                            .format(fun.name, fun.args, self.callArgs, self.line))
+                                       .format(fun.name, fun.args, self.callArgs, self.line))
         lines += setters(map(lambda a: fun.ids[a], fun.args), self.callArgs)
         lines.append(AsmInst('op', [Value('add'), fun.returnAddress, Value('@counter'), Value('1')]))
         lines.append(Jump('jump to function {}'.format(self.name), fun.refDefinition))
