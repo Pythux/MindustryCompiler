@@ -34,6 +34,11 @@ def yaccParse(content, debug=False):
 
 # run parser on content, which is main file or REPL
 def runYacc(content: str, debug=False, clearContext=False):
+    # do it first in case of exception
+    if clearContext:
+        importsHandling.imports.clear()
+        context.clear()
+
     checkExistingVars(content)  # only on main file
     lines = yaccParse(content, debug=debug)
 

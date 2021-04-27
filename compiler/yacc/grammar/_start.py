@@ -2,7 +2,7 @@
 from ply.yacc import YaccProduction
 from compiler.lex.mainLex import LexToken
 
-from compiler.yacc.generateYacc import grammar, precedence
+from compiler.yacc.generateYacc import grammar
 
 from ..context import context
 

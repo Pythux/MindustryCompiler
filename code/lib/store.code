@@ -14,8 +14,14 @@ getCoreOr(appro, message)
         // get core position
         #ref getCorePos
         // require to have a @unite
-        msg.printAndWait("looking for core, this is done once", message)
-        ulocate building core false @copper coreX coreY coreFound core
+        print "looking for core"
+        printflush message
+        if @unit == null // if no unit to locate, will take a flare
+            ubind @flare
+            ulocate building core false @copper coreX coreY coreFound core
+            ubind null  // avoid to have some if @unit != null that run out of this side effect
+        else
+            ulocate building core false @copper coreX coreY coreFound core
         if coreFound == false
             msg.printAndWait("[red] core not found, searching again", message)
             msg.printAndWait(core, message)

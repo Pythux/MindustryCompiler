@@ -75,6 +75,9 @@ set loopSearchingBots 0
 
 sensor botType @unit @type // get botType
 
+// bot to take, in order of priority to transport ressource
+botTypeList = [@zenith, @horizon, @flare]
+
 if botNb > 8
     msg.printAndWait("[red] can't take more than 8 bots\n change parameter 'botNb' to fix it", message)
     end
@@ -106,10 +109,13 @@ set reset false
 #ref loop
 
 // switch to turn off
-set isOn true
-if switch != null
-    sensor isOn switch @enabled
-
+sensor isOn switch @enabled
+op add count count 1
+print "switch is "
+print isOn
+print " c: "
+print count
+printflush message
 if isOn != true
     msg.printAndWait("[yellow] process is turn off", message)
     set reset true // will reset after switch On
@@ -140,22 +146,31 @@ if haveFreeBots == true
 
 
 if botOwnedNb < botNb  // need one ?
+    if botType == @flare // is the default bot, will try to take better
+        for listedBotType in botTypeList
+            haveNewBot = idBots.getFreeBotAndFlagIt(listedBotType, procId, message)
+            if haveNewBot == true
+                jump saveNewBot
     haveNewBot = idBots.tryTakeOneMoreBot(procId, botType, message)
     if haveNewBot == true
-        op add botOwnedNb botOwnedNb 1
-        for ownedBot, linkId in listBotRessourceLink
-            if ownedBot == null
-                set ownedBot @unit
-                jump endBotSave
-        #ref endBotSave
+        jump saveNewBot
 
+jump passSave
+#ref saveNewBot
+op add botOwnedNb botOwnedNb 1
+for ownedBot, linkId in listBotRessourceLink
+    if ownedBot == null
+        set ownedBot @unit
+        jump endBotSave
+#ref endBotSave
+#ref passSave
 
 for ownedBot, botFactoLink in listBotRessourceLink
     ubind ownedBot
     if @unit == null // no more owned bots
         jump loop
 
-    botFactoLink, needToFreeBot = moveBotToFillFactoInNeed(botFactoLink, coreX, coreY, core, message)
+    botFactoLink, needToFreeBot = moveBotToFillFactoInNeed(botFactoLink, coreX, coreY, core, radiusApproche, message)
     if needToFreeBot == true
         set botFactoLink 0
         jump freeSomeBots
@@ -179,7 +194,7 @@ set haveFreeBots true
 jump loop
 
 
-moveBotToFillFactoInNeed(botFactoLink, coreX, coreY, core, message)
+moveBotToFillFactoInNeed(botFactoLink, coreX, coreY, core, radiusApproche, message)
     getlink facto botFactoLink
     sensor payload @unit @totalItems
     if payload > 0
@@ -204,12 +219,11 @@ moveBotToFillFactoInNeed(botFactoLink, coreX, coreY, core, message)
     else  // empty
         set nothingToDo 0
         #ref searchingRessource
-        op add nothingToDo nothingToDo 1
         getlink facto botFactoLink
         if facto == null // end link list, search again
             set botFactoLink 0
+            op add nothingToDo nothingToDo 1
             jump searchingRessource
-
         ressourceNeeded = getNeededRessource(facto, message)
         if ressourceNeeded != false
             ucontrol approach coreX coreY radiusApproche null null
@@ -219,14 +233,17 @@ moveBotToFillFactoInNeed(botFactoLink, coreX, coreY, core, message)
             else
                 print "[yellow] not enouth of "
                 print ressourceNeeded
-                msg.printAndWait(" in base, will take something else", message)
-                op add botFactoLink botFactoLink 1
+                print " in base, will fill another factory"
+                printflush message
+                jump toSearchingR
         else
-            op add botFactoLink botFactoLink 1
-            if nothingToDo > 3
-                return botFactoLink, true
-            jump searchingRessource
+            jump toSearchingR
     return botFactoLink, false
+    #ref toSearchingR
+    op add botFactoLink botFactoLink 1
+    if nothingToDo > 3
+        return botFactoLink, true
+    jump searchingRessource
 
 
 // will return ressourceType needed by factory or false if facto does not need any

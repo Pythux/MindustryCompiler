@@ -1,4 +1,6 @@
 
+
+from compiler import CompilationException
 from typing import Callable
 from pathlib import PurePath
 import os
@@ -18,7 +20,7 @@ context = Context()
 def grammar(p_fun: Callable):
     p_name = p_fun.__name__
     if p_name in context.p_fun:
-        raise Exception("function {} is defined more than once".format(p_name))
+        raise CompilationException("function {} is defined more than once".format(p_name))
     context.p_fun[p_name] = p_fun
     p_import = p_fun.__module__
     if p_import not in context.p_imports:

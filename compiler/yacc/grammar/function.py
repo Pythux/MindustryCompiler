@@ -1,4 +1,5 @@
 
+from compiler import CompilationException
 from compiler.yacc.classes import Jump, FunCall
 from ._start import grammar, YaccProduction, context
 
@@ -46,7 +47,7 @@ def runFunc(p: YaccProduction):
 def defFun(p: YaccProduction):
     '''noLine : dottedID OpenParenthesis arguments CloseParenthesis OpenCurlyBracket funScope lines CloseCurlyBracket''' # noqa
     if len(p[1]) != 1:
-        raise Exception("function definition incorrect: {} is not accepted".format(p[1]))
+        raise CompilationException("function definition incorrect: {} is not accepted".format(p[1]))
     context.fun.name = p[1][0]
     args = p[3]
     addArguments(args)
@@ -59,7 +60,7 @@ def defFun(p: YaccProduction):
 def addArguments(args):
     for arg in args:
         if arg in context.fun.args:
-            raise SystemExit('Duplicate parameter "{}"'.format(arg))
+            raise CompilationException('Duplicate parameter "{}"'.format(arg))
         context.fun.args.append(arg)
         context.fun.scopeId(arg)
 
@@ -68,8 +69,7 @@ def addArguments(args):
 def funScope(p: YaccProduction):
     '''funScope : '''
     if context.fun.inFunScope:
-        print("function definition inside function is not handled line: {}".format(p.lineno(0)))
-        raise SystemExit()
+        raise CompilationException("function definition inside function is not handled line: {}".format(p.lineno(0)))
     context.fun.inFunScope = True
 
     context.fun.returnRef = context.genRef()
@@ -79,8 +79,7 @@ def funScope(p: YaccProduction):
 def handleReturn(p: YaccProduction):
     '''lines : Return arguments'''
     if not context.fun.inFunScope:
-        print("return keyword only indide function definition, line {}".format(p.lineno(1)))
-        raise SystemExit()
+        raise CompilationException("return keyword only indide function definition, line {}".format(p.lineno(1)))
     p[0] = funReturn(p[2])
 
 
@@ -91,8 +90,8 @@ def funReturn(args):
 
     # exact same return quantity
     if len(args) != len(context.fun.returns):
-        raise SystemExit("function {} must return {} as many values for all it's return"
-                         .format(context.fun.name, len(context.fun.returns)))
+        raise CompilationException("function {} must return {} as many values for all it's return"
+                                   .format(context.fun.name, len(context.fun.returns)))
 
     lines = setters(context.fun.returns, args)
     lines.append(Jump('return', context.fun.returnRef))

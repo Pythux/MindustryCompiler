@@ -1,4 +1,4 @@
-
+from compiler import CompilationException
 from ..classes import AsmInst, Variable, Value
 
 
@@ -48,7 +48,7 @@ class Fun:
     # change ref/var name for scope
     def generateDefinition(self, moduleName):
         if self.defined:
-            raise Exception("function {} is already defined".format(self.name))
+            raise CompilationException("function {} is already defined".format(self.name))
         self.defined = True
         self.refDefinition = self.context.genRef()
         self.returnAddress = self.getReturnAddr(moduleName)

@@ -1,4 +1,5 @@
 
+from compiler import CompilationException
 from ._start import grammar, YaccProduction, context
 from ..classes import AsmInst, Variable, Value
 
@@ -28,7 +29,7 @@ def asmInstr(p: YaccProduction):
 def lineEnd(p: YaccProduction):
     '''line : ID EndLine'''
     if (p[1] != 'end'):
-        raise SystemExit('instruction "{}" is not "end" and alone'.format(p[1]))
+        raise CompilationException('instruction "{}" is not "end" and alone'.format(p[1]))
     p[0] = AsmInst(p[1], [])
 
 

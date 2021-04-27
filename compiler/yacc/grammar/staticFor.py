@@ -1,5 +1,6 @@
 
 
+from compiler import CompilationException
 from compiler.yacc.classes.AsmInst import Variable
 from ._start import grammar, YaccProduction, context
 from boa import boa
@@ -28,7 +29,7 @@ def staticFor(p: YaccProduction):
 
     for el in li:
         if len(decompose) != len(el):
-            raise Exception("cannot unpack list, el length not equal")
+            raise CompilationException("cannot unpack list, el length not equal")
     # do a variable replacing
     lines = []
 
@@ -63,11 +64,11 @@ def liNameOrList(p: YaccProduction):
 def staticList(p: YaccProduction):
     '''noLine : affectation list'''
     if len(p[1]) != 1:
-        raise Exception("afectation incorrect: {} is not accepted".format(p[1]))
+        raise CompilationException("afectation incorrect: {} is not accepted".format(p[1]))
     name = p[1][0]
     val = p[2]
     if name in context.staticVarsList:
-        raise Exception("static list named: ⸄{}⸅ alrealy defined".format(name))
+        raise CompilationException("static list named: ⸄{}⸅ alrealy defined".format(name))
     context.staticVarsList[name] = val
 
 

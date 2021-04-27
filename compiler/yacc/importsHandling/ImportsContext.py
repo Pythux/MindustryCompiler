@@ -1,5 +1,8 @@
 
 
+from compiler import CompilationException
+
+
 class Imports:
     def __init__(self) -> None:
         self.imported = {None: {}}  # None is main file
@@ -30,21 +33,21 @@ class Imports:
 
     def addFunToModule(self, funDef):
         if funDef.name in self.imported[self.currentFile]:
-            raise Exception("function {} already defined".format(funDef.name))
+            raise CompilationException("function {} already defined".format(funDef.name))
         self.imported[self.currentFile][funDef.name] = funDef
 
     # called at the verry end, once everything is imported
     def getModule(self, fileLib):
         if fileLib not in self.imported:
-            raise Exception("module {} is used but not imported".format(fileLib))
+            raise CompilationException("module {} is used but not imported".format(fileLib))
         return self.imported[fileLib]
 
     # once parsing over, all funDef are registered in module
     def getFunCalled(self, moduleName, name, lineCall):
         module = self.getModule(moduleName)
         if name not in module:
-            raise Exception("function '{}' does not exist, module {}, at line {}"
-                            .format(name, moduleName, lineCall))
+            raise CompilationException("function '{}' does not exist, module {}, at line {}"
+                                       .format(name, moduleName, lineCall))
         fun = module[name]
         if not fun.defined:
             self.linesFunDef += fun.generateDefinition(moduleName)
