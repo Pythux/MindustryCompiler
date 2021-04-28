@@ -13,7 +13,7 @@ from . import grammar  # noqa
 
 from .context import context
 from .classes import Jump, Ref, FunCall, AsmInst, Variable
-
+from ..lex import lexClearContext
 
 # generate module .p_functionYacc
 generateYaccFunctions()
@@ -32,12 +32,17 @@ def yaccParse(content, debug=False):
     return lines
 
 
+def yaccClearContext():
+    lexClearContext()
+    importsHandling.imports.clear()
+    context.clear()
+
+
 # run parser on content, which is main file or REPL
 def runYacc(content: str, debug=False, clearContext=False):
     # do it first in case of exception
     if clearContext:
-        importsHandling.imports.clear()
-        context.clear()
+        yaccClearContext()
 
     checkExistingVars(content)  # only on main file
     lines = yaccParse(content, debug=debug)
@@ -66,8 +71,7 @@ def runYacc(content: str, debug=False, clearContext=False):
     stringCode = '\n'.join(stringLi) + '\n'
 
     if clearContext:
-        importsHandling.imports.clear()
-        context.clear()
+        yaccClearContext()
     return stringCode
 
 

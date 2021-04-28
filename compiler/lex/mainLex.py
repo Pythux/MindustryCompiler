@@ -63,12 +63,22 @@ def t_stringSimpleQuote(t: LexToken):
     return t
 
 
-tokens += ['OpenCurlyBracket', 'CloseCurlyBracket']
 endLineContext = boa({})
-endLineContext.addCloseBracket = 0
-endLineContext.previousIndentationLvl = 0
-endLineContext.indentNb = None
-endLineContext.inOpenBracket = False
+
+
+def lexClearContext():
+    global endLineContext
+    endLineContext = boa({})
+    endLineContext.addCloseBracket = 0
+    endLineContext.previousIndentationLvl = 0
+    endLineContext.indentNb = None
+    endLineContext.inOpenBracket = False
+
+
+lexClearContext()
+
+
+tokens += ['OpenCurlyBracket', 'CloseCurlyBracket']
 
 
 # count indentation, indent could be spaces or tabs
