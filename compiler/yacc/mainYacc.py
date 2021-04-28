@@ -26,8 +26,6 @@ from .p_functionYacc import parser  # noqa
 def yaccParse(content, debug=False):
     if not len(content):
         return ''
-    if content[-1] != '\n':
-        content += '\n'
     lines = parser.parse(content, debug=debug)
     return lines
 
@@ -44,6 +42,8 @@ def runYacc(content: str, debug=False, clearContext=False):
     if clearContext:
         yaccClearContext()
 
+    if content[-1] != '\n':
+        content += '\n'
     checkExistingVars(content)  # only on main file
     lines = yaccParse(content, debug=debug)
 
