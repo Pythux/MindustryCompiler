@@ -6,7 +6,7 @@ from .ValVar import Value, Variable
 
 class AsmInst:
     def __init__(self, instruction: str, liValVar=None) -> None:
-        validateAsmInstr(instruction, liValVar)
+        # validateAsmInstr(instruction, liValVar)
         self.instruction = instruction
         self.liValVar = liValVar if liValVar is not None else []
 
@@ -86,6 +86,7 @@ def operation(liValVar):
     if not isinstance(result, Variable):
         raise CompilationException("operation result must be stored in variable, '{}' is not a variable".format(result))
     if op not in opSpecific:
+        breakpoint()
         raise CompilationException("operation '{}' does not exist, existing operation: {}".format(op, opSpecific))
 
     if len(args) < opSpecific[op]:
