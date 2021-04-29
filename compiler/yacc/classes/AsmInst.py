@@ -38,7 +38,6 @@ def draw(liValVar):
     pass
 
 
-
 opSpecific = {
     'add': 2,
     'sub': 2,
@@ -120,6 +119,10 @@ def uradar(liValVar):
         raise CompilationException("uradar recev {} arguments, 6 required".format(lenArgs))
 
 
+def ucontrol(liValVar):
+    op, *args = liValVar
+
+
 instr = {
     'read': 3,
     'write': 3,
@@ -134,6 +137,7 @@ instr = {
     'ubind': 1,
     'radar': radar,
     'uradar': uradar,
+    'ucontrol': ucontrol,
     'end': 0,
 }
 
