@@ -7,13 +7,15 @@ def idTuple(li):
     return {w: w for w in li}
 
 
-instrs = [
+instr = [
     'op',
 ]
 
-ops = [
+op = [
     'add',
 ]
+
+subInstr = [*op, ]
 
 
 # the all reserved keyword list
@@ -28,7 +30,7 @@ reserved = {
     'false': 'False',
     'for': 'For',
 
-    **idTuple(instrs),
+    **idTuple(instr),
 
-    **idTuple(ops),
+    **idTuple(op),
 }

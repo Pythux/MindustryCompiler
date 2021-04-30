@@ -1,5 +1,4 @@
 
-from ply.lex import LexToken
 from compiler import CompilationException
 from ._start import grammar, YaccProduction, context
 from ..classes import AsmInst, Variable, Value
@@ -34,36 +33,28 @@ def resultOpTwoArgs(p: YaccProduction):
     breakpoint()
 
 
-def toStrToken(t):
-    if isinstance(t, LexToken):
-        return t.value
-    return t
-
-
 @grammar
 def instrError(p: YaccProduction):
     '''line : info error'''
-    raise CompilationException("line {}, instruction '{}' is not valide, valides instuctions are: {}"
-                               .format(p.lineno(2), toStrToken(p[1]), instrs))
+    raise err.invalideInstr(p, line=p.lineno(2))
 
 
 @grammar
-def instrError2(p: YaccProduction):
+def instrKeyErrorError(p: YaccProduction):
     '''line : error'''
-    raise CompilationException("line {}, instruction '{}' is not valide, valides instuctions are: {}"
-                               .format(p.lineno(1), toStrToken(p[1]), instrs))
+    raise err.invalideInstr(p, line=p.lineno(1))
 
 
 @grammar
 def instrKeywordOp_error(p: YaccProduction):
     '''line : op error'''
-    raise CompilationException("line {}, instruction '{}', '{}' is not a valide keyword, must be on of: {}"
-                               .format(p.lineno(1), toStrToken(p[1]), toStrToken(p[2]), ops))
+    raise err.invalideSubInstr(p)
 
 
 @grammar
 def opTwoArgsResult_error(p: YaccProduction):
     '''line : op opTwoArgs error'''
+    raise err.mustBeVar(p, 3)
     raise CompilationException(
         "line {}, instruction '{}' require a variable to store result at position 3, '{}' not valide"
         .format(p.lineno(1), p[1], toStrToken(p[3])))
@@ -73,15 +64,8 @@ def opTwoArgsResult_error(p: YaccProduction):
 def opTwoArgsArgs_error(p: YaccProduction):
     '''line : op opTwoArgs ID error
             | op opTwoArgs ID info error'''
-    tokenErr = p[len(p) - 1]
-    msg = "line {}, instruction '{}' ".format(p.lineno(1), p[1])
-    if tokenErr.type == 'EndLine':
-        givenArgs = len(p) - 5
-        raise err.notEnoughtArgs(p.lineno(1), p[1], 2, givenArgs)
-
-    # not an info, can only be reserved keyword
-    raise CompilationException("'{}' is a reserved keyword, it could not be used as variable"
-                               .format(toStrToken(tokenErr)))
+    givenArgs = len(p) - 5
+    raise err.maybeNotEnoughtArgs(p, 2, givenArgs)
 
 
 @grammar

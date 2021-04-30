@@ -1,19 +1,57 @@
 
-
+from ply.lex import LexToken
 from compiler import CompilationException
+from compiler.lex.keywords import instr, subInstr
 
 
-def getStartMsg(lineNb, instr):
+def toStrToken(t):
+    if isinstance(t, LexToken):
+        return t.value
+    return t
+
+
+def getStartMsg(p, line=None):
+    lineNb, instr = p.lineno(1), p[1]
+    lineNb = lineNb if line is None else line
     return "line {}, instruction '{}' ".format(lineNb, instr)
 
 
-def notEnoughtArgs(lineNb, instr, nbArgsReq, nbArgsGiven):
+def invalideInstr(p, line=None):
     return CompilationException(
-        getStartMsg(lineNb, instr) + "require {} arguments, {} given".format(nbArgsReq, nbArgsGiven)
+        getStartMsg(p, line) + "is not valide, valides instuctions are: {}".format(instr)
     )
 
 
-def tooManyArgs(lineNb, instr, nbArgsReq):
+def invalideSubInstr(p):
+    valideKeys = list(subInstr[p[1]].keys())
     return CompilationException(
-        getStartMsg(lineNb, instr) + "require {} arguments, too much is given".format(nbArgsReq)
+        getStartMsg(p) + "'{}' is not a valide keyword, must be on of: {}".format(toStrToken(p[2]), valideKeys))
+
+
+def maybeNotEnoughtArgs(p, nbArgsReq, nbArgsGiven):
+    tokenErr = p[len(p) - 1]
+    if tokenErr.type == 'EndLine':
+        return notEnoughtArgs(p, nbArgsReq, nbArgsGiven)
+    return reservedKeword(p, tokenErr)
+
+
+def reservedKeword(p, tokenErr):
+    return CompilationException(
+        getStartMsg(p) + "'{}' is a reserved keyword, it could not be used as variable".format(toStrToken(tokenErr)))
+
+
+def notEnoughtArgs(p, nbArgsReq, nbArgsGiven):
+    return CompilationException(
+        getStartMsg(p) + "require {} arguments, {} given".format(nbArgsReq, nbArgsGiven)
     )
+
+
+def tooManyArgs(p, nbArgsReq):
+    return CompilationException(
+        getStartMsg(p) + "require {} arguments, too much is given".format(nbArgsReq)
+    )
+
+
+def mustBeVar(p, index):
+    return CompilationException(
+        getStartMsg(p) + "require a variable to store result at position {}, '{}' not valide".format(index, toStrToken(p[index])))
