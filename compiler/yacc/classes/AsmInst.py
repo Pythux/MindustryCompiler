@@ -1,11 +1,11 @@
 
 
 from compiler import CompilationException
-from .ValVar import Value, Variable
+from .ValVarKey import Value, Variable, KeyWord
 
 
 class AsmInst:
-    def __init__(self, instruction: str, liValVar=None) -> None:
+    def __init__(self, instruction: KeyWord, liValVar=None) -> None:
         # validateAsmInstr(instruction, liValVar)
         self.instruction = instruction
         self.liValVar = liValVar if liValVar is not None else []

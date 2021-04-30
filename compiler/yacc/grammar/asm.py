@@ -26,12 +26,6 @@ def asmInstr(p: YaccProduction):
 
 
 @grammar
-def resultOpTwoArgs(p: YaccProduction):
-    '''line : op opTwoArgs ID info info EndLine'''
-    breakpoint()
-
-
-@grammar
 def instrKey_error(p: YaccProduction):
     '''line : info error'''
     raise err.invalideInstr(p, line=p.lineno(2))

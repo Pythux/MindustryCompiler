@@ -44,3 +44,5 @@ def test_asm():
     for dico in [instrNotValide, subInstrNotValide, instrOp]:
         for k, v in dico.items():
             assertCompilationException(k, v)
+
+    assert runYacc('op add yo 1 2', clearContext=True) == 'op add yo 1 2\n'

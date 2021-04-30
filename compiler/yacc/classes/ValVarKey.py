@@ -43,3 +43,22 @@ class Variable:
 
     def copy(self):
         return self.__class__(self.variable)
+
+
+class KeyWord:
+    def __init__(self, value: str) -> None:
+        self.value = value
+
+    def __str__(self) -> str:
+        return self.value
+
+    def __eq__(self, o: object) -> bool:
+        if isinstance(o, self.__class__):
+            return o.value == self.value
+        return False
+
+    def __repr__(self) -> str:
+        return '<KeyWord {}>'.format(self.value)
+
+    def copy(self):
+        return self.__class__(self.value)

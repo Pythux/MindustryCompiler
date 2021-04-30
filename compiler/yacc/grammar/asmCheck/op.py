@@ -1,6 +1,13 @@
 
 from .._start import grammar, YaccProduction
 from .. import asmError as err
+from ...classes import AsmInst, Variable, Value, KeyWord
+
+
+@grammar
+def opResultTwoArgs(p: YaccProduction):
+    '''line : op opTwoArgs ID info info EndLine'''
+    p[0] = AsmInst(KeyWord(p[1]), [p[2], Variable(p[3]), p[4], p[5]])
 
 
 @grammar
@@ -32,4 +39,4 @@ def opTwoArgsArgsTooMuch_error(p: YaccProduction):
 @grammar
 def opTwoArgs(p: YaccProduction):
     '''opTwoArgs : add'''
-    pass
+    p[0] = KeyWord(p[1])
