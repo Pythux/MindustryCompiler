@@ -32,47 +32,15 @@ def resultOpTwoArgs(p: YaccProduction):
 
 
 @grammar
-def instrError(p: YaccProduction):
+def instrKey_error(p: YaccProduction):
     '''line : info error'''
     raise err.invalideInstr(p, line=p.lineno(2))
 
 
 @grammar
-def instrKeyErrorError(p: YaccProduction):
+def instrKey_error2(p: YaccProduction):
     '''line : error'''
     raise err.invalideInstr(p, line=p.lineno(1))
-
-
-@grammar
-def instrKeywordOp_error(p: YaccProduction):
-    '''line : op error'''
-    raise err.invalideSubInstr(p)
-
-
-@grammar
-def opTwoArgsResult_error(p: YaccProduction):
-    '''line : op opTwoArgs error'''
-    raise err.mustBeVar(p, 3)
-
-
-@grammar
-def opTwoArgsArgs_error(p: YaccProduction):
-    '''line : op opTwoArgs ID error
-            | op opTwoArgs ID info error'''
-    givenArgs = len(p) - 5
-    raise err.maybeNotEnoughtArgs(p, 2, givenArgs)
-
-
-@grammar
-def opTwoArgsArgsTooMuch_error(p: YaccProduction):
-    '''line : op opTwoArgs ID info info error'''
-    raise err.tooManyArgs(p, 2)
-
-
-@grammar
-def opTwoArgs(p: YaccProduction):
-    '''opTwoArgs : add'''
-    pass
 
 
 @grammar
