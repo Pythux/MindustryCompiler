@@ -1,8 +1,6 @@
 
-from compiler import CompilationException
 from ._start import grammar, YaccProduction, context
 from ..classes import AsmInst, Variable, Value
-from compiler.lex.keywords import instrs, ops
 from . import asmError as err
 
 
@@ -55,9 +53,6 @@ def instrKeywordOp_error(p: YaccProduction):
 def opTwoArgsResult_error(p: YaccProduction):
     '''line : op opTwoArgs error'''
     raise err.mustBeVar(p, 3)
-    raise CompilationException(
-        "line {}, instruction '{}' require a variable to store result at position 3, '{}' not valide"
-        .format(p.lineno(1), p[1], toStrToken(p[3])))
 
 
 @grammar
@@ -71,7 +66,7 @@ def opTwoArgsArgs_error(p: YaccProduction):
 @grammar
 def opTwoArgsArgsTooMuch_error(p: YaccProduction):
     '''line : op opTwoArgs ID info info error'''
-    raise err.tooManyArgs(p.lineno(1), p[1], 2)
+    raise err.tooManyArgs(p, 2)
 
 
 @grammar

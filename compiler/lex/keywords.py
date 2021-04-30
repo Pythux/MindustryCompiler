@@ -15,7 +15,9 @@ op = [
     'add',
 ]
 
-subInstr = [*op, ]
+subInstr = {
+    'op': op,
+}
 
 
 # the all reserved keyword list

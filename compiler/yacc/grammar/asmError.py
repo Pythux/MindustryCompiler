@@ -10,10 +10,10 @@ def toStrToken(t):
     return t
 
 
-def getStartMsg(p, line=None):
+def getStartMsg(p, line=None, end=None):
     lineNb, instr = p.lineno(1), p[1]
     lineNb = lineNb if line is None else line
-    return "line {}, instruction '{}' ".format(lineNb, instr)
+    return "line {}, instruction '{}'{}".format(lineNb, instr, ' ' if end is None else end)
 
 
 def invalideInstr(p, line=None):
@@ -23,9 +23,10 @@ def invalideInstr(p, line=None):
 
 
 def invalideSubInstr(p):
-    valideKeys = list(subInstr[p[1]].keys())
+    valideKeys = subInstr[toStrToken(p[1])]
     return CompilationException(
-        getStartMsg(p) + "'{}' is not a valide keyword, must be on of: {}".format(toStrToken(p[2]), valideKeys))
+        getStartMsg(p, end=', ') +
+        "'{}' is not a valide keyword, must be on of: {}".format(toStrToken(p[2]), valideKeys))
 
 
 def maybeNotEnoughtArgs(p, nbArgsReq, nbArgsGiven):
