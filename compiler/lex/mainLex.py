@@ -11,6 +11,7 @@ from ply.lex import Lexer
 from boa import boa
 
 from compiler import CompilationException
+from .keywords import reserved
 
 
 class LexToken:
@@ -209,18 +210,6 @@ def t_Comparison(t: LexToken):
         return t
 
 
-# reserved keyword
-reserved = {
-    'jump': 'Jump',
-    'if': 'If',
-    'else': 'Else',
-    'elif': 'ElseIf',
-    'return': 'Return',
-    'import': 'Import',
-    'true': 'True',
-    'false': 'False',
-    'for': 'For',
-}
 tokens += list(reserved.values())
 tokens += ['ID']  # not reserved words
 

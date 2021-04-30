@@ -25,7 +25,7 @@ def runFuncReturnArgs(p: YaccProduction):
     dotted = p[2]
     module, funName = getModuleAndFunName(dotted)
     callArgs = p[4]
-    p[0] = FunCall(module, funName, callArgs, p.lineno(1), returnTo)
+    p[0] = FunCall(module, funName, callArgs, p.lineno(3), returnTo)
 
 
 def handleScopeReturnedVars(liReturn):
@@ -40,7 +40,7 @@ def runFunc(p: YaccProduction):
     dotted = p[1]
     module, funName = getModuleAndFunName(dotted)
     callArgs = p[3]
-    p[0] = FunCall(module, funName, callArgs, p.lineno(1))
+    p[0] = FunCall(module, funName, callArgs, p.lineno(2))
 
 
 @grammar
