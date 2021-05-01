@@ -15,7 +15,13 @@ instr = [
     'write',
     'sensor',
     'getlink',
+    'radar',
+    'uradar',
 ]
+
+radarTarget = ['any', 'enemy', 'ally', 'player', 'attacker', 'flying', 'ground', 'boss']
+radarSort = ['distance', 'health', 'shield', 'armor', 'maxHealth']
+
 
 op = [
     'add',
@@ -58,8 +64,10 @@ op = [
     'rand',
 ]
 
+
 subInstr = {
     'op': op,
+    'radar': radarTarget + radarSort,
 }
 
 

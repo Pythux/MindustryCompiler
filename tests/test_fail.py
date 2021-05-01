@@ -91,11 +91,27 @@ instrGetlink = {
     'getlink res': "line 1, instruction 'getlink' require 1 arguments, 0 given",
     'getlink res linkid yo': "line 1, instruction 'getlink' require 1 arguments, 2 given",
 }
+instrRadar = {
+    'radar': "line 1, instruction 'radar' not enought arguments, the first three arguments of this instruction must be one of: ['any', 'enemy', 'ally', 'player', 'attacker', 'flying', 'ground', 'boss']",
+    'radar x': "line 1, instruction 'radar' the first three arguments of this instruction must be one of: ['any', 'enemy', 'ally', 'player', 'attacker', 'flying', 'ground', 'boss'], 'x' given instead",
+    'radar any 4': "line 1, instruction 'radar' the first three arguments of this instruction must be one of: ['any', 'enemy', 'ally', 'player', 'attacker', 'flying', 'ground', 'boss'], '4' given instead",
+    'radar any ally': "line 1, instruction 'radar' not enought arguments, the first three arguments of this instruction must be one of: ['any', 'enemy', 'ally', 'player', 'attacker', 'flying', 'ground', 'boss']",
+    'radar any boss 2': "line 1, instruction 'radar' the first three arguments of this instruction must be one of: ['any', 'enemy', 'ally', 'player', 'attacker', 'flying', 'ground', 'boss'], '2' given instead",
+    'radar any boss ally 2': "line 1, instruction 'radar' the 4th argument of this instruction must be one of: ['distance', 'health', 'shield', 'armor', 'maxHealth'], '2' given instead",
+    'radar any boss ally': "line 1, instruction 'radar' the 4th argument of this instruction must be one of: ['distance', 'health', 'shield', 'armor', 'maxHealth'], only 3 arguments provided",
+    'radar any boss ally distance': "line 1, instruction 'radar' not enought arguments",
+    'radar any boss ally distance shield': "line 1, instruction 'radar', 'shield' is a reserved keyword, it could not be used as variable",
+    'radar any boss ally distance yo': "line 1, instruction 'radar' not enought arguments",
+    'radar any boss ally distance yo set': "line 1, instruction 'radar', 'set' is a reserved keyword, it could not be used as variable",
+    'radar any boss ally distance yo 4': "line 1, instruction 'radar' require a variable to store result at position 8, no variable given",
+    'radar any boss ally distance yo 4 6': "line 1, instruction 'radar' require a variable to store result at position 8, '6' not valide",
+    'radar any boss ally distance yo 4 result 2': "line 1, instruction 'radar' too many arguments",
+}
 
 
 errorList = [
     instrNotValide, subInstrNotValide, instrOp, instrSimple, instrSet, intrOneArg, instrWrite, instrRead,
-    instrSensor, instrGetlink]
+    instrSensor, instrGetlink, instrRadar]
 
 
 def test_asm():
@@ -112,3 +128,4 @@ def test_asm():
     assert runYacc('read res cell 1', clearContext=True) == 'read res cell 1\n'
     assert runYacc('sensor result block1 @copper', clearContext=True) == 'sensor result block1 @copper\n'
     assert runYacc('getlink result linkId', clearContext=True) == 'getlink result linkId\n'
+    assert runYacc('radar enemy any flying distance turret1 sortOrder result', clearContext=True) == 'radar enemy any flying distance turret1 sortOrder result\n'

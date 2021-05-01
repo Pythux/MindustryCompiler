@@ -32,7 +32,7 @@ def opKeyword_error(p: YaccProduction):
 def opTwoArgsResult_error(p: YaccProduction):
     '''line : op opTwoArgs error
             | op opOneArgs error'''
-    raise err.mustBeVar(p, 3, p[3])
+    raise err.mustBeVar(p, 3)
 
 
 @grammar

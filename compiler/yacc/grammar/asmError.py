@@ -57,7 +57,14 @@ def tooManyArgs(p, nbArgsReq, nbArgsGiven, line=None):
     )
 
 
-def mustBeVar(p, index, error, line=None):
+def tooManyArgsNameIt(p, tokenErr, line=None):
+    return CompilationException(
+        getStartMsg(p, line) + "too many arguments, '{}' is exeeding".format(tokenErr.value)
+    )
+
+
+def mustBeVar(p, index, line=None):
+    error = p[index]
     strErr = toStrToken(error)
     endMsg = "'{}' not valide".format(strErr)
     if error.type in reserved:

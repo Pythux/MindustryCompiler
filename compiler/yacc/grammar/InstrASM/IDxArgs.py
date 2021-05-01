@@ -25,7 +25,7 @@ def set_tooMuchArgs(p: YaccProduction):
 @grammar
 def set_mustBeID(p: YaccProduction):
     '''line : set error'''
-    raise err.mustBeVar(p, 2, p[2])
+    raise err.mustBeVar(p, 2)
 
 
 # read result cell1 index
@@ -49,7 +49,7 @@ def read_tooMuchArgs(p: YaccProduction):
 @grammar
 def read_mustBeID(p: YaccProduction):
     '''line : read error'''
-    raise err.mustBeVar(p, 2, p[2])
+    raise err.mustBeVar(p, 2)
 
 
 # sensor result block1 @copper
@@ -73,7 +73,7 @@ def sensor_tooMuchArgs(p: YaccProduction):
 @grammar
 def sensor_mustBeID(p: YaccProduction):
     '''line : sensor error'''
-    raise err.mustBeVar(p, 2, p[2])
+    raise err.mustBeVar(p, 2)
 
 
 # getlink result linkId
@@ -97,4 +97,4 @@ def getlink_tooMuchArgs(p: YaccProduction):
 @grammar
 def getlink_mustBeID(p: YaccProduction):
     '''line : getlink error'''
-    raise err.mustBeVar(p, 2, p[2])
+    raise err.mustBeVar(p, 2)

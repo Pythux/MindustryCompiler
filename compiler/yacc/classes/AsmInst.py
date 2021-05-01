@@ -66,6 +66,10 @@ def ucontrol(liValVar):
     op, *args = liValVar
 
 
+def ulocate():
+    pass
+
+
 instr = {
     # 'read': 3,
     # 'write': 3,
@@ -78,10 +82,11 @@ instr = {
     # 'set': 2,
     # 'op': operation,
     # 'ubind': 1,
-    'radar': radar,
+    # 'radar': radar,
     'uradar': uradar,
     'ucontrol': ucontrol,
     # 'end': 0,
+    'ulocate': ulocate,
 }
 
 
