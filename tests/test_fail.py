@@ -43,12 +43,12 @@ instrOp = {
     'op abs res arg1 arg2': "line 1, instruction 'op' require 1 arguments, too much is given",
 }
 instrSimple = {
-    'end yo': "<",
+    'end yo': "line 1, instruction 'end' require 0 arguments, too much is given",
 }
 
 
 def test_asm():
-    for dico in [instrNotValide, subInstrNotValide, instrOp]:
+    for dico in [instrNotValide, subInstrNotValide, instrOp, instrSimple]:
         for k, v in dico.items():
             assertCompilationException(k, v)
 

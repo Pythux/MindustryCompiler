@@ -13,4 +13,4 @@ def endResult(p: YaccProduction):
 @grammar
 def end_error(p: YaccProduction):
     '''line : end error'''
-    raise err.tooManyArgs(p, 2)
+    raise err.tooManyArgs(p, 0)
