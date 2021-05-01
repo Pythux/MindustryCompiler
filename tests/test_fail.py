@@ -37,6 +37,9 @@ instrOp = {
     'op add yo 1': "line 1, instruction 'op' require 2 arguments, 1 given",
     'op add yo 1 2 3': "line 1, instruction 'op' require 2 arguments, too much is given",
     'op add yo 1 2 3 4 5 6': "line 1, instruction 'op' require 2 arguments, too much is given",
+    'op abs': "line 1, instruction 'op' require a variable to store result at position 3",
+    'op abs add': "line 1, instruction 'op' require a variable to store result at position 3, 'add' is a reserved keyword",
+    'op abs yo lo': "6",
 }
 
 
@@ -46,3 +49,5 @@ def test_asm():
             assertCompilationException(k, v)
 
     assert runYacc('op add yo 1 2', clearContext=True) == 'op add yo 1 2\n'
+    assert runYacc('op mul yo 1 2', clearContext=True) == 'op mul yo 1 2\n'
+    assert runYacc('op abs yo', clearContext=True) == '6'

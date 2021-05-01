@@ -3,16 +3,49 @@
 # list of token reserved keywords
 
 
-def idTuple(li):
-    return {w: w for w in li}
-
-
 instr = [
     'op',
 ]
 
 op = [
     'add',
+    'sub',
+    'mul',
+    'div',
+    'idiv',
+    'mod',
+    'pow',
+
+    'equal',
+    'notEqual',
+    'land',
+    'lessThan',
+    'lessThanEq',
+    'greaterThan',
+    'strictEqual',
+
+    'shl',
+    'shr',
+    'or',
+    'and',
+    'xor',
+    'not',
+
+    'max',
+    'min',
+    'angle',
+    'len',
+    'noise',
+    'abs',
+    'log',
+    'log10',
+    'sin',
+    'cos',
+    'tan',
+    'floor',
+    'ceil',
+    'sqrt',
+    'rand',
 ]
 
 subInstr = {
@@ -32,7 +65,9 @@ reserved = {
     'false': 'False',
     'for': 'For',
 
-    **idTuple(instr),
-
-    **idTuple(op),
+    **{w: w for w in instr},
 }
+
+for instr in subInstr:
+    for sub in subInstr[instr]:
+        reserved[sub] = sub

@@ -1,7 +1,7 @@
 
 from ply.lex import LexToken
 from compiler import CompilationException
-from compiler.lex.keywords import instr, subInstr
+from compiler.lex.keywords import instr, subInstr, reserved
 
 
 def toStrToken(t):
@@ -53,6 +53,10 @@ def tooManyArgs(p, nbArgsReq):
     )
 
 
-def mustBeVar(p, index):
+def mustBeVar(p, index, error):
+    endMsg = "not valide"
+    if error.type in reserved:
+        endMsg = "is a reserved keyword"
     return CompilationException(
-        getStartMsg(p) + "require a variable to store result at position {}, '{}' not valide".format(index, toStrToken(p[index])))
+        getStartMsg(p) + "require a variable to store result at position {}, '{}' {}"
+        .format(index, toStrToken(p[index]), endMsg))
