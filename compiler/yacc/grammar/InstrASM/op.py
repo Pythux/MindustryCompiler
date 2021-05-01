@@ -6,14 +6,20 @@ from ...classes import AsmInst, Variable, KeyWord
 
 @grammar
 def opResultTwoArgs(p: YaccProduction):
-    '''line : op opTwoArgs ID info info EndLine'''
-    p[0] = AsmInst(KeyWord(p[1]), [p[2], Variable(p[3]), p[4], p[5]])
+    '''line : op opTwoArgs ID instrArgs EndLine'''
+    args = p[4]
+    if len(args) != 2:
+        raise err.tooManyArgs(p, 2, len(args))
+    p[0] = AsmInst(KeyWord(p[1]), [p[2], Variable(p[3]), *args])
 
 
 @grammar
 def opResultOneArgs(p: YaccProduction):
-    '''line : op opOneArgs ID info EndLine'''
-    p[0] = AsmInst(KeyWord(p[1]), [p[2], Variable(p[3]), p[4]])
+    '''line : op opOneArgs ID instrArgs EndLine'''
+    args = p[4]
+    if len(args) != 1:
+        raise err.tooManyArgs(p, 1, len(args))
+    p[0] = AsmInst(KeyWord(p[1]), [p[2], Variable(p[3]), *args])
 
 
 @grammar
@@ -31,29 +37,14 @@ def opTwoArgsResult_error(p: YaccProduction):
 
 @grammar
 def opTwoArgsArgs_error(p: YaccProduction):
-    '''line : op opTwoArgs ID error
-            | op opTwoArgs ID info error'''
-    givenArgs = len(p) - 5
-    raise err.maybeNotEnoughtOrTooMuchArgs(p, 2)
+    '''line : op opTwoArgs ID instrArgs error'''
+    raise err.maybeNotEnoughtArgs(p, 2)
 
 
 @grammar
 def opOneArgsArgs_error(p: YaccProduction):
-    '''line : op opOneArgs ID error'''
-    givenArgs = len(p) - 5
-    raise err.maybeNotEnoughtOrTooMuchArgs(p, 1)
-
-
-@grammar
-def opTwoArgsArgsTooMuch_error(p: YaccProduction):
-    '''line : op opTwoArgs ID info info error'''
-    raise err.tooManyArgs(p, 2)
-
-
-@grammar
-def opOneArgsArgsTooMuch_error(p: YaccProduction):
-    '''line : op opOneArgs ID info error'''
-    raise err.tooManyArgs(p, 1)
+    '''line : op opOneArgs ID instrArgs error'''
+    raise err.maybeNotEnoughtArgs(p, 1)
 
 
 @grammar

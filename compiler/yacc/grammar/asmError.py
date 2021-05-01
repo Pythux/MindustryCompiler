@@ -29,15 +29,14 @@ def invalideSubInstr(p, line=None):
         "'{}' is not a valide keyword, must be on of: {}".format(toStrToken(p[2]), valideKeys))
 
 
-def maybeNotEnoughtOrTooMuchArgs(p, nbArgsReq, line=None):
+def maybeNotEnoughtArgs(p, nbArgsReq, line=None):
     tokenErr = p[len(p) - 1]
     instrArgs = p[len(p) - 2]
     nbArgsGiven = len(instrArgs)
     if tokenErr.type in reserved:
         return reservedKeword(p, tokenErr, line=line)
-    if tokenErr.type == 'EndLine':
-        return notEnoughtArgs(p, nbArgsReq, nbArgsGiven, line=line)
-    return tooManyArgs(p, nbArgsReq, nbArgsGiven, line=line)
+    assert tokenErr.type == 'EndLine'
+    return notEnoughtArgs(p, nbArgsReq, nbArgsGiven, line=line)
 
 
 def reservedKeword(p, tokenErr, line=None):

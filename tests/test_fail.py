@@ -35,15 +35,15 @@ instrOp = {
     'op add 4 1': "line 1, instruction 'op' require a variable to store result at position 3, '4' not valide",
     'op add yo': "line 1, instruction 'op' require 2 arguments, 0 given",
     'op add yo 1': "line 1, instruction 'op' require 2 arguments, 1 given",
-    'op add yo 1 2 3': "line 1, instruction 'op' require 2 arguments, too much is given",
-    'op add yo 1 2 3 4 5 6': "line 1, instruction 'op' require 2 arguments, too much is given",
+    'op add yo 1 2 3': "line 1, instruction 'op' require 2 arguments, 3 given",
+    'op add yo 1 2 3 4 5 6': "line 1, instruction 'op' require 2 arguments, 6 given",
     'op abs': "line 1, instruction 'op' require a variable to store result at position 3",
     'op abs add': "line 1, instruction 'op' require a variable to store result at position 3, 'add' is a reserved keyword",
     'op abs res': "line 1, instruction 'op' require 1 arguments, 0 given",
-    'op abs res arg1 arg2': "line 1, instruction 'op' require 1 arguments, too much is given",
+    'op abs res arg1 arg2': "line 1, instruction 'op' require 1 arguments, 2 given",
 }
 instrSimple = {
-    'end yo': "line 1, instruction 'end' require 0 arguments, too much is given",
+    'end yo': "line 1, instruction 'end' require 0 arguments, 1 given",
 }
 instrSet = {
     'set': "line 1, instruction 'set' require a variable to store result at position 2, no variable given",

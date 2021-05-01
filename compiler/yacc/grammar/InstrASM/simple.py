@@ -6,32 +6,36 @@ from ...classes import AsmInst, KeyWord
 
 @grammar
 def endResult(p: YaccProduction):
-    '''line : end EndLine'''
+    '''line : end instrArgs EndLine'''
+    args = p[2]
+    nbArgs = 0
+    if len(args) != nbArgs:
+        raise err.tooManyArgs(p, nbArgs, len(args))
+
     p[0] = AsmInst(KeyWord(p[1]))
 
 
 @grammar
 def end_errorTooMuch(p: YaccProduction):
-    '''line : end error'''
-    raise err.tooManyArgs(p, 0)
+    '''line : end instrArgs error'''
+    raise err.maybeNotEnoughtArgs(p, nbArgsReq=0)
 
 
 @grammar
 def instrOneArgResult(p: YaccProduction):
-    '''line : instrOneArg info EndLine'''
-    p[0] = AsmInst(p[1], [p[2]])
+    '''line : instrOneArg instrArgs EndLine'''
+    args = p[2]
+    nbArgs = 1
+    if len(args) != nbArgs:
+        raise err.tooManyArgs(p, nbArgs, len(args))
 
-
-@grammar
-def instrOneArg_tooMuchArgs(p: YaccProduction):
-    '''line : instrOneArg info error'''
-    raise err.tooManyArgs(p, 1, line=p[1].lineno)
+    p[0] = AsmInst(p[1], args)
 
 
 @grammar
 def instrOneArg_MaybeArgsNotEnought(p: YaccProduction):
-    '''line : instrOneArg error'''
-    raise err.maybeNotEnoughtArgs(p, 1, 0, line=p[1].lineno)
+    '''line : instrOneArg instrArgs error'''
+    raise err.maybeNotEnoughtArgs(p, nbArgsReq=1, line=p[1].lineno)
 
 
 @grammar
@@ -48,28 +52,18 @@ def instrOneArg(p: YaccProduction):
 @grammar
 def writeResult(p: YaccProduction):
     '''line : write instrArgs EndLine'''
-    if len(p[2]) != 3:
-        raise err.tooManyArgs(p, 3, len(p[2]))
+    args = p[2]
+    nbArgs = 1
+    if len(args) != nbArgs:
+        raise err.tooManyArgs(p, nbArgs, len(args))
+
     p[0] = AsmInst(p[1], p[2])
 
 
 @grammar
 def write_MaybeArgsNotEnought(p: YaccProduction):
     '''line : write instrArgs error'''
-    raise err.maybeNotEnoughtOrTooMuchArgs(p, nbArgsReq=3)
-
-
-@grammar
-def instrArgs(p: YaccProduction):
-    '''instrArgs :
-                 | info
-                 | instrArgs info'''
-    if len(p) == 1:
-        p[0] = []
-    elif len(p) == 2:
-        p[0] = [p[1]]
-    else:
-        p[0] = p[1] + [p[2]]
+    raise err.maybeNotEnoughtArgs(p, nbArgsReq=3)
 
 
 # read result cell1 index
