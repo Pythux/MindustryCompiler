@@ -13,6 +13,8 @@ instr = [
     'ubind',
     'read',
     'write',
+    'sensor',
+    'getlink',
 ]
 
 op = [

@@ -76,9 +76,26 @@ instrRead = {
     'read res cell': "line 1, instruction 'read' require 2 arguments, 1 given",
     'read res cell index 4': "line 1, instruction 'read' require 2 arguments, 3 given",
 }
+instrSensor = {
+    'sensor': "line 1, instruction 'sensor' require a variable to store result at position 2, no variable given",
+    'sensor 4': "line 1, instruction 'sensor' require a variable to store result at position 2, '4' not valide",
+    'sensor "res"': """line 1, instruction \'sensor\' require a variable to store result at position 2, \'"res"\' not valide""",
+    'sensor res': "line 1, instruction 'sensor' require 2 arguments, 0 given",
+    'sensor res building': "line 1, instruction 'sensor' require 2 arguments, 1 given",
+    'sensor res building @x tooMuch': "line 1, instruction 'sensor' require 2 arguments, 3 given",
+}
+instrGetlink = {
+    'getlink': "line 1, instruction 'getlink' require a variable to store result at position 2, no variable given",
+    'getlink 4': "line 1, instruction 'getlink' require a variable to store result at position 2, '4' not valide",
+    'getlink "res"': """line 1, instruction \'getlink\' require a variable to store result at position 2, \'"res"\' not valide""",
+    'getlink res': "line 1, instruction 'getlink' require 1 arguments, 0 given",
+    'getlink res linkid yo': "line 1, instruction 'getlink' require 1 arguments, 2 given",
+}
 
 
-errorList = [instrNotValide, subInstrNotValide, instrOp, instrSimple, instrSet, intrOneArg, instrWrite, instrRead]
+errorList = [
+    instrNotValide, subInstrNotValide, instrOp, instrSimple, instrSet, intrOneArg, instrWrite, instrRead,
+    instrSensor, instrGetlink]
 
 
 def test_asm():
@@ -93,3 +110,5 @@ def test_asm():
     assert runYacc('set yo 4', clearContext=True) == 'set yo 4\n'
     assert runYacc('ubind @flare', clearContext=True) == 'ubind @flare\n'
     assert runYacc('read res cell 1', clearContext=True) == 'read res cell 1\n'
+    assert runYacc('sensor result block1 @copper', clearContext=True) == 'sensor result block1 @copper\n'
+    assert runYacc('getlink result linkId', clearContext=True) == 'getlink result linkId\n'
