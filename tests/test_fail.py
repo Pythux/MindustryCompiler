@@ -49,24 +49,24 @@ instrSet = {
     'set': "line 1, instruction 'set' require a variable to store result at position 2, no variable given",
     'set 4': "line 1, instruction 'set' require a variable to store result at position 2, '4' not valide",
     'set @4 2': "line 1, instruction 'set' require a variable to store result at position 2, '@4' not valide",
-    'set yo 4 3': "line 1, instruction 'set' require 1 arguments, too much is given",
+    'set yo 4 3': "line 1, instruction 'set' require 1 arguments, 2 given",
 }
 intrOneArg = {
     'print': "line 1, instruction 'print' require 1 arguments, 0 given",
     'printflush': "line 1, instruction 'printflush' require 1 arguments, 0 given",
     'drawflush': "line 1, instruction 'drawflush' require 1 arguments, 0 given",
     'ubind': "line 1, instruction 'ubind' require 1 arguments, 0 given",
-    'print 1 2 3': "line 1, instruction 'print' require 1 arguments, too much is given",
-    'print 1 2': "line 1, instruction 'print' require 1 arguments, too much is given",
+    'print 1 2 3': "line 1, instruction 'print' require 1 arguments, 3 given",
+    'print 1 2': "line 1, instruction 'print' require 1 arguments, 2 given",
 }
 instrWrite = {
-    'write': "line 1, instruction 'write' require 1 arguments, 0 given",
-    'write 1': "6",
-    'write add': "6",
-    'write set': "6",
-    'write 1 set 3': "6",
-    'write 1 2 set': "6",
-    'white @yo lo "da" ta': "6",
+    'write': "line 1, instruction 'write' require 3 arguments, 0 given",
+    'write 1': "line 1, instruction 'write' require 3 arguments, 1 given",
+    'write add': "line 1, instruction 'write', 'add' is a reserved keyword, it could not be used as variable",
+    'write set': "line 1, instruction 'write', 'set' is a reserved keyword, it could not be used as variable",
+    'write 1 set 3': "line 1, instruction 'write', 'set' is a reserved keyword, it could not be used as variable",
+    'write 1 2 set': "line 1, instruction 'write', 'set' is a reserved keyword, it could not be used as variable",
+    'write @yo lo "da" ta': "line 1, instruction 'write' require 3 arguments, 4 given",
 }
 
 

@@ -27,7 +27,7 @@ def instrOneArgResult(p: YaccProduction):
     args = p[2]
     nbArgs = 1
     if len(args) != nbArgs:
-        raise err.tooManyArgs(p, nbArgs, len(args))
+        raise err.tooManyArgs(p, nbArgs, len(args), line=p[1].lineno)
 
     p[0] = AsmInst(p[1], args)
 
@@ -53,7 +53,7 @@ def instrOneArg(p: YaccProduction):
 def writeResult(p: YaccProduction):
     '''line : write instrArgs EndLine'''
     args = p[2]
-    nbArgs = 1
+    nbArgs = 3
     if len(args) != nbArgs:
         raise err.tooManyArgs(p, nbArgs, len(args))
 
