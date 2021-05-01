@@ -42,6 +42,9 @@ instrOp = {
     'op abs res': "line 1, instruction 'op' require 1 arguments, 0 given",
     'op abs res arg1 arg2': "line 1, instruction 'op' require 1 arguments, too much is given",
 }
+instrSimple = {
+    'end yo': "<",
+}
 
 
 def test_asm():
@@ -52,3 +55,4 @@ def test_asm():
     assert runYacc('op add yo 1 2', clearContext=True) == 'op add yo 1 2\n'
     assert runYacc('op mul yo 1 2', clearContext=True) == 'op mul yo 1 2\n'
     assert runYacc('op abs res arg1', clearContext=True) == 'op abs res arg1\n'
+    assert runYacc('end', clearContext=True) == 'end\n'

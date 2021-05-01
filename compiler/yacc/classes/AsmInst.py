@@ -22,7 +22,7 @@ class AsmInst:
 
     def toStr(self):
         if not len(self.liValVar):
-            return self.instruction
+            return "{}".format(self.instruction)
 
         return "{instr} {liValVar}".format(
             instr=self.instruction, liValVar=' '.join(map(str, self.liValVar)))
@@ -36,64 +36,6 @@ class AsmInst:
 
 def draw(liValVar):
     pass
-
-
-opSpecific = {
-    'add': 2,
-    'sub': 2,
-    'mul': 2,
-    'div': 2,
-    'idiv': 2,
-    'mod': 2,
-    'pow': 2,
-
-    'equal': 2,
-    'notEqual': 2,
-    'land': 2,
-    'lessThan': 2,
-    'lessThanEq': 2,
-    'greaterThan': 2,
-    'strictEqual': 2,
-
-    'shl': 2,
-    'shr': 2,
-    'or': 2,
-    'and': 2,
-    'xor': 2,
-    'not': 2,
-
-    'max': 2,
-    'min': 2,
-    'angle': 2,
-    'len': 2,
-    'noise': 2,
-    'abs': 1,
-    'log': 1,
-    'log10': 1,
-    'sin': 1,
-    'cos': 1,
-    'tan': 1,
-    'floor': 1,
-    'ceil': 1,
-    'sqrt': 1,
-    'rand': 1,
-}
-
-
-# an operation have a specifique operation, the stored result and args
-def operation(liValVar):
-    op, result, *args = liValVar
-    if not isinstance(result, Variable):
-        raise CompilationException("operation result must be stored in variable, '{}' is not a variable".format(result))
-    if op not in opSpecific:
-        breakpoint()
-        raise CompilationException("operation '{}' does not exist, existing operation: {}".format(op, opSpecific))
-
-    if len(args) < opSpecific[op]:
-        raise CompilationException("operation '{}' require {} arguments, {} given"
-                                   .format(op, opSpecific[op], len(args)))
-    if len(args) > opSpecific[op]:
-        print("warning: operation '{}' use only {} arguments, {} given".format(op, opSpecific[op], len(args)))
 
 
 def radar(liValVar):
@@ -134,7 +76,7 @@ instr = {
     'getlink': 2,
     'sensor': 3,
     'set': 2,
-    'op': operation,
+    # 'op': operation,
     'ubind': 1,
     'radar': radar,
     'uradar': uradar,

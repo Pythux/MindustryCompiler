@@ -12,7 +12,7 @@ from .generateYacc import generateYaccFunctions
 from . import grammar  # noqa
 
 from .context import context
-from .classes import Jump, Ref, FunCall, AsmInst, Variable
+from .classes import Jump, Ref, FunCall, AsmInst, Variable, KeyWord
 from ..lex import lexClearContext
 
 # generate module .p_functionYacc
@@ -56,7 +56,7 @@ def runYacc(content: str, debug=False, clearContext=False):
 
     functionCalled = importsHandling.imports.getFunctionsDefinition()  # add after end prog, function used
     if len(functionCalled):
-        lines.append(AsmInst('end'))
+        lines.append(AsmInst(KeyWord('end')))
         lines += functionCalled
 
     while (lines.filter(lambda el: isinstance(el, FunCall))):
@@ -103,7 +103,7 @@ def fillFunCall(lines):
 # we only have at this moment str, Jump and Ref Objects in lines
 def consumeRefAndChangeJump(li: List[T]):
     if isinstance(li[-1], Ref):
-        li.append(AsmInst('end', []))  # finish with end statement to #ref on it
+        li.append(AsmInst(KeyWord('end')))  # finish with end statement to #ref on it
 
     li = consumeRef(li)  # build refDictionary
 

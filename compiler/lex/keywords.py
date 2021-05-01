@@ -5,6 +5,7 @@
 
 instr = [
     'op',
+    'end',
 ]
 
 op = [
