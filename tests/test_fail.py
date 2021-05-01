@@ -68,9 +68,17 @@ instrWrite = {
     'write 1 2 set': "line 1, instruction 'write', 'set' is a reserved keyword, it could not be used as variable",
     'write @yo lo "da" ta': "line 1, instruction 'write' require 3 arguments, 4 given",
 }
+instrRead = {
+    'read': "line 1, instruction 'read' require a variable to store result at position 2, no variable given",
+    'read 4': "line 1, instruction 'read' require a variable to store result at position 2, '4' not valide",
+    'read "res"': """line 1, instruction \'read\' require a variable to store result at position 2, \'"res"\' not valide""",
+    'read res': "line 1, instruction 'read' require 2 arguments, 0 given",
+    'read res cell': "line 1, instruction 'read' require 2 arguments, 1 given",
+    'read res cell index 4': "line 1, instruction 'read' require 2 arguments, 3 given",
+}
 
 
-errorList = [instrNotValide, subInstrNotValide, instrOp, instrSimple, instrSet, intrOneArg, instrWrite]
+errorList = [instrNotValide, subInstrNotValide, instrOp, instrSimple, instrSet, intrOneArg, instrWrite, instrRead]
 
 
 def test_asm():
@@ -84,3 +92,4 @@ def test_asm():
     assert runYacc('end', clearContext=True) == 'end\n'
     assert runYacc('set yo 4', clearContext=True) == 'set yo 4\n'
     assert runYacc('ubind @flare', clearContext=True) == 'ubind @flare\n'
+    assert runYacc('read res cell 1', clearContext=True) == 'read res cell 1\n'

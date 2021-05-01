@@ -1,3 +1,4 @@
+'''instr 0+ args'''
 
 from .._start import grammar, YaccProduction
 from .. import asmError as err
@@ -64,8 +65,3 @@ def writeResult(p: YaccProduction):
 def write_MaybeArgsNotEnought(p: YaccProduction):
     '''line : write instrArgs error'''
     raise err.maybeNotEnoughtArgs(p, nbArgsReq=3)
-
-
-# read result cell1 index
-# sensor result block1 @copper
-# getlink result linkId

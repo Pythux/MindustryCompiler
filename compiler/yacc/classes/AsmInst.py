@@ -67,8 +67,8 @@ def ucontrol(liValVar):
 
 
 instr = {
-    'read': 3,
-    'write': 3,
+    # 'read': 3,
+    # 'write': 3,
     # 'print': 1,
     # 'printflush': 1,
     'draw': draw,
