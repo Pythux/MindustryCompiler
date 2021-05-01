@@ -51,9 +51,17 @@ instrSet = {
     'set @4 2': "line 1, instruction 'set' require a variable to store result at position 2, '@4' not valide",
     'set yo 4 3': "line 1, instruction 'set' require 1 arguments, too much is given",
 }
+intrOneArg = {
+    'print': "line 1, instruction 'print' require 1 arguments, 0 given",
+    'printflush': "line 1, instruction 'printflush' require 1 arguments, 0 given",
+    'drawflush': "line 1, instruction 'drawflush' require 1 arguments, 0 given",
+    'ubind': "line 1, instruction 'ubind' require 1 arguments, 0 given",
+    'print 1 2 3': "line 1, instruction 'print' require 1 arguments, too much is given",
+    'print 1 2': "line 1, instruction 'print' require 1 arguments, too much is given",
+}
 
 
-errorList = [instrNotValide, subInstrNotValide, instrOp, instrSimple, instrSet]
+errorList = [instrNotValide, subInstrNotValide, instrOp, instrSimple, instrSet, intrOneArg]
 
 
 def test_asm():
@@ -66,3 +74,4 @@ def test_asm():
     assert runYacc('op abs res arg1', clearContext=True) == 'op abs res arg1\n'
     assert runYacc('end', clearContext=True) == 'end\n'
     assert runYacc('set yo 4', clearContext=True) == 'set yo 4\n'
+    assert runYacc('ubind @flare', clearContext=True) == 'ubind @flare\n'

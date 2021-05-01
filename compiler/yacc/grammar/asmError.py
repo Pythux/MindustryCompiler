@@ -29,31 +29,32 @@ def invalideSubInstr(p):
         "'{}' is not a valide keyword, must be on of: {}".format(toStrToken(p[2]), valideKeys))
 
 
-def maybeNotEnoughtArgs(p, nbArgsReq, nbArgsGiven):
+def maybeNotEnoughtArgs(p, nbArgsReq, nbArgsGiven, line=None):
     tokenErr = p[len(p) - 1]
     if tokenErr.type == 'EndLine':
-        return notEnoughtArgs(p, nbArgsReq, nbArgsGiven)
-    return reservedKeword(p, tokenErr)
+        return notEnoughtArgs(p, nbArgsReq, nbArgsGiven, line=line)
+    return reservedKeword(p, tokenErr, line=line)
 
 
-def reservedKeword(p, tokenErr):
+def reservedKeword(p, tokenErr, line=None):
     return CompilationException(
-        getStartMsg(p) + "'{}' is a reserved keyword, it could not be used as variable".format(toStrToken(tokenErr)))
+        getStartMsg(p, line) +
+        "'{}' is a reserved keyword, it could not be used as variable".format(toStrToken(tokenErr)))
 
 
-def notEnoughtArgs(p, nbArgsReq, nbArgsGiven):
+def notEnoughtArgs(p, nbArgsReq, nbArgsGiven, line=None):
     return CompilationException(
-        getStartMsg(p) + "require {} arguments, {} given".format(nbArgsReq, nbArgsGiven)
+        getStartMsg(p, line) + "require {} arguments, {} given".format(nbArgsReq, nbArgsGiven)
     )
 
 
-def tooManyArgs(p, nbArgsReq):
+def tooManyArgs(p, nbArgsReq, line=None):
     return CompilationException(
-        getStartMsg(p) + "require {} arguments, too much is given".format(nbArgsReq)
+        getStartMsg(p, line) + "require {} arguments, too much is given".format(nbArgsReq)
     )
 
 
-def mustBeVar(p, index, error):
+def mustBeVar(p, index, error, line=None):
     strErr = toStrToken(error)
     endMsg = "'{}' not valide".format(strErr)
     if error.type in reserved:
@@ -61,5 +62,5 @@ def mustBeVar(p, index, error):
     if error.type == 'EndLine':
         endMsg = "no variable given"
     return CompilationException(
-        getStartMsg(p) + "require a variable to store result at position {}, {}"
+        getStartMsg(p, line) + "require a variable to store result at position {}, {}"
         .format(index, endMsg))

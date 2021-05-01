@@ -11,6 +11,12 @@ def setResult(p: YaccProduction):
 
 
 @grammar
+def set_tooMuchArgs(p: YaccProduction):
+    '''line : set ID info error'''
+    raise err.tooManyArgs(p, 1)
+
+
+@grammar
 def set_mustBeID(p: YaccProduction):
     '''line : set error'''
     raise err.mustBeVar(p, 2, p[2])
@@ -20,9 +26,3 @@ def set_mustBeID(p: YaccProduction):
 def set_MaybeArgsNotEnought(p: YaccProduction):
     '''line : set ID error'''
     raise err.maybeNotEnoughtArgs(p, 1, p[3])
-
-
-@grammar
-def set_tooMuchArgs(p: YaccProduction):
-    '''line : set ID info error'''
-    raise err.tooManyArgs(p, 1)

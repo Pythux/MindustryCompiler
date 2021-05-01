@@ -7,6 +7,10 @@ instr = [
     'op',
     'end',
     'set',
+    'print',
+    'printflush',
+    'drawflush',
+    'ubind',
 ]
 
 op = [
