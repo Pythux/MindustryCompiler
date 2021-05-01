@@ -45,10 +45,19 @@ instrOp = {
 instrSimple = {
     'end yo': "line 1, instruction 'end' require 0 arguments, too much is given",
 }
+instrSet = {
+    'set': "line 1, instruction 'set' require a variable to store result at position 2, no variable given",
+    'set 4': "line 1, instruction 'set' require a variable to store result at position 2, '4' not valide",
+    'set @4 2': "line 1, instruction 'set' require a variable to store result at position 2, '@4' not valide",
+    'set yo 4 3': "6",
+}
+
+
+errorList = [instrNotValide, subInstrNotValide, instrOp, instrSimple, instrSet]
 
 
 def test_asm():
-    for dico in [instrNotValide, subInstrNotValide, instrOp, instrSimple]:
+    for dico in errorList:
         for k, v in dico.items():
             assertCompilationException(k, v)
 
@@ -56,3 +65,4 @@ def test_asm():
     assert runYacc('op mul yo 1 2', clearContext=True) == 'op mul yo 1 2\n'
     assert runYacc('op abs res arg1', clearContext=True) == 'op abs res arg1\n'
     assert runYacc('end', clearContext=True) == 'end\n'
+    assert runYacc('set yo 4', clearContext=True) == ''

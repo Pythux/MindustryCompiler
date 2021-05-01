@@ -81,7 +81,7 @@ instr = {
     'radar': radar,
     'uradar': uradar,
     'ucontrol': ucontrol,
-    'end': 0,
+    # 'end': 0,
 }
 
 

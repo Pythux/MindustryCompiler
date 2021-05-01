@@ -54,9 +54,12 @@ def tooManyArgs(p, nbArgsReq):
 
 
 def mustBeVar(p, index, error):
-    endMsg = "not valide"
+    strErr = toStrToken(error)
+    endMsg = "'{}' not valide".format(strErr)
     if error.type in reserved:
-        endMsg = "is a reserved keyword"
+        endMsg = "'{}' is a reserved keyword".format(strErr)
+    if error.type == 'EndLine':
+        endMsg = "no variable given"
     return CompilationException(
-        getStartMsg(p) + "require a variable to store result at position {}, '{}' {}"
-        .format(index, toStrToken(p[index]), endMsg))
+        getStartMsg(p) + "require a variable to store result at position {}, {}"
+        .format(index, endMsg))

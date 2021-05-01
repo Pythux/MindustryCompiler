@@ -11,6 +11,6 @@ def endResult(p: YaccProduction):
 
 
 @grammar
-def end_error(p: YaccProduction):
+def end_errorTooMuch(p: YaccProduction):
     '''line : end error'''
     raise err.tooManyArgs(p, 0)
