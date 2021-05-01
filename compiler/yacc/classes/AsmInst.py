@@ -75,7 +75,7 @@ instr = {
     # 'drawflush': 1,
     'getlink': 2,
     'sensor': 3,
-    'set': 2,
+    # 'set': 2,
     # 'op': operation,
     # 'ubind': 1,
     'radar': radar,

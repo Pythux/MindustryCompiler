@@ -11,6 +11,7 @@ instr = [
     'printflush',
     'drawflush',
     'ubind',
+    'write',
 ]
 
 op = [

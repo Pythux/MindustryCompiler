@@ -25,4 +25,4 @@ def set_mustBeID(p: YaccProduction):
 @grammar
 def set_MaybeArgsNotEnought(p: YaccProduction):
     '''line : set ID error'''
-    raise err.maybeNotEnoughtArgs(p, 1, p[3])
+    raise err.maybeNotEnoughtOrTooMuchArgs(p, 1)

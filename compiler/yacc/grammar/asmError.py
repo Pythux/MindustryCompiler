@@ -22,23 +22,27 @@ def invalideInstr(p, line=None):
     )
 
 
-def invalideSubInstr(p):
+def invalideSubInstr(p, line=None):
     valideKeys = subInstr[toStrToken(p[1])]
     return CompilationException(
-        getStartMsg(p, end=', ') +
+        getStartMsg(p, line=line, end=', ') +
         "'{}' is not a valide keyword, must be on of: {}".format(toStrToken(p[2]), valideKeys))
 
 
-def maybeNotEnoughtArgs(p, nbArgsReq, nbArgsGiven, line=None):
+def maybeNotEnoughtOrTooMuchArgs(p, nbArgsReq, line=None):
     tokenErr = p[len(p) - 1]
+    instrArgs = p[len(p) - 2]
+    nbArgsGiven = len(instrArgs)
+    if tokenErr.type in reserved:
+        return reservedKeword(p, tokenErr, line=line)
     if tokenErr.type == 'EndLine':
         return notEnoughtArgs(p, nbArgsReq, nbArgsGiven, line=line)
-    return reservedKeword(p, tokenErr, line=line)
+    return tooManyArgs(p, nbArgsReq, nbArgsGiven, line=line)
 
 
 def reservedKeword(p, tokenErr, line=None):
     return CompilationException(
-        getStartMsg(p, line) +
+        getStartMsg(p, line=line, end=', ') +
         "'{}' is a reserved keyword, it could not be used as variable".format(toStrToken(tokenErr)))
 
 
@@ -48,9 +52,9 @@ def notEnoughtArgs(p, nbArgsReq, nbArgsGiven, line=None):
     )
 
 
-def tooManyArgs(p, nbArgsReq, line=None):
+def tooManyArgs(p, nbArgsReq, nbArgsGiven, line=None):
     return CompilationException(
-        getStartMsg(p, line) + "require {} arguments, too much is given".format(nbArgsReq)
+        getStartMsg(p, line) + "require {} arguments, {} given".format(nbArgsReq, nbArgsGiven)
     )
 
 

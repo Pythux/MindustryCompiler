@@ -59,9 +59,18 @@ intrOneArg = {
     'print 1 2 3': "line 1, instruction 'print' require 1 arguments, too much is given",
     'print 1 2': "line 1, instruction 'print' require 1 arguments, too much is given",
 }
+instrWrite = {
+    'write': "line 1, instruction 'write' require 1 arguments, 0 given",
+    'write 1': "6",
+    'write add': "6",
+    'write set': "6",
+    'write 1 set 3': "6",
+    'write 1 2 set': "6",
+    'white @yo lo "da" ta': "6",
+}
 
 
-errorList = [instrNotValide, subInstrNotValide, instrOp, instrSimple, instrSet, intrOneArg]
+errorList = [instrNotValide, subInstrNotValide, instrOp, instrSimple, instrSet, intrOneArg, instrWrite]
 
 
 def test_asm():

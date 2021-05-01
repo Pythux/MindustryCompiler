@@ -34,14 +34,14 @@ def opTwoArgsArgs_error(p: YaccProduction):
     '''line : op opTwoArgs ID error
             | op opTwoArgs ID info error'''
     givenArgs = len(p) - 5
-    raise err.maybeNotEnoughtArgs(p, 2, givenArgs)
+    raise err.maybeNotEnoughtOrTooMuchArgs(p, 2)
 
 
 @grammar
 def opOneArgsArgs_error(p: YaccProduction):
     '''line : op opOneArgs ID error'''
     givenArgs = len(p) - 5
-    raise err.maybeNotEnoughtArgs(p, 1, givenArgs)
+    raise err.maybeNotEnoughtOrTooMuchArgs(p, 1)
 
 
 @grammar
