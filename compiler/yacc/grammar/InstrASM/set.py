@@ -6,8 +6,8 @@ from ...classes import AsmInst, Variable, KeyWord
 
 @grammar
 def setResult(p: YaccProduction):
-    '''line : set ID info info EndLine'''
-    p[0] = AsmInst(KeyWord(p[1]), [p[2], Variable(p[3])])
+    '''line : set ID info EndLine'''
+    p[0] = AsmInst(KeyWord(p[1]), [Variable(p[2]), p[3]])
 
 
 @grammar
@@ -16,11 +16,13 @@ def set_mustBeID(p: YaccProduction):
     raise err.mustBeVar(p, 2, p[2])
 
 
+@grammar
 def set_MaybeArgsNotEnought(p: YaccProduction):
-    '''line : set error'''
-    raise err.maybeNotEnoughtArgs(p, 1, p[2])
+    '''line : set ID error'''
+    raise err.maybeNotEnoughtArgs(p, 1, p[3])
 
 
-def set_MaybeArgsNotEnought(p: YaccProduction):
+@grammar
+def set_tooMuchArgs(p: YaccProduction):
     '''line : set ID info error'''
     raise err.tooManyArgs(p, 1)

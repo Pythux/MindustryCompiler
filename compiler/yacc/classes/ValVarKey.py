@@ -24,7 +24,7 @@ class Value:
 class Variable:
     def __init__(self, variable: str) -> None:
         if not isinstance(variable, str):
-            raise CompilationException("not a string !")
+            raise CompilationException("Variable construction, input is not a string !")
         self.variable = variable
 
     def __str__(self) -> str:
