@@ -83,7 +83,7 @@ instr = {
     # 'op': operation,
     # 'ubind': 1,
     # 'radar': radar,
-    'uradar': uradar,
+    # 'uradar': uradar,
     'ucontrol': ucontrol,
     # 'end': 0,
     'ulocate': ulocate,

@@ -1,36 +1,38 @@
 
 from .._start import grammar, YaccProduction
 from .. import asmError as err
-from ...classes import AsmInst, Variable, KeyWord
+from ...classes import AsmInst, KeyWord
 from compiler import CompilationException
 from compiler.lex import keywords
 
 
-# radar enemy any flying distance turret1 1 result
 # uradar enemy any any distance 0 order result
-
 # radar enemy any flying distance turret1 sortOrder result
 @grammar
 def radarResult(p: YaccProduction):
-    '''line : radar radarTarget radarTarget radarTarget radarSort info info ID EndLine'''
+    '''line : radar radarTarget radarTarget radarTarget radarSort info info ID EndLine
+            | uradar radarTarget radarTarget radarTarget radarSort info info ID EndLine'''
     p[0] = AsmInst(KeyWord(p[1]), p[2:len(p)-1])
 
 
 @grammar
 def radarTooManyArgs(p: YaccProduction):
-    '''line : radar radarTarget radarTarget radarTarget radarSort info info ID error'''
+    '''line : radar radarTarget radarTarget radarTarget radarSort info info ID error
+            | uradar radarTarget radarTarget radarTarget radarSort info info ID error'''
     raise CompilationException(err.getStartMsg(p) + "too many arguments")
 
 
 @grammar
 def radarNotAnID(p: YaccProduction):
-    '''line : radar radarTarget radarTarget radarTarget radarSort info info error'''
+    '''line : radar radarTarget radarTarget radarTarget radarSort info info error
+            | uradar radarTarget radarTarget radarTarget radarSort info info error'''
     raise err.mustBeVar(p, 8)
 
 
 @grammar
 def radarMaybeNotEnought(p: YaccProduction):
-    '''line : radar radarTarget radarTarget radarTarget radarSort error'''
+    '''line : radar radarTarget radarTarget radarTarget radarSort error
+            | uradar radarTarget radarTarget radarTarget radarSort error'''
     tokenErr = p[len(p)-1]
     startMsg = err.getStartMsg(p)
     if tokenErr.type == 'EndLine':
@@ -43,7 +45,8 @@ def radarMaybeNotEnought(p: YaccProduction):
 
 @grammar
 def radarMaybeNotEnought2(p: YaccProduction):
-    '''line : radar radarTarget radarTarget radarTarget error'''
+    '''line : radar radarTarget radarTarget radarTarget error
+            | uradar radarTarget radarTarget radarTarget error'''
     tokenErr = p[len(p)-1]
     startMsg = err.getStartMsg(p)
     endmsg = 'only 3 arguments provided'
@@ -56,7 +59,8 @@ def radarMaybeNotEnought2(p: YaccProduction):
 
 @grammar
 def radarMaybeNotEnought3(p: YaccProduction):
-    '''line : radar error'''
+    '''line : radar error
+            | uradar error'''
     tokenErr = p[len(p)-1]
     startMsg = err.getStartMsg(p)
     if tokenErr.type != 'EndLine':

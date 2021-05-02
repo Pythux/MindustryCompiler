@@ -107,11 +107,27 @@ instrRadar = {
     'radar any boss ally distance yo 4 6': "line 1, instruction 'radar' require a variable to store result at position 8, '6' not valide",
     'radar any boss ally distance yo 4 result 2': "line 1, instruction 'radar' too many arguments",
 }
+instrUradar = {
+    'uradar': "line 1, instruction 'uradar' not enought arguments, the first three arguments of this instruction must be one of: ['any', 'enemy', 'ally', 'player', 'attacker', 'flying', 'ground', 'boss']",
+    'uradar x': "line 1, instruction 'uradar' the first three arguments of this instruction must be one of: ['any', 'enemy', 'ally', 'player', 'attacker', 'flying', 'ground', 'boss'], 'x' given instead",
+    'uradar any 4': "line 1, instruction 'uradar' the first three arguments of this instruction must be one of: ['any', 'enemy', 'ally', 'player', 'attacker', 'flying', 'ground', 'boss'], '4' given instead",
+    'uradar any ally': "line 1, instruction 'uradar' not enought arguments, the first three arguments of this instruction must be one of: ['any', 'enemy', 'ally', 'player', 'attacker', 'flying', 'ground', 'boss']",
+    'uradar any boss 2': "line 1, instruction 'uradar' the first three arguments of this instruction must be one of: ['any', 'enemy', 'ally', 'player', 'attacker', 'flying', 'ground', 'boss'], '2' given instead",
+    'uradar any boss ally 2': "line 1, instruction 'uradar' the 4th argument of this instruction must be one of: ['distance', 'health', 'shield', 'armor', 'maxHealth'], '2' given instead",
+    'uradar any boss ally': "line 1, instruction 'uradar' the 4th argument of this instruction must be one of: ['distance', 'health', 'shield', 'armor', 'maxHealth'], only 3 arguments provided",
+    'uradar any boss ally distance': "line 1, instruction 'uradar' not enought arguments",
+    'uradar any boss ally distance shield': "line 1, instruction 'uradar', 'shield' is a reserved keyword, it could not be used as variable",
+    'uradar any boss ally distance yo': "line 1, instruction 'uradar' not enought arguments",
+    'uradar any boss ally distance yo set': "line 1, instruction 'uradar', 'set' is a reserved keyword, it could not be used as variable",
+    'uradar any boss ally distance yo 4': "line 1, instruction 'uradar' require a variable to store result at position 8, no variable given",
+    'uradar any boss ally distance yo 4 6': "line 1, instruction 'uradar' require a variable to store result at position 8, '6' not valide",
+    'uradar any boss ally distance yo 4 result 2': "line 1, instruction 'uradar' too many arguments",
+}
 
 
 errorList = [
     instrNotValide, subInstrNotValide, instrOp, instrSimple, instrSet, intrOneArg, instrWrite, instrRead,
-    instrSensor, instrGetlink, instrRadar]
+    instrSensor, instrGetlink, instrRadar, instrUradar]
 
 
 def test_asm():
@@ -129,3 +145,4 @@ def test_asm():
     assert runYacc('sensor result block1 @copper', clearContext=True) == 'sensor result block1 @copper\n'
     assert runYacc('getlink result linkId', clearContext=True) == 'getlink result linkId\n'
     assert runYacc('radar enemy any flying distance turret1 sortOrder result', clearContext=True) == 'radar enemy any flying distance turret1 sortOrder result\n'
+    assert runYacc('uradar enemy any flying distance null sortOrder result', clearContext=True) == 'uradar enemy any flying distance null sortOrder result\n'
