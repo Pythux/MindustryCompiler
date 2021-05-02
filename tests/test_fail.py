@@ -154,10 +154,10 @@ instUlocate = {
     'ulocate building rally x y z': "line 1, instruction 'ulocate' require 6 arguments, 3 given",
     'ulocate building rally x y z 1 2': "line 1, instruction 'ulocate' require 6 arguments, 5 given",
     'ulocate spawn building x': "line 1, instruction 'ulocate', 'building' is a reserved keyword, it could not be used as variable",
-    'ulocate ore null true @copper outx outy found buildingResult'
-    'ulocate spawn a x': "66",
-    'ulocate spawn null true null outx outy found buildingResult tooMuch': "66",
-    'ulocate spawn 0 outx outy found': "66",
+    'ulocate ore null true @copper outx outy found': "line 1, instruction 'ulocate' require 7 arguments, 6 given",
+    'ulocate spawn a x': "line 1, instruction 'ulocate' require 7 arguments, 2 given",
+    'ulocate spawn null true null outx outy found buildingResult tooMuch': "line 1, instruction 'ulocate' require 7 arguments, 8 given",
+    'ulocate spawn 0 outx outy found': "line 1, instruction 'ulocate' require 7 arguments, 4 given",
 }
 
 
