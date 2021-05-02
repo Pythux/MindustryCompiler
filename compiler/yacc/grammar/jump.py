@@ -38,7 +38,7 @@ def jump_always(p: YaccProduction):
     ref = p[2]
     if context.fun.inFunScope:
         ref = context.fun.scopeRef(ref)
-    p[0] = Jump(p.no(1), Ref(ref))
+    p[0] = Jump(p.lineno(1), Ref(ref))
 
 
 # to keep the "valide ASM will pass"
@@ -47,7 +47,7 @@ def jump_asmNoRef(p: YaccProduction):
     '''ligne : jump Number asmCondition EndLine'''
     instr = 'jump'
     comparison = p[3]
-    liValVar = [Value(p[2]), Value(comparison.comp), comparison.ab[0], comparison.ab[1]]
+    liValVar = [Value(p[2]), comparison.comp, comparison.ab[0], comparison.ab[1]]
     p[0] = AsmInst(instr, liValVar)
 
 

@@ -1,7 +1,7 @@
 sensor in node1 @powerNetIn
 sensor out node1 @powerNetOut
 op sub net in out
-op floor net net out
+op floor net net
 print "power: "
 print net
 printflush message1
