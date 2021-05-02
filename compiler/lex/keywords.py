@@ -19,6 +19,7 @@ instr = [
     'radar',
     'uradar',
     'jump',
+    'control',
 ]
 
 radarTarget = ['any', 'enemy', 'ally', 'player', 'attacker', 'flying', 'ground', 'boss']
@@ -91,12 +92,20 @@ jump = [
     'always',
 ]
 
+control = [
+    'enabled',
+    'configure',
+    'shootp',
+    'shoot',
+    'color',
+]
 
 subInstr = {
     'op': op,
     'radar': radarTarget + radarSort,
     'draw': draw,
     'jump': jump,
+    'control': control,
 }
 
 

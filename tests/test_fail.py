@@ -132,11 +132,19 @@ instrDraw = {
     'draw triangle x y': "line 1, instruction 'draw' require 6 arguments, 2 given",
     'draw triangle 1 2 3 4 5 6 7': "line 1, instruction 'draw' require 6 arguments, 7 given",
 }
+instrControl = {
+    'control': "line 1, instruction 'control', require keyword, must be on of: ['enabled', 'configure', 'shootp', 'shoot', 'color']",
+    'control 4': "line 1, instruction 'control', '4' is not a valide keyword, must be on of:",
+    'control 4 5 6 7 8': "line 1, instruction 'control', '4' is not a valide keyword, must be on of:",
+    'control shootp block1 0 0 0 0 6': "line 1, instruction 'control' require 5 arguments, 6 given",
+}
 
 
 errorList = [
     instrNotValide, subInstrNotValide, instrOp, instrSimple, instrSet, intrOneArg, instrWrite, instrRead,
-    instrSensor, instrGetlink, instrRadar, instrUradar, instrDraw]
+    instrSensor, instrGetlink, instrRadar, instrUradar, instrDraw,
+    instrControl,
+]
 
 
 def identical(instr):
@@ -148,16 +156,17 @@ def test_asm():
         for k, v in dico.items():
             assertCompilationException(k, v)
 
-    assert runYacc('op add yo 1 2', clearContext=True) == 'op add yo 1 2\n'
-    assert runYacc('op mul yo 1 2', clearContext=True) == 'op mul yo 1 2\n'
-    assert runYacc('op abs res arg1', clearContext=True) == 'op abs res arg1\n'
-    assert runYacc('end', clearContext=True) == 'end\n'
-    assert runYacc('set yo 4', clearContext=True) == 'set yo 4\n'
-    assert runYacc('ubind @flare', clearContext=True) == 'ubind @flare\n'
-    assert runYacc('read res cell 1', clearContext=True) == 'read res cell 1\n'
-    assert runYacc('sensor result block1 @copper', clearContext=True) == 'sensor result block1 @copper\n'
-    assert runYacc('getlink result linkId', clearContext=True) == 'getlink result linkId\n'
-    assert runYacc('radar enemy any flying distance turret1 sortOrder result', clearContext=True) == 'radar enemy any flying distance turret1 sortOrder result\n'
-    assert runYacc('uradar enemy any flying distance null sortOrder result', clearContext=True) == 'uradar enemy any flying distance null sortOrder result\n'
-    assert runYacc('uradar enemy any flying distance null sortOrder result', clearContext=True) == 'uradar enemy any flying distance null sortOrder result\n'
+    assert identical('op add yo 1 2')
+    assert identical('op mul yo 1 2')
+    assert identical('op abs res arg1')
+    assert identical('end')
+    assert identical('set yo 4')
+    assert identical('ubind @flare')
+    assert identical('read res cell 1')
+    assert identical('sensor result block1 @copper')
+    assert identical('getlink result linkId')
+    assert identical('radar enemy any flying distance turret1 sortOrder result')
+    assert identical('uradar enemy any flying distance null sortOrder result')
+    assert identical('uradar enemy any flying distance null sortOrder result')
     assert identical('draw triangle 1 2 3 4 5 6')
+    assert identical('control shootp block1 0 0 0 0')

@@ -1,7 +1,7 @@
 
 from .._start import grammar, YaccProduction
 from .. import asmError as err
-from ...classes import AsmInst, Variable, KeyWord
+from ...classes import AsmInst, KeyWord
 
 
 # draw stroke 0 0 0 255 0 0

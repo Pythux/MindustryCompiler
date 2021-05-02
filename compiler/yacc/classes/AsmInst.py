@@ -75,7 +75,7 @@ instr = {
     # 'write': 3,
     # 'print': 1,
     # 'printflush': 1,
-    'draw': draw,
+    # 'draw': draw,
     # 'drawflush': 1,
     # 'getlink': 2,
     # 'sensor': 3,
@@ -84,6 +84,7 @@ instr = {
     # 'ubind': 1,
     # 'radar': radar,
     # 'uradar': uradar,
+    # 'control': 'control',
     'ucontrol': ucontrol,
     # 'end': 0,
     'ulocate': ulocate,
@@ -103,16 +104,6 @@ def validateAsmInstr(instruction, liValVar):
 
 
 '''
-draw stroke 0 0 0 255 0 0
-draw clear 0 0 0 0 0 0
-draw color 0 0 0 255 0 0
-draw line 0 0 0 255 0 0
-draw rect 0 0 0 255 0 0
-draw lineRect 0 0 0 255 0 0
-draw image 0 0 @copper 32 0 0
-draw poly 0 0 0 255 0 0
-draw linePoly 0 0 0 255 0 0
-draw triangle 0 0 0 255 0 0
 
 control enabled block1 0 0 0 0
 control configure block1 0 0 0 0
