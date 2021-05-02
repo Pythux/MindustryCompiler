@@ -87,7 +87,7 @@ instr = {
     # 'control': 'control',
     # 'ucontrol': ucontrol,
     # 'end': 0,
-    'ulocate': ulocate,
+    # 'ulocate': ulocate,
 }
 
 
@@ -101,16 +101,3 @@ def validateAsmInstr(instruction, liValVar):
                                        .format(instruction, len(liValVar), i))
     else:
         i(liValVar)
-
-
-'''
-
-ulocate ore core true @copper outx outy found building
-ulocate spawn core true @copper outx outy found building
-ulocate damaged core true @copper outx outy found building
-ulocate building core true @copper outx outy found building
-ulocate building reactor true @copper outx outy found building
-
-ulocate building resupply true @copper outx outy found building
-
-'''
