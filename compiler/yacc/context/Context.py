@@ -11,7 +11,6 @@ class Context:
         self.refCount = 0
         self.fun = Fun(self)
         self.funs = {}
-        self.nextNoVar = 0
         self.existingVars = set()
         self.idInc = 0
         self.staticVarsList = {}
@@ -21,7 +20,6 @@ class Context:
         self.refCount = 0
         self.fun = Fun(self)
         self.funs = {}
-        self.nextNoVar = 0
         self.existingVars = set()
         self.idInc = 0
         self.staticVarsList = {}

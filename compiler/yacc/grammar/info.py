@@ -8,9 +8,7 @@ from ..classes import Variable, Value
 def info_id(p: YaccProduction):
     '''info : ID'''
     info = Variable(p[1])
-    if context.nextNoVar > 0:
-        context.nextNoVar -= 1
-    elif context.fun.inFunScope:
+    if context.fun.inFunScope:
         p[0] = context.fun.scopeId(info)
         return
 
