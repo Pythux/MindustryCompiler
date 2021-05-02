@@ -22,15 +22,15 @@ def invalideInstr(p, line=None):
     )
 
 
-def invalideSubInstr(p, line=None):
-    valideKeys = subInstr[toStrToken(p[1])]
-    if p[2].type == 'EndLine':
+def invalideSubInstr(p, line=None, valideKeys=None, indexErr=2):
+    valideKeys = valideKeys if valideKeys else subInstr[toStrToken(p[1])]
+    if p[indexErr].type == 'EndLine':
         return CompilationException(
             getStartMsg(p, line=line, end=', ') +
             "require keyword, must be on of: {}".format(valideKeys))
     return CompilationException(
         getStartMsg(p, line=line, end=', ') +
-        "'{}' is not a valide keyword, must be on of: {}".format(toStrToken(p[2]), valideKeys))
+        "'{}' is not a valide keyword, must be on of: {}".format(toStrToken(p[indexErr]), valideKeys))
 
 
 def maybeNotEnoughtArgs(p, nbArgsReq, line=None):

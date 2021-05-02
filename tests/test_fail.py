@@ -81,8 +81,8 @@ instrSensor = {
     'sensor 4': "line 1, instruction 'sensor' require a variable to store result at position 2, '4' not valide",
     'sensor "res"': """line 1, instruction \'sensor\' require a variable to store result at position 2, \'"res"\' not valide""",
     'sensor res': "line 1, instruction 'sensor' require 2 arguments, 0 given",
-    'sensor res building': "line 1, instruction 'sensor' require 2 arguments, 1 given",
-    'sensor res building @x tooMuch': "line 1, instruction 'sensor' require 2 arguments, 3 given",
+    'sensor res buildingX': "line 1, instruction 'sensor' require 2 arguments, 1 given",
+    'sensor res buildingX @x tooMuch': "line 1, instruction 'sensor' require 2 arguments, 3 given",
 }
 instrGetlink = {
     'getlink': "line 1, instruction 'getlink' require a variable to store result at position 2, no variable given",
@@ -143,12 +143,28 @@ instrUcontrol = {
     'ucontrol 4': "line 1, instruction 'ucontrol', '4' is not a valide keyword, must be on of:",
     'ucontrol move 0 0 0 0 0 6': "line 1, instruction 'ucontrol' require 5 arguments, 6 given",
 }
+instUlocate = {
+    'ulocate': "line 1, instruction 'ulocate', require keyword, must be on of: ['ore', 'damaged', 'spawn', 'building']",
+    'ulocate a': "line 1, instruction 'ulocate', 'a' is not a valide keyword, must be on of:",
+    'ulocate 4': "line 1, instruction 'ulocate', '4' is not a valide keyword, must be on of:",
+    'ulocate building': "line 1, instruction 'ulocate', require keyword, must be on of: ['core', 'storage', 'generator', 'factory', 'repair', 'rally', 'battery', 'resupply', 'reactor', 'turret']",
+    'ulocate building x': "line 1, instruction 'ulocate', 'x' is not a valide keyword, must be on of: ['core', 'storage', 'generator', 'factory', 'repair', 'rally', 'battery', 'resupply', 'reactor', 'turret']",
+    'ulocate building x y z': "line 1, instruction 'ulocate', 'x' is not a valide keyword, must be on of:",
+    'ulocate building rally x': "line 1, instruction 'ulocate' require 6 arguments, 1 given",
+    'ulocate building rally x y z': "line 1, instruction 'ulocate' require 6 arguments, 3 given",
+    'ulocate building rally x y z 1 2': "line 1, instruction 'ulocate' require 6 arguments, 5 given",
+    'ulocate spawn building x': "line 1, instruction 'ulocate', 'building' is a reserved keyword, it could not be used as variable",
+    'ulocate ore null true @copper outx outy found buildingResult'
+    'ulocate spawn a x': "66",
+    'ulocate spawn null true null outx outy found buildingResult tooMuch': "66",
+    'ulocate spawn 0 outx outy found': "66",
+}
 
 
 errorList = [
     instrNotValide, subInstrNotValide, instrOp, instrSimple, instrSet, intrOneArg, instrWrite, instrRead,
     instrSensor, instrGetlink, instrRadar, instrUradar, instrDraw,
-    instrControl, instrUcontrol,
+    instrControl, instrUcontrol, instUlocate
 ]
 
 
@@ -176,3 +192,6 @@ def test_asm():
     assert identical('draw triangle 1 2 3 4 5 6')
     assert identical('control shootp block1 0 0 0 0')
     assert identical('control shootp 0 0 0 0 0')
+    assert identical('ulocate building reactor true null outx outy found buildingResult')
+    assert identical('ulocate spawn null true null outx outy found buildingResult')
+    assert identical('ulocate ore null true @copper outx outy found buildingResult')

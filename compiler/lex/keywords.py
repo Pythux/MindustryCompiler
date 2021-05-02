@@ -21,6 +21,7 @@ instr = [
     'jump',
     'control',
     'ucontrol',
+    'ulocate',
 ]
 
 radarTarget = ['any', 'enemy', 'ally', 'player', 'attacker', 'flying', 'ground', 'boss']
@@ -121,6 +122,26 @@ ucontrol = [
     'boost',
 ]
 
+ulocate = [
+    'ore',
+    'damaged',
+    'spawn',
+    'building',
+]
+
+ulocateBuildingType = [
+    'core',
+    'storage',
+    'generator',
+    'factory',
+    'repair',
+    'rally',
+    'battery',
+    'resupply',
+    'reactor',
+    'turret',
+]
+
 subInstr = {
     'op': op,
     'radar': radarTarget + radarSort,
@@ -128,6 +149,7 @@ subInstr = {
     'jump': jump,
     'control': control,
     'ucontrol': ucontrol,
+    'ulocate': ulocate + ulocateBuildingType,
 }
 
 

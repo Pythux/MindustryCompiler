@@ -85,7 +85,7 @@ instr = {
     # 'radar': radar,
     # 'uradar': uradar,
     # 'control': 'control',
-    'ucontrol': ucontrol,
+    # 'ucontrol': ucontrol,
     # 'end': 0,
     'ulocate': ulocate,
 }
@@ -105,18 +105,12 @@ def validateAsmInstr(instruction, liValVar):
 
 '''
 
-control enabled block1 0 0 0 0
-control configure block1 0 0 0 0
-control shootp block1 0 0 0 0
-control shoot block1 0 0 0 0
-control color block1 0 0 0 0
-
-ucontrol move 0 0 0 0 0
-
 ulocate ore core true @copper outx outy found building
 ulocate spawn core true @copper outx outy found building
 ulocate damaged core true @copper outx outy found building
 ulocate building core true @copper outx outy found building
 ulocate building reactor true @copper outx outy found building
+
+ulocate building resupply true @copper outx outy found building
 
 '''
