@@ -138,12 +138,17 @@ instrControl = {
     'control 4 5 6 7 8': "line 1, instruction 'control', '4' is not a valide keyword, must be on of:",
     'control shootp block1 0 0 0 0 6': "line 1, instruction 'control' require 5 arguments, 6 given",
 }
+instrUcontrol = {
+    'ucontrol': "line 1, instruction 'ucontrol', require keyword, must be on of: ['idle', 'stop', 'move', 'approach', 'pathfind', 'target', 'targetp', 'itemdrop', 'itemtake', 'paydrop', 'paytake', 'flag', 'mine', 'build', 'getblock', 'within', 'boost']",
+    'ucontrol 4': "line 1, instruction 'ucontrol', '4' is not a valide keyword, must be on of:",
+    'ucontrol move 0 0 0 0 0 6': "line 1, instruction 'ucontrol' require 5 arguments, 6 given",
+}
 
 
 errorList = [
     instrNotValide, subInstrNotValide, instrOp, instrSimple, instrSet, intrOneArg, instrWrite, instrRead,
     instrSensor, instrGetlink, instrRadar, instrUradar, instrDraw,
-    instrControl,
+    instrControl, instrUcontrol,
 ]
 
 
@@ -170,3 +175,4 @@ def test_asm():
     assert identical('uradar enemy any flying distance null sortOrder result')
     assert identical('draw triangle 1 2 3 4 5 6')
     assert identical('control shootp block1 0 0 0 0')
+    assert identical('control shootp 0 0 0 0 0')

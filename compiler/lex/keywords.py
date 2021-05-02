@@ -20,6 +20,7 @@ instr = [
     'uradar',
     'jump',
     'control',
+    'ucontrol',
 ]
 
 radarTarget = ['any', 'enemy', 'ally', 'player', 'attacker', 'flying', 'ground', 'boss']
@@ -100,12 +101,33 @@ control = [
     'color',
 ]
 
+ucontrol = [
+    'idle',
+    'stop',
+    'move',
+    'approach',
+    'pathfind',
+    'target',
+    'targetp',
+    'itemdrop',
+    'itemtake',
+    'paydrop',
+    'paytake',
+    'flag',
+    'mine',
+    'build',
+    'getblock',
+    'within',
+    'boost',
+]
+
 subInstr = {
     'op': op,
     'radar': radarTarget + radarSort,
     'draw': draw,
     'jump': jump,
     'control': control,
+    'ucontrol': ucontrol,
 }
 
 

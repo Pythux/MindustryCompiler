@@ -23,6 +23,12 @@ def controlKeyword_error(p: YaccProduction):
 
 
 @grammar
+def controlArgs_error(p: YaccProduction):
+    '''ligne : control controlKeyWord instrArgs error'''
+    raise err.maybeNotEnoughtArgs(p, 5)
+
+
+@grammar
 def controlKeyWord(p: YaccProduction):
     '''controlKeyWord : enabled
                       | configure
@@ -31,9 +37,3 @@ def controlKeyWord(p: YaccProduction):
                       | color
     '''
     p[0] = KeyWord(p[1])
-
-
-@grammar
-def controlArgs_error(p: YaccProduction):
-    '''ligne : control controlKeyWord instrArgs error'''
-    raise err.maybeNotEnoughtArgs(p, 5)
