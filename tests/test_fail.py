@@ -124,13 +124,13 @@ instrUradar = {
     'uradar any boss ally distance yo 4 result 2': "line 1, instruction 'uradar' too many arguments",
 }
 instrDraw = {
-    'draw': "6",
-    'draw line': "6",
-    'draw yo': "6",
-    'draw set': "6",
-    'draw add': "6",
-    'draw triangle x y': "6",
-    'draw triangle 1 2 3 4 5 6 7': "6",
+    'draw': "line 1, instruction 'draw', require keyword, must be on of: ['stroke', 'clear', 'color', 'line', 'rect', 'lineRect', 'image', 'poly', 'linePoly', 'triangle']",
+    'draw line': "line 1, instruction 'draw' require 6 arguments, 0 given",
+    'draw yo': "line 1, instruction 'draw', 'yo' is not a valide keyword, must be on of:",
+    'draw set': "line 1, instruction 'draw', 'set' is not a valide keyword, must be on of",
+    'draw add': "line 1, instruction 'draw', 'add' is not a valide keyword, must be on of",
+    'draw triangle x y': "line 1, instruction 'draw' require 6 arguments, 2 given",
+    'draw triangle 1 2 3 4 5 6 7': "line 1, instruction 'draw' require 6 arguments, 7 given",
 }
 
 
