@@ -6,7 +6,7 @@ from ...classes import AsmInst, Variable, KeyWord
 
 @grammar
 def opResultTwoArgs(p: YaccProduction):
-    '''line : op opTwoArgs ID instrArgs EndLine'''
+    '''ligne : op opTwoArgs ID instrArgs EndLine'''
     args = p[4]
     if len(args) != 2:
         raise err.tooManyArgs(p, 2, len(args))
@@ -15,7 +15,7 @@ def opResultTwoArgs(p: YaccProduction):
 
 @grammar
 def opResultOneArgs(p: YaccProduction):
-    '''line : op opOneArgs ID instrArgs EndLine'''
+    '''ligne : op opOneArgs ID instrArgs EndLine'''
     args = p[4]
     if len(args) != 1:
         raise err.tooManyArgs(p, 1, len(args))
@@ -24,26 +24,26 @@ def opResultOneArgs(p: YaccProduction):
 
 @grammar
 def opKeyword_error(p: YaccProduction):
-    '''line : op error'''
+    '''ligne : op error'''
     raise err.invalideSubInstr(p)
 
 
 @grammar
 def opTwoArgsResult_error(p: YaccProduction):
-    '''line : op opTwoArgs error
+    '''ligne : op opTwoArgs error
             | op opOneArgs error'''
     raise err.mustBeVar(p, 3)
 
 
 @grammar
 def opTwoArgsArgs_error(p: YaccProduction):
-    '''line : op opTwoArgs ID instrArgs error'''
+    '''ligne : op opTwoArgs ID instrArgs error'''
     raise err.maybeNotEnoughtArgs(p, 2)
 
 
 @grammar
 def opOneArgsArgs_error(p: YaccProduction):
-    '''line : op opOneArgs ID instrArgs error'''
+    '''ligne : op opOneArgs ID instrArgs error'''
     raise err.maybeNotEnoughtArgs(p, 1)
 
 

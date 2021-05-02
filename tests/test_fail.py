@@ -123,11 +123,24 @@ instrUradar = {
     'uradar any boss ally distance yo 4 6': "line 1, instruction 'uradar' require a variable to store result at position 8, '6' not valide",
     'uradar any boss ally distance yo 4 result 2': "line 1, instruction 'uradar' too many arguments",
 }
+instrDraw = {
+    'draw': "6",
+    'draw line': "6",
+    'draw yo': "6",
+    'draw set': "6",
+    'draw add': "6",
+    'draw triangle x y': "6",
+    'draw triangle 1 2 3 4 5 6 7': "6",
+}
 
 
 errorList = [
     instrNotValide, subInstrNotValide, instrOp, instrSimple, instrSet, intrOneArg, instrWrite, instrRead,
-    instrSensor, instrGetlink, instrRadar, instrUradar]
+    instrSensor, instrGetlink, instrRadar, instrUradar, instrDraw]
+
+
+def identical(instr):
+    return runYacc(instr) == instr + '\n'
 
 
 def test_asm():
@@ -146,3 +159,5 @@ def test_asm():
     assert runYacc('getlink result linkId', clearContext=True) == 'getlink result linkId\n'
     assert runYacc('radar enemy any flying distance turret1 sortOrder result', clearContext=True) == 'radar enemy any flying distance turret1 sortOrder result\n'
     assert runYacc('uradar enemy any flying distance null sortOrder result', clearContext=True) == 'uradar enemy any flying distance null sortOrder result\n'
+    assert runYacc('uradar enemy any flying distance null sortOrder result', clearContext=True) == 'uradar enemy any flying distance null sortOrder result\n'
+    assert identical('draw triangle 1 2 3 4 5 6')

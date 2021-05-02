@@ -19,7 +19,7 @@ def getModuleAndFunName(dotted):
 
 @grammar
 def runFuncReturnArgs(p: YaccProduction):
-    '''line : affectation dottedID OpenParenthesis arguments CloseParenthesis'''
+    '''ligne : affectation dottedID OpenParenthesis arguments CloseParenthesis'''
     returnTo = p[1]
     returnTo = handleScopeReturnedVars(returnTo)
     dotted = p[2]
@@ -36,7 +36,7 @@ def handleScopeReturnedVars(liReturn):
 
 @grammar
 def runFunc(p: YaccProduction):
-    '''line : dottedID OpenParenthesis arguments CloseParenthesis'''
+    '''ligne : dottedID OpenParenthesis arguments CloseParenthesis'''
     dotted = p[1]
     module, funName = getModuleAndFunName(dotted)
     callArgs = p[3]

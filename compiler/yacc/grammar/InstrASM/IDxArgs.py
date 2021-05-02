@@ -7,7 +7,7 @@ from ...classes import AsmInst, Variable, KeyWord
 
 @grammar
 def setResult(p: YaccProduction):
-    '''line : set ID instrArgs EndLine'''
+    '''ligne : set ID instrArgs EndLine'''
     args = p[3]
     nbArgs = 1
     if len(args) != nbArgs:
@@ -18,20 +18,20 @@ def setResult(p: YaccProduction):
 
 @grammar
 def set_tooMuchArgs(p: YaccProduction):
-    '''line : set ID instrArgs error'''
+    '''ligne : set ID instrArgs error'''
     raise err.maybeNotEnoughtArgs(p, nbArgsReq=1)
 
 
 @grammar
 def set_mustBeID(p: YaccProduction):
-    '''line : set error'''
+    '''ligne : set error'''
     raise err.mustBeVar(p, 2)
 
 
 # read result cell1 index
 @grammar
 def readResult(p: YaccProduction):
-    '''line : read ID instrArgs EndLine'''
+    '''ligne : read ID instrArgs EndLine'''
     args = p[3]
     nbArgs = 2
     if len(args) != nbArgs:
@@ -42,20 +42,20 @@ def readResult(p: YaccProduction):
 
 @grammar
 def read_tooMuchArgs(p: YaccProduction):
-    '''line : read ID instrArgs error'''
+    '''ligne : read ID instrArgs error'''
     raise err.maybeNotEnoughtArgs(p, nbArgsReq=1)
 
 
 @grammar
 def read_mustBeID(p: YaccProduction):
-    '''line : read error'''
+    '''ligne : read error'''
     raise err.mustBeVar(p, 2)
 
 
 # sensor result block1 @copper
 @grammar
 def sensorResult(p: YaccProduction):
-    '''line : sensor ID instrArgs EndLine'''
+    '''ligne : sensor ID instrArgs EndLine'''
     args = p[3]
     nbArgs = 2
     if len(args) != nbArgs:
@@ -66,20 +66,20 @@ def sensorResult(p: YaccProduction):
 
 @grammar
 def sensor_tooMuchArgs(p: YaccProduction):
-    '''line : sensor ID instrArgs error'''
+    '''ligne : sensor ID instrArgs error'''
     raise err.maybeNotEnoughtArgs(p, nbArgsReq=1)
 
 
 @grammar
 def sensor_mustBeID(p: YaccProduction):
-    '''line : sensor error'''
+    '''ligne : sensor error'''
     raise err.mustBeVar(p, 2)
 
 
 # getlink result linkId
 @grammar
 def getlinkResult(p: YaccProduction):
-    '''line : getlink ID instrArgs EndLine'''
+    '''ligne : getlink ID instrArgs EndLine'''
     args = p[3]
     nbArgs = 1
     if len(args) != nbArgs:
@@ -90,11 +90,11 @@ def getlinkResult(p: YaccProduction):
 
 @grammar
 def getlink_tooMuchArgs(p: YaccProduction):
-    '''line : getlink ID instrArgs error'''
+    '''ligne : getlink ID instrArgs error'''
     raise err.maybeNotEnoughtArgs(p, nbArgsReq=1)
 
 
 @grammar
 def getlink_mustBeID(p: YaccProduction):
-    '''line : getlink error'''
+    '''ligne : getlink error'''
     raise err.mustBeVar(p, 2)

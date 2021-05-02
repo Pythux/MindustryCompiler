@@ -5,7 +5,7 @@ from ._start import grammar, YaccProduction
 # trac AsmLineNumber to #ref it
 @grammar
 def lines_one(p: YaccProduction):
-    '''lines : line'''
+    '''lines : ligne'''
     line = p[1]
     if line is None:
         p[0] = []
@@ -21,8 +21,8 @@ def lines_lines(p: YaccProduction):
 
 # no p[0] =, we don't bubble it, just dircarded
 @grammar
-def lines_empty(p: YaccProduction):
-    '''line : noLine'''
+def ligne_empty(p: YaccProduction):
+    '''ligne : noLine'''
 
 
 # discard empty lines

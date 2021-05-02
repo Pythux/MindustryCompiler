@@ -7,7 +7,7 @@ from ...classes import AsmInst, KeyWord
 
 @grammar
 def endResult(p: YaccProduction):
-    '''line : end instrArgs EndLine'''
+    '''ligne : end instrArgs EndLine'''
     args = p[2]
     nbArgs = 0
     if len(args) != nbArgs:
@@ -18,13 +18,13 @@ def endResult(p: YaccProduction):
 
 @grammar
 def end_errorTooMuch(p: YaccProduction):
-    '''line : end instrArgs error'''
+    '''ligne : end instrArgs error'''
     raise err.maybeNotEnoughtArgs(p, nbArgsReq=0)
 
 
 @grammar
 def instrOneArgResult(p: YaccProduction):
-    '''line : instrOneArg instrArgs EndLine'''
+    '''ligne : instrOneArg instrArgs EndLine'''
     args = p[2]
     nbArgs = 1
     if len(args) != nbArgs:
@@ -35,7 +35,7 @@ def instrOneArgResult(p: YaccProduction):
 
 @grammar
 def instrOneArg_MaybeArgsNotEnought(p: YaccProduction):
-    '''line : instrOneArg instrArgs error'''
+    '''ligne : instrOneArg instrArgs error'''
     raise err.maybeNotEnoughtArgs(p, nbArgsReq=1, line=p[1].lineno)
 
 
@@ -52,7 +52,7 @@ def instrOneArg(p: YaccProduction):
 
 @grammar
 def writeResult(p: YaccProduction):
-    '''line : write instrArgs EndLine'''
+    '''ligne : write instrArgs EndLine'''
     args = p[2]
     nbArgs = 3
     if len(args) != nbArgs:
@@ -63,5 +63,5 @@ def writeResult(p: YaccProduction):
 
 @grammar
 def write_MaybeArgsNotEnought(p: YaccProduction):
-    '''line : write instrArgs error'''
+    '''ligne : write instrArgs error'''
     raise err.maybeNotEnoughtArgs(p, nbArgsReq=3)

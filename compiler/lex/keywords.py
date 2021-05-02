@@ -9,6 +9,7 @@ instr = [
     'set',
     'print',
     'printflush',
+    'draw',
     'drawflush',
     'ubind',
     'read',
@@ -17,6 +18,7 @@ instr = [
     'getlink',
     'radar',
     'uradar',
+    'jump',
 ]
 
 radarTarget = ['any', 'enemy', 'ally', 'player', 'attacker', 'flying', 'ground', 'boss']
@@ -65,15 +67,41 @@ op = [
 ]
 
 
+draw = [
+    'stroke',
+    'clear',
+    'color',
+    'line',
+    'rect',
+    'lineRect',
+    'image',
+    'poly',
+    'linePoly',
+    'triangle',
+]
+
+jump = [
+    'equal',
+    'notEqual',
+    'lessThan',
+    'lessThanEq',
+    'greaterThan',
+    'greaterThanEq',
+    'strictEqual',
+    'always',
+]
+
+
 subInstr = {
     'op': op,
     'radar': radarTarget + radarSort,
+    'draw': draw,
+    'jump': jump,
 }
 
 
 # the all reserved keyword list
 reserved = {
-    'jump': 'Jump',
     'if': 'If',
     'else': 'Else',
     'elif': 'ElseIf',
