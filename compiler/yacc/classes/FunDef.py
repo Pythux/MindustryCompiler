@@ -13,9 +13,17 @@ class ReturnStm:
     def __repr__(self) -> str:
         return '<ReturnStm {}>'.format(self.variables)
 
+    def replace(self, toReplace, toReplaceBy):
+        for index, el in enumerate(self.variables):
+            if isinstance(el, Variable) and el == toReplace:
+                self.variables[index] = toReplaceBy
+
     def applyToVariables(self, fun):
         for var in self.variables:
             fun(var)
+
+    def copy(self):
+        return self.__class__(list(map(lambda v: v.copy(), self.variables)))
 
     def __len__(self) -> int:
         return len(self.variables)

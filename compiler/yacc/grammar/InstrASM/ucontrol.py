@@ -37,14 +37,14 @@ def ucontrolKeyWord(p: YaccProduction):
                        | pathfind
                        | target
                        | targetp
-                       | itemdrop
-                       | itemtake
-                       | paydrop
-                       | paytake
+                       | itemDrop
+                       | itemTake
+                       | payDrop
+                       | payTake
                        | flag
                        | mine
                        | build
-                       | getblock
+                       | getBlock
                        | within
                        | boost
     '''

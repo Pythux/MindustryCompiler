@@ -33,35 +33,35 @@ if @unit == null  // no bot of that type
     end
 
 
-set coreX null
-set coreY null
+set baseX null
+set baseY null
 
 
-// where to take ressource from, appro or core
+// where to take ressource from, appro or base
 
 if appro != null
-    print "[green] appro not null, will replace core to take ressource from"
+    print "[green] appro not null, will replace base to take ressource from"
     msg.printAndWait(appro, message)
-    // appro position, default to core if null
-    sensor coreX appro @x
-    sensor coreY appro @y
-    set core appro
+    // appro position, default to base if null
+    sensor baseX appro @x
+    sensor baseY appro @y
+    set base appro
 
-// get core position
+// get base position
 #ref getCorePos
 // require to have a @unite
-if coreX == null
+if baseX == null
     msg.printAndWait("looking for core, this is done once", message)
-    ulocate building core false @copper coreX coreY coreFound core
-    if coreFound == false
+    ulocate building core false @copper baseX baseY baseFound base
+    if baseFound == false
         msg.printAndWait("[red] core not found, searching again", message)
-        msg.printAndWait(core, message)
-        msg.printAndWait(coreFound, message)
+        msg.printAndWait(base, message)
+        msg.printAndWait(baseFound, message)
         jump getCorePos
     print "[green] core found at "
-    print coreX
+    print baseX
     print " "
-    print coreY
+    print baseY
     msg.printAndWait("", message)
 
 
@@ -170,7 +170,7 @@ for ownedBot, botFactoLink in listBotRessourceLink
     if @unit == null // no more owned bots
         jump loop
 
-    botFactoLink, needToFreeBot = moveBotToFillFactoInNeed(botFactoLink, coreX, coreY, core, radiusApproche, message)
+    botFactoLink, needToFreeBot = moveBotToFillFactoInNeed(botFactoLink, baseX, baseY, base, radiusApproche, message)
     if needToFreeBot == true
         set botFactoLink 0
         jump freeSomeBots
@@ -194,15 +194,15 @@ set haveFreeBots true
 jump loop
 
 
-moveBotToFillFactoInNeed(botFactoLink, coreX, coreY, core, radiusApproche, message)
+moveBotToFillFactoInNeed(botFactoLink, baseX, baseY, base, radiusApproche, message)
     getlink facto botFactoLink
     sensor payload @unit @totalItems
     if payload > 0
         sensor transportedRessource @unit @firstItem
 
         if facto == null // end link list
-            ucontrol approach coreX coreY radiusApproche null null
-            ucontrol itemDrop core 800 null null null
+            ucontrol approach baseX baseY radiusApproche null null
+            ucontrol itemDrop base 800 null null null
             set botFactoLink 0
         else
             sensor factoType facto @type
@@ -226,10 +226,10 @@ moveBotToFillFactoInNeed(botFactoLink, coreX, coreY, core, radiusApproche, messa
             jump searchingRessource
         ressourceNeeded = getNeededRessource(facto, message)
         if ressourceNeeded != false
-            ucontrol approach coreX coreY radiusApproche null null
-            sensor coreStored core ressourceNeeded
+            ucontrol approach baseX baseY radiusApproche null null
+            sensor coreStored base ressourceNeeded
             if coreStored > 40 // take it
-                ucontrol itemTake core ressourceNeeded 800 null null
+                ucontrol itemTake base ressourceNeeded 800 null null
             else
                 print "[yellow] not enouth of "
                 print ressourceNeeded
