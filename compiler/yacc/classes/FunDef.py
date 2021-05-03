@@ -3,6 +3,7 @@ from compiler import CompilationException
 from .AsmInst import AsmInst
 from .ValVarKey import Value, Variable
 from .RefAndJump import Ref, Jump
+from boa import boa
 
 
 class ReturnStm:
@@ -11,6 +12,10 @@ class ReturnStm:
 
     def __repr__(self) -> str:
         return '<ReturnStm {}>'.format(self.variables)
+
+    def applyToVariables(self, fun):
+        for var in self.variables:
+            fun(var)
 
     def __len__(self) -> int:
         return len(self.variables)
@@ -21,9 +26,9 @@ class ReturnStm:
 
 class FunDef:
     def __init__(self, context, name, args, content) -> None:
-        self.context = context
+        self.context = boa(context)
         self.name = name
-        self.args = args
+        self.args = boa(args)
         self.content = content
 
         self.ids = {}
@@ -32,8 +37,9 @@ class FunDef:
         self.returnRef = None
         self.refDefinition = None
         self.defined = False
-        self.processReturns()
         self.scopeVarRef()
+        self.processReturns()
+        breakpoint()
 
     # return line to lines
     def processReturns(self):
@@ -56,18 +62,27 @@ class FunDef:
 
     # scope fun args / content
     def scopeVarRef(self):
+        for arg in self.args:
+            self.scopeId(arg)
         for line in self.content:
             line.applyToVariables(self.scopeId)
             if isinstance(line, Ref) or isinstance(line, Jump):
                 line.applyToRef(self.scopeRef)
 
+    # change var for scoping
     def scopeId(self, identifier: Variable):
         if identifier not in self.ids:
-            self.ids[identifier] = self.genId()
-        return self.ids[identifier]
+            self.ids[identifier.copy()] = self.genId()
+        identifier.variable = self.ids[identifier].variable
+
+    def scopeRef(self, ref):
+        if ref not in self.refs:
+            self.refs[ref.copy()] = self.context.genRef().id
+        ref.id = self.refs[ref]
 
     def genId(self):
         self.context.idInc += 1
+        breakpoint()
         newId = Variable('tmp{}'.format(self.context.idInc))
         if newId not in self.context.existingVars:
             return newId
@@ -84,11 +99,6 @@ class FunDef:
             self.context.existingVars.add(newId)
             return newId
         return self.getReturnAddr(moduleName, idInc+1)
-
-    def scopeRef(self, ref):
-        if ref not in self.refs:
-            self.refs[ref] = self.context.genRef().id
-        return self.refs[ref]
 
     # change ref/var name for scope
     def generateDefinition(self, moduleName):

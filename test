@@ -1,6 +1,7 @@
 // function definition
 plusOne(a)
-    op add a a 1
+    set c 2
+    op add a a c
     return a
 
 

@@ -1,6 +1,6 @@
 
 from compiler import CompilationException
-from .ValVarKey import Value
+from .ValVarKey import Value, Variable
 
 
 class Ref:
@@ -89,7 +89,8 @@ class Comparison:
 
     def applyToVariables(self, fun):
         for el in self.ab:
-            fun(el)
+            if isinstance(el, Variable):
+                fun(el)
 
     def copy(self):
         return self.__class__(self.ab[0].copy(), self.comp, self.ab[1].copy())
