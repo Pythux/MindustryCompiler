@@ -131,6 +131,7 @@ def redoToken(t):
 
 def handleIndent(t: LexToken):
     nb = len(t.value[1:])
+
     if nb / endLineContext.indentNb != nb // endLineContext.indentNb:
         raise CompilationException('line {}, indentation incorrect to previous lines in file'.format(t.lineno))
     indentLvl = len(t.value[1:]) // endLineContext.indentNb

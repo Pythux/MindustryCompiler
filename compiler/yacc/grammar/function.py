@@ -39,7 +39,9 @@ def runFunc(p: YaccProduction):
 def defFun(p: YaccProduction):
     '''noLine : dottedID OpenParenthesis arguments CloseParenthesis OpenCurlyBracket funDefContext lines CloseCurlyBracket''' # noqa
     if len(p[1]) != 1:
-        raise CompilationException("function definition incorrect: {} is not accepted".format(p[1]))
+        raise CompilationException(
+            "line {}, function definition incorrect: {} is not accepted"
+            .format(p.lineno(2), p[1]))
     name = p[1][0]
     args = p[3]
     content = p[7]

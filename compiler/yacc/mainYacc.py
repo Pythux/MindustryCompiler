@@ -47,6 +47,7 @@ def runYacc(content: str, debug=False, clearContext=False):
     checkExistingVars(content)  # only on main file
     lines = yaccParse(content, debug=debug)
 
+    lexClearContext()  # to dissociate indentation from file to imported files
     runImports()
     # back to main file:
     if lines is None or len(lines) == 0:
