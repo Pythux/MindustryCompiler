@@ -1,6 +1,8 @@
 
 // this code fill all linked bot factory (and overdrive-projector/dome), with bots
 
+// medium processor required (480 instr/s)
+
 // ressource will be picked from core of "appro" if specified, default to container1
 
 // can change who take it (here @flare)
