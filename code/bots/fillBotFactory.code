@@ -417,7 +417,7 @@ isGoodRessource(transportedRessource, facto)
     elif factoType == @overdrive-dome
         for ressource in [@phase-fabric, @silicon]
             if transportedRessource == ressource
-                sensor currentCapacity facto ressource
+                sensor currentCapacity flag ressource
                 if currentCapacity < 3
                     return true
     return false
