@@ -51,6 +51,10 @@ class FunCall:
             if isinstance(arg, Variable) and arg == toReplace:
                 self.returnTo[index] = toReplaceBy
 
+    def applyToVariables(self, fun):
+        for arg in self.callArgs + self.returnTo:
+            fun(arg)
+
     def __str__(self) -> str:
         return "<FunCall {}.{}>".format(self.module, self.name)
 

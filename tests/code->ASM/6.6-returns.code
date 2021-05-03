@@ -36,12 +36,12 @@ jump 17 always true true
 set @counter returnAddress-None-yo
 print tmp4
 printflush tmp5
-set tmp7 2
+set tmp6 2
 op add returnAddress-time-wait @counter 1
 jump 24 always true true
 set @counter returnAddress-msg-printAndWait
-set tmp6 @time
-op mul tmp7 tmp7 1000
-op add tmp8 tmp6 tmp7
+set tmp7 @time
+op mul tmp6 tmp6 1000
+op add tmp8 tmp7 tmp6
 jump 27 greaterThanEq tmp8 @time
 set @counter returnAddress-time-wait

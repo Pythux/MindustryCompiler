@@ -11,6 +11,7 @@ class Context:
         self.existingVars = set()
         self.idInc = 0
         self.staticVarsList = {}
+        self.inFunDefinition = False
 
     def clear(self):
         self.refDict = {}
@@ -18,6 +19,7 @@ class Context:
         self.existingVars = set()
         self.idInc = 0
         self.staticVarsList = {}
+        self.inFunDefinition = False
 
     def addRef(self, ref, index):
         if ref.id in self.refDict:

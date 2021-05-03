@@ -37,37 +37,29 @@ def runFunc(p: YaccProduction):
 
 @grammar
 def defFun(p: YaccProduction):
-    '''noLine : dottedID OpenParenthesis arguments CloseParenthesis OpenCurlyBracket funContent CloseCurlyBracket''' # noqa
+    '''noLine : dottedID OpenParenthesis arguments CloseParenthesis OpenCurlyBracket funDefContext lines CloseCurlyBracket''' # noqa
     if len(p[1]) != 1:
         raise CompilationException("function definition incorrect: {} is not accepted".format(p[1]))
     name = p[1][0]
     args = p[3]
-    content = p[6]
+    content = p[7]
     fundef = FunDef(context, name, args, content)
     importsHandling.imports.addFunToModule(fundef)
+    context.inFunDefinition = False
 
 
 @grammar
-def funContent(p: YaccProduction):
-    '''funContent : '''
-    p[0] = []
-
-
-@grammar
-def funContentLines(p: YaccProduction):
-    '''funContent : funContent lines'''
-    p[0] = p[1] + p[2]
-
-
-@grammar
-def funContentReturnStm(p: YaccProduction):
-    '''funContent : funContent returnStatement'''
-    p[0] = p[1] + [p[2]]
+def funDefContext(p: YaccProduction):
+    '''funDefContext : '''
+    context.inFunDefinition = True
 
 
 @grammar
 def handleReturn(p: YaccProduction):
-    '''returnStatement : Return arguments'''
+    '''ligne : Return arguments'''
+    if not context.inFunDefinition:
+        raise CompilationException(
+            "line {}, return statement must be in function definition".format(p.lineno(1)))
     p[0] = ReturnStm(p[2])
 
 

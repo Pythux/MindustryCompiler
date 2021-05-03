@@ -70,9 +70,12 @@ class FunDef:
 
     # change var for scoping
     def scopeId(self, identifier: Variable):
+        if not isinstance(identifier, Variable):
+            return
         if identifier not in self.ids:
             self.ids[identifier.copy()] = self.context.genId()
         identifier.variable = self.ids[identifier].variable
+
 
     def scopeRef(self, ref):
         if ref not in self.refs:
