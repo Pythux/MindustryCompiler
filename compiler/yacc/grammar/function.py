@@ -1,10 +1,9 @@
 
 from compiler import CompilationException
-from compiler.yacc.classes import Jump, FunCall
 from ._start import grammar, YaccProduction, context
 
 from .. import importsHandling
-from ..classes import AsmInst
+from ..classes import AsmInst, Jump, FunDef, ReturnStm, FunCall
 
 
 def getModuleAndFunName(dotted):
@@ -38,13 +37,14 @@ def runFunc(p: YaccProduction):
 
 @grammar
 def defFun(p: YaccProduction):
-    '''noLine : dottedID OpenParenthesis arguments CloseParenthesis OpenCurlyBracket lines CloseCurlyBracket''' # noqa
+    '''noLine : dottedID OpenParenthesis arguments CloseParenthesis OpenCurlyBracket funContent CloseCurlyBracket''' # noqa
     if len(p[1]) != 1:
         raise CompilationException("function definition incorrect: {} is not accepted".format(p[1]))
-    funName = p[1][0]
+    name = p[1][0]
     args = p[3]
     content = p[6]
-    importsHandling.imports.addFunToModule(context.getDefinedFunction())
+    fundef = FunDef(context, name, args, content)
+    importsHandling.imports.addFunToModule(fundef)
 
 
 @grammar
@@ -68,26 +68,7 @@ def funContent(p: YaccProduction):
 @grammar
 def handleReturn(p: YaccProduction):
     '''returnStatement : Return arguments'''
-    p[p] = p[2]
-    return
-    if not context.fun.inFunScope:
-        raise CompilationException("return keyword only indide function definition, line {}".format(p.lineno(1)))
-    p[0] = funReturn(p[2])
-
-
-def funReturn(args):
-    if context.fun.returns is None:
-        # no return meet before
-        context.fun.returns = [context.fun.genId() for _ in range(len(args))]
-
-    # exact same return quantity
-    if len(args) != len(context.fun.returns):
-        raise CompilationException("function {} must return {} as many values for all it's return"
-                                   .format(context.fun.name, len(context.fun.returns)))
-
-    lines = setters(context.fun.returns, args)
-    lines.append(Jump('return', context.fun.returnRef))
-    return lines
+    p[p] = ReturnStm(p[2])
 
 
 # set {liSet} {liVal}

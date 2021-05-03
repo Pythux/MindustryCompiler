@@ -1,19 +1,61 @@
+
 from compiler import CompilationException
 from ..classes import AsmInst, Variable, Value
+from .RefAndJump import Jump
 
 
-class Fun:
-    def __init__(self, context) -> None:
-        self.name = None
+class ReturnStm:
+    def __init__(self, variables) -> None:
+        self.variables = variables
+
+    def __repr__(self) -> str:
+        return '<ReturnStm {}>'.format(self.variables)
+
+    def __len__(self) -> int:
+        return len(self.variables)
+
+    def __iter__(self):
+        return iter(self.variables)
+
+
+class FunDef:
+    def __init__(self, context, name, args, content) -> None:
+        self.context = context
+        self.name = name
+        self.args = args
+        self.content = content
+
         self.ids = {}
-        self.args = []
         self.refs = {}
         self.returns = None
         self.returnRef = None
-        self.content = []
-        self.context = context
         self.refDefinition = None
         self.defined = False
+        self.processReturns()
+        self.scopeVarRef()
+
+    # return line to lines
+    def processReturns(self):
+        newContent = []
+        for line in self.content:
+            if isinstance(line, ReturnStm):
+                newContent += self.genReturnLines(line)
+            else:
+                newContent.append(line)
+        self.content = newContent
+
+    def genReturnLines(self, returnStm: ReturnStm):
+        if self.returns is None:  # no return meet before, generates liste of vars to return
+            self.returns = [self.genId() for _ in range(len(returnStm))]
+            self.returnRef = self.context.genRef()
+
+        lines = setters(self.returns, returnStm)
+        lines.append(Jump('return', self.returnRef))
+        return lines
+
+    # scope fun args / content
+    def scopeVarRef(self):
+        pass
 
     def scopeId(self, identifier: Variable):
         if identifier not in self.ids:
@@ -61,3 +103,8 @@ class Fun:
         # jump to funCall
         lines.append(AsmInst('set', [Value('@counter'), self.returnAddress]))
         return lines
+
+
+# set {liSet} {liVal}
+def setters(liSet, liVar):
+    return [AsmInst('set', [s, v]) for s, v in zip(liSet, liVar)]
