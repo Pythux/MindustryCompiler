@@ -58,7 +58,6 @@ def wheel():
 
 
 def moveBeforeBuild():
-    breakpoint()
     for mvFrom, mvTo in context.get('moveAtBuild', []):
         shutil.move(mvFrom, mvTo)
 
