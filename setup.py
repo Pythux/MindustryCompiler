@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 from importlib import import_module
-from helper_setup import read_readme, activate_cmd_build, activate_cmd_publish
+from helper_setup import read_readme, activate_cmd_build, activate_cmd_publish, moveAtBuild
 
 
 #################################################################
@@ -26,6 +26,7 @@ entry_points = {
 
 #################################################################
 
+moveAtBuild([('./code', './compiler/code')])
 activate_cmd_build()  # can do: python setup.py build
 activate_cmd_publish()  # can do: python setup.py publish
 __init__ = import_module(find_packages()[0])
@@ -39,6 +40,7 @@ setup(
     long_description_content_type="text/markdown",
     url=url,
     packages=find_packages(),
+    package_data={find_packages()[0]: ['code/*', 'code/**/*', 'code/**/**/*']},
     classifiers=classifiers,
     install_requires=install_requires,  # external packages as dependencies,
     python_requires='>=3.6',
