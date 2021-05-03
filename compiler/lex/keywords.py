@@ -167,6 +167,6 @@ reserved = {
     **{w: w for w in instr},
 }
 
-for instr in subInstr:
-    for sub in subInstr[instr]:
+for ist in subInstr:
+    for sub in subInstr[ist]:
         reserved[sub] = sub
