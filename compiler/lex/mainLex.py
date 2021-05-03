@@ -85,13 +85,9 @@ tokens += ['OpenCurlyBracket', 'CloseCurlyBracket']
 # count indentation, indent could be spaces or tabs
 def t_EndLine(t: LexToken):
     r'\n[ ]*\t*'
-    if endLineContext.inOpenBracket:
-        t.lexer.lineno += 1
+    t.lexer.lineno += 1  # inc line number to track lines
+    if endLineContext.inOpenBracket or isEmptyEndLine(t):
         return
-    if isEmptyEndLine(t):
-        t.lexer.lineno += 1  # inc line number to track lines
-        return
-
     if endLineContext.addCloseBracket > 0:
         return closeBracket(t)
 
@@ -100,7 +96,6 @@ def t_EndLine(t: LexToken):
             endLineContext.indentNb = len(t.value[1:])
 
     if endLineContext.indentNb is None:
-        t.lexer.lineno += 1  # inc line number to track lines
         return t
 
     tok = handleIndent(t)
@@ -130,6 +125,7 @@ def closeBracket(t):
 
 # rerun the same to create more than one token
 def redoToken(t):
+    t.lexer.lineno -= 1
     t.lexer.lexpos -= len(t.value)
 
 
@@ -146,7 +142,6 @@ def handleIndent(t: LexToken):
         return indentDown(t, indentLvl)
 
     endLineContext.previousIndentationLvl = indentLvl
-    t.lexer.lineno += 1  # inc line number to track lines
     return t
 
 
@@ -155,7 +150,6 @@ def indentUp(t: LexToken, indentLvl):
         raise CompilationException('too much indentation line {}'.format(t.lineno))
     t.type = 'OpenCurlyBracket'
     endLineContext.previousIndentationLvl = indentLvl
-    t.lexer.lineno += 1  # inc line number to track lines
     return t
 
 
