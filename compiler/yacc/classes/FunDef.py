@@ -39,7 +39,6 @@ class FunDef:
         self.defined = False
         self.scopeVarRef()
         self.processReturns()
-        breakpoint()
 
     # return line to lines
     def processReturns(self):
@@ -53,7 +52,7 @@ class FunDef:
 
     def genReturnLines(self, returnStm: ReturnStm):
         if self.returns is None:  # no return meet before, generates liste of vars to return
-            self.returns = [self.genId() for _ in range(len(returnStm))]
+            self.returns = [self.context.genId() for _ in range(len(returnStm))]
             self.returnRef = self.context.genRef()
 
         lines = setters(self.returns, returnStm)
@@ -72,21 +71,13 @@ class FunDef:
     # change var for scoping
     def scopeId(self, identifier: Variable):
         if identifier not in self.ids:
-            self.ids[identifier.copy()] = self.genId()
+            self.ids[identifier.copy()] = self.context.genId()
         identifier.variable = self.ids[identifier].variable
 
     def scopeRef(self, ref):
         if ref not in self.refs:
             self.refs[ref.copy()] = self.context.genRef().id
         ref.id = self.refs[ref]
-
-    def genId(self):
-        self.context.idInc += 1
-        breakpoint()
-        newId = Variable('tmp{}'.format(self.context.idInc))
-        if newId not in self.context.existingVars:
-            return newId
-        return self.genId()
 
     def getReturnAddr(self, moduleName, idInc=None) -> Variable:
         if idInc is None:

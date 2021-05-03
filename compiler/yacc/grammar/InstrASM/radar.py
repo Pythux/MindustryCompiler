@@ -10,15 +10,15 @@ from compiler.lex import keywords
 # radar enemy any flying distance turret1 sortOrder result
 @grammar
 def radarResult(p: YaccProduction):
-    '''ligne : radar radarTarget radarTarget radarTarget radarSort info info ID EndLine
-             | uradar radarTarget radarTarget radarTarget radarSort info info ID EndLine'''
+    '''ligne : radar radarTarget radarTarget radarTarget radarSort info info variable EndLine
+             | uradar radarTarget radarTarget radarTarget radarSort info info variable EndLine'''
     p[0] = AsmInst(KeyWord(p[1]), p[2:len(p)-1])
 
 
 @grammar
 def radarTooManyArgs(p: YaccProduction):
-    '''ligne : radar radarTarget radarTarget radarTarget radarSort info info ID error
-             | uradar radarTarget radarTarget radarTarget radarSort info info ID error'''
+    '''ligne : radar radarTarget radarTarget radarTarget radarSort info info variable error
+             | uradar radarTarget radarTarget radarTarget radarSort info info variable error'''
     raise CompilationException(err.getStartMsg(p) + "too many arguments")
 
 

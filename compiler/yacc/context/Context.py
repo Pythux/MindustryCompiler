@@ -1,6 +1,6 @@
 
 from compiler import CompilationException
-from ..classes import Ref
+from ..classes import Ref, Variable
 
 
 class Context:
@@ -27,3 +27,10 @@ class Context:
     def genRef(self):
         self.refCount += 1
         return Ref(self.refCount)
+
+    def genId(self):
+        self.idInc += 1
+        newId = Variable('tmp{}'.format(self.idInc))
+        if newId not in self.existingVars:
+            return newId
+        return self.genId()

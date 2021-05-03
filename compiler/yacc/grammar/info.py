@@ -19,3 +19,9 @@ def info(p: YaccProduction):
             | False
     '''
     p[0] = Value(p[1])
+
+
+@grammar
+def variable(p: YaccProduction):
+    '''variable : ID'''
+    p[0] = Variable(p[1])

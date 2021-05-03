@@ -1,10 +1,12 @@
 // function definition
-plusOne(a)
-    set c 2
-    op add a a c
-    return a
+plusAndGetBot(a, b)
+    op add a a b
+    radar ally enemy boss distance 1 2 éÀîj
+    return a, éÀîj
 
 
 // function call
-b = plusOne(4)
-print b
+set a 1
+nb, bot = plusAndGetBot(4, a)
+print nb
+print bot

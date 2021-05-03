@@ -1,7 +1,7 @@
 // function definition
 plusAndGetBot(a, b)
     op add a a b
-    radar ally enemy boss distance empty 1 éÀîj
+    radar ally enemy boss distance 1 2 éÀîj
     return a, éÀîj
 
 
@@ -29,5 +29,23 @@ op add tmp1 tmp1 tmp2
 radar ally enemy boss distance empty 1 tmp3
 set tmp4 tmp1
 set tmp5 tmp3
+jump 15 always true true
+set @counter returnAddress-None-plusAndGetBot
+
+
+set a 1
+set tmp1 4
+set tmp2 a
+op add returnAddress-None-plusAndGetBot @counter 1
+jump 10 always true true
+set nb tmp5
+set bot tmp6
+print nb
+print bot
+end
+op add tmp1 tmp1 tmp2
+radar ally enemy boss distance tmp3 1 éÀîj
+set tmp5 tmp1
+set tmp6 tmp4
 jump 15 always true true
 set @counter returnAddress-None-plusAndGetBot
