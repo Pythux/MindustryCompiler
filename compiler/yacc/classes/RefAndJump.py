@@ -1,6 +1,6 @@
 
 from compiler import CompilationException
-from .AsmInst import Value
+from .ValVarKey import Value
 
 
 class Ref:

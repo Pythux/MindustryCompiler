@@ -1,7 +1,8 @@
 
 from compiler import CompilationException
 from ..importsHandling import imports
-from .AsmInst import AsmInst, Value, Variable
+from .AsmInst import AsmInst
+from .ValVarKey import Value, Variable
 from .RefAndJump import Jump
 
 

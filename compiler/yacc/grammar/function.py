@@ -49,17 +49,26 @@ def defFun(p: YaccProduction):
 
 @grammar
 def funContent(p: YaccProduction):
-    '''funContent : ligne
-                  | lignes
-                  | returnStatement
-                  | ligne returnStatement'''
-    breakpoint()
+    '''funContent : '''
+    p[0] = []
+
+
+@grammar
+def funContentLines(p: YaccProduction):
+    '''funContent : funContent lines'''
+    p[0] = p[1] + p[2]
+
+
+@grammar
+def funContentReturnStm(p: YaccProduction):
+    '''funContent : funContent returnStatement'''
+    p[0] = p[1] + [p[2]]
 
 
 @grammar
 def handleReturn(p: YaccProduction):
     '''returnStatement : Return arguments'''
-    p[p] = ReturnStm(p[2])
+    p[0] = ReturnStm(p[2])
 
 
 # set {liSet} {liVal}
