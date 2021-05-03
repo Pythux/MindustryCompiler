@@ -1,7 +1,6 @@
 
 from compiler import CompilationException
 from ..classes import Ref
-from .Function import Fun
 
 
 class Context:
@@ -9,8 +8,6 @@ class Context:
         # will be used to store: ref -> code line
         self.refDict = {}
         self.refCount = 0
-        self.fun = Fun(self)
-        self.funs = {}
         self.existingVars = set()
         self.idInc = 0
         self.staticVarsList = {}
@@ -18,16 +15,9 @@ class Context:
     def clear(self):
         self.refDict = {}
         self.refCount = 0
-        self.fun = Fun(self)
-        self.funs = {}
         self.existingVars = set()
         self.idInc = 0
         self.staticVarsList = {}
-
-    def getDefinedFunction(self):
-        fun = self.fun
-        self.fun = Fun(self)  # clean context fun scope
-        return fun
 
     def addRef(self, ref, index):
         if ref.id in self.refDict:

@@ -9,9 +9,6 @@ from ..classes import Jump, Ref, AsmInst, Value, Comparison, KeyWord
 def ref(p: YaccProduction):
     '''ligne : RefJump EndLine'''
     ref = p[1]
-    if context.fun.inFunScope:
-        ref = context.fun.scopeRef(ref)
-
     p[0] = Ref(ref)
 
 
@@ -20,8 +17,6 @@ def jump_asmCondition(p: YaccProduction):
     '''ligne : jump ID asmCondition EndLine'''
     # get for error message line of jump instruction
     ref = p[2]
-    if context.fun.inFunScope:
-        ref = context.fun.scopeRef(ref)
     jump = Jump(p.lineno(1), Ref(ref), p[3])
     p[0] = jump
 
@@ -36,8 +31,6 @@ def comparison(p: YaccProduction):
 def jump_always(p: YaccProduction):
     '''ligne : jump ID EndLine'''
     ref = p[2]
-    if context.fun.inFunScope:
-        ref = context.fun.scopeRef(ref)
     p[0] = Jump(p.lineno(1), Ref(ref))
 
 

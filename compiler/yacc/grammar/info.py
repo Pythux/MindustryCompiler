@@ -1,18 +1,13 @@
 
 
-from ._start import grammar, YaccProduction, context
+from ._start import grammar, YaccProduction
 from ..classes import Variable, Value
 
 
 @grammar
 def info_id(p: YaccProduction):
     '''info : ID'''
-    info = Variable(p[1])
-    if context.fun.inFunScope:
-        p[0] = context.fun.scopeId(info)
-        return
-
-    p[0] = info
+    p[0] = Variable(p[1])
 
 
 @grammar

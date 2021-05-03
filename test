@@ -1,0 +1,9 @@
+// function definition
+plusOne(a)
+    op add a a 1
+    return a
+
+
+// function call
+b = plusOne(4)
+print b

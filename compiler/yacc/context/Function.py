@@ -5,7 +5,6 @@ from ..classes import AsmInst, Variable, Value
 class Fun:
     def __init__(self, context) -> None:
         self.name = None
-        self.inFunScope = False
         self.ids = {}
         self.args = []
         self.refs = {}
@@ -52,7 +51,10 @@ class Fun:
         self.defined = True
         self.refDefinition = self.context.genRef()
         self.returnAddress = self.getReturnAddr(moduleName)
-        lines = [self.refDefinition] + self.content
+        lines = [self.refDefinition]
+        for line in self.content:
+            line.applyToVariables(self.scopeId)
+            lines.append(line)
 
         if self.returnRef:
             lines.append(self.returnRef)
