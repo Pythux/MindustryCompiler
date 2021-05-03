@@ -3,7 +3,7 @@ from compiler import CompilationException
 from ._start import grammar, YaccProduction, context
 
 from .. import importsHandling
-from ..classes import AsmInst, Jump, FunDef, ReturnStm, FunCall
+from ..classes import AsmInst, FunDef, ReturnStm, FunCall
 
 
 def getModuleAndFunName(dotted):
@@ -54,15 +54,6 @@ def funContent(p: YaccProduction):
                   | returnStatement
                   | ligne returnStatement'''
     breakpoint()
-
-
-# # register function definition arguments
-# def addArguments(args):
-#     for arg in args:
-#         if arg in context.fun.args:
-#             raise CompilationException('Duplicate parameter "{}"'.format(arg))
-#         context.fun.args.append(arg)
-#         context.fun.scopeId(arg)
 
 
 @grammar

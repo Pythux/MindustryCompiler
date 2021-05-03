@@ -1,12 +1,9 @@
 
-
-from compiler import CompilationException
-from .ValVarKey import Value, Variable, KeyWord
+from .ValVarKey import Variable, KeyWord
 
 
 class AsmInst:
     def __init__(self, instruction: KeyWord, liValVar=None) -> None:
-        # validateAsmInstr(instruction, liValVar)
         self.instruction = instruction
         self.liValVar = liValVar if liValVar is not None else []
 
@@ -20,6 +17,11 @@ class AsmInst:
             if isinstance(el, Variable) and el == toReplace:
                 self.liValVar[index] = toReplaceBy
 
+    def applyToVariables(self, fun):
+        for el in self.liValVar:
+            if isinstance(el, Variable):
+                fun(el)
+
     def toStr(self):
         if not len(self.liValVar):
             return "{}".format(self.instruction)
@@ -32,72 +34,3 @@ class AsmInst:
 
     def __repr__(self) -> str:
         return '<AsmInstr {}>'.format(self.toStr())
-
-
-def draw(liValVar):
-    pass
-
-
-def radar(liValVar):
-    if len(liValVar) < 7:
-        raise CompilationException("instruction 'radar' must have 7 arguments, {} given".format(len(liValVar)))
-    valideRadarTarget = ['any', 'enemy', 'ally', 'player', 'attacker', 'flying', 'ground', 'boss']
-    for i in range(3):
-        if liValVar[i] not in valideRadarTarget:
-            raise CompilationException("at instruction 'radar', the {} argument is not on of: {}"
-                                       .format(i+1, valideRadarTarget))
-    valideSort = ['distance', 'health', 'shield', 'armor', 'maxHealth']
-    if liValVar[3] not in valideSort:
-        raise CompilationException("at instruction 'radar', the 4 arguments is not on of: {}".format(valideSort))
-
-
-def uradar(liValVar):
-    lenArgs = len(liValVar)
-    if lenArgs == 7:
-        radar(liValVar)
-    elif lenArgs == 6:
-        liValVar = liValVar[:4] + [Value('null')] + liValVar[4:]
-        radar(liValVar)
-    else:
-        raise CompilationException("uradar recev {} arguments, 6 required".format(lenArgs))
-
-
-def ucontrol(liValVar):
-    op, *args = liValVar
-
-
-def ulocate():
-    pass
-
-
-instr = {
-    # 'read': 3,
-    # 'write': 3,
-    # 'print': 1,
-    # 'printflush': 1,
-    # 'draw': draw,
-    # 'drawflush': 1,
-    # 'getlink': 2,
-    # 'sensor': 3,
-    # 'set': 2,
-    # 'op': operation,
-    # 'ubind': 1,
-    # 'radar': radar,
-    # 'uradar': uradar,
-    # 'control': 'control',
-    # 'ucontrol': ucontrol,
-    # 'end': 0,
-    # 'ulocate': ulocate,
-}
-
-
-def validateAsmInstr(instruction, liValVar):
-    if instruction not in instr:
-        raise CompilationException("instruction '{}' is not a valide mindustry instruction".format(instruction))
-    i = instr[instruction]
-    if isinstance(i, int):
-        if len(liValVar) != i:
-            raise CompilationException("not enought arguments for instruction '{}', {} given, required {}"
-                                       .format(instruction, len(liValVar), i))
-    else:
-        i(liValVar)

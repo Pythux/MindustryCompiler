@@ -1,7 +1,7 @@
 
 from compiler import CompilationException
 from ..classes import AsmInst, Variable, Value
-from .RefAndJump import Jump
+from .RefAndJump import Ref, Jump
 
 
 class ReturnStm:
@@ -55,7 +55,10 @@ class FunDef:
 
     # scope fun args / content
     def scopeVarRef(self):
-        pass
+        for line in self.content:
+            line.applyToVariables(self.scopeId)
+            if isinstance(line, Ref) or isinstance(line, Jump):
+                line.applyToRef(self.scopeRef)
 
     def scopeId(self, identifier: Variable):
         if identifier not in self.ids:
@@ -93,10 +96,7 @@ class FunDef:
         self.defined = True
         self.refDefinition = self.context.genRef()
         self.returnAddress = self.getReturnAddr(moduleName)
-        lines = [self.refDefinition]
-        for line in self.content:
-            line.applyToVariables(self.scopeId)
-            lines.append(line)
+        lines = [self.refDefinition] + self.content
 
         if self.returnRef:
             lines.append(self.returnRef)
