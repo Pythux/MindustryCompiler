@@ -5,8 +5,8 @@ import msg
 // return random number of the kind:
 // XXX
 genProcId()
-    op rand r 999 null
-    op floor r r null
+    op rand r 999
+    op floor r r
     #ref up
     if r < 100
         // make sur to be a 3 digit number
@@ -25,8 +25,8 @@ getFreeBot(botType, message)
     if @unit == null  // no bot of that botType
         return false
 
-    sensor flag @unit @flag
-    if flag == 0  // bot is free
+    sensor flagUnit @unit @flag
+    if flagUnit == 0  // bot is free
         print "[green] It's free real estate"
         printflush message
         return true

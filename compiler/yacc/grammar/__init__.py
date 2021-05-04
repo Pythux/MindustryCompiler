@@ -18,4 +18,4 @@ def importSubModules(package, recursive=False):
             importSubModules(full_name)
 
 
-importSubModules(__package__)
+importSubModules(__package__, recursive=True)

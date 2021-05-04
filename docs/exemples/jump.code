@@ -1,14 +1,9 @@
-
+#ref reset
 set x 1
-// it would be cool to jump to a specific point defined in the code
-jump SpecificPoint equal x 1
+#ref loop
+jump inc x < 4
+jump reset x == 4
 
-// some codes pass
+#ref inc
 op add x x 1
-
-// and here I want to jump to:
-#ref SpecificPoint
-print x
-printflush message1
-
-jump SpecificPoint x == 1
+jump loop

@@ -6,6 +6,7 @@
 import sys
 import os
 import shutil
+from pathlib import PurePath
 from setuptools import find_packages
 from importlib import import_module
 
@@ -18,6 +19,14 @@ def read(*paths):
 def read_readme():
     """will read the README.* file, it can be any extention"""
     return read(next(filter(lambda f: 'README.' in f, os.listdir('.'))))
+
+
+context = {}
+
+
+def moveAtBuild(liToMove):
+    context['moveAtBuild'] = \
+        [[PurePath(os.path.dirname(__file__), path) for path in tuple] for tuple in liToMove]
 
 
 def activate_cmd_publish():
@@ -43,7 +52,19 @@ def activate_cmd_build():
 def wheel():
     clean_dirs()
     check_installed_tools()
+    moveBeforeBuild()
     build_wheel()
+    moveAfterBuild()
+
+
+def moveBeforeBuild():
+    for mvFrom, mvTo in context.get('moveAtBuild', []):
+        shutil.move(mvFrom, mvTo)
+
+
+def moveAfterBuild():
+    for mvFrom, mvTo in context.get('moveAtBuild', []):
+        shutil.move(mvTo, mvFrom)
 
 
 def publish():

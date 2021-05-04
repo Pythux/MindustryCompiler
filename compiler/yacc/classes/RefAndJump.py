@@ -1,6 +1,6 @@
 
 from compiler import CompilationException
-from .AsmInst import Value
+from .ValVarKey import Value, Variable
 
 
 class Ref:
@@ -19,8 +19,14 @@ class Ref:
     def replace(self, toReplace, toReplaceBy):
         pass
 
+    def applyToVariables(self, fun):
+        pass
+
     def changeRef(self, newRef):
         self.id = newRef.id
+
+    def applyToRef(self, fun):
+        fun(self)
 
     def __eq__(self, o: object) -> bool:
         if isinstance(o, self.__class__):
@@ -55,8 +61,14 @@ class Jump:
     def replace(self, toReplace, toReplaceBy):
         self.asmCondition.replace(toReplace, toReplaceBy)
 
+    def applyToVariables(self, fun):
+        self.asmCondition.applyToVariables(fun)
+
     def changeRef(self, newRef):
         self.ref = newRef
+
+    def applyToRef(self, fun):
+        fun(self.ref)
 
     def copy(self):
         return self.__class__(self.line, self.ref.copy(), self.asmCondition.copy())
@@ -74,6 +86,11 @@ class Comparison:
         for index, el in enumerate(self.ab):
             if el == toReplace:
                 self.ab[index] = toReplaceBy
+
+    def applyToVariables(self, fun):
+        for el in self.ab:
+            if isinstance(el, Variable):
+                fun(el)
 
     def copy(self):
         return self.__class__(self.ab[0].copy(), self.comp, self.ab[1].copy())

@@ -12,8 +12,8 @@ from .generateYacc import generateYaccFunctions
 from . import grammar  # noqa
 
 from .context import context
-from .classes import Jump, Ref, FunCall, AsmInst, Variable
-
+from .classes import Jump, Ref, FunCall, AsmInst, Variable, KeyWord
+from ..lex import lexClearContext
 
 # generate module .p_functionYacc
 generateYaccFunctions()
@@ -26,22 +26,28 @@ from .p_functionYacc import parser  # noqa
 def yaccParse(content, debug=False):
     if not len(content):
         return ''
-    if content[-1] != '\n':
-        content += '\n'
     lines = parser.parse(content, debug=debug)
     return lines
+
+
+def yaccClearContext():
+    lexClearContext()
+    importsHandling.imports.clear()
+    context.clear()
 
 
 # run parser on content, which is main file or REPL
 def runYacc(content: str, debug=False, clearContext=False):
     # do it first in case of exception
     if clearContext:
-        importsHandling.imports.clear()
-        context.clear()
+        yaccClearContext()
 
+    if content[-1] != '\n':
+        content += '\n'
     checkExistingVars(content)  # only on main file
     lines = yaccParse(content, debug=debug)
 
+    lexClearContext()  # to dissociate indentation from file to imported files
     runImports()
     # back to main file:
     if lines is None or len(lines) == 0:
@@ -51,7 +57,7 @@ def runYacc(content: str, debug=False, clearContext=False):
 
     functionCalled = importsHandling.imports.getFunctionsDefinition()  # add after end prog, function used
     if len(functionCalled):
-        lines.append(AsmInst('end'))
+        lines.append(AsmInst(KeyWord('end')))
         lines += functionCalled
 
     while (lines.filter(lambda el: isinstance(el, FunCall))):
@@ -66,8 +72,7 @@ def runYacc(content: str, debug=False, clearContext=False):
     stringCode = '\n'.join(stringLi) + '\n'
 
     if clearContext:
-        importsHandling.imports.clear()
-        context.clear()
+        yaccClearContext()
     return stringCode
 
 
@@ -99,7 +104,7 @@ def fillFunCall(lines):
 # we only have at this moment str, Jump and Ref Objects in lines
 def consumeRefAndChangeJump(li: List[T]):
     if isinstance(li[-1], Ref):
-        li.append(AsmInst('end', []))  # finish with end statement to #ref on it
+        li.append(AsmInst(KeyWord('end')))  # finish with end statement to #ref on it
 
     li = consumeRef(li)  # build refDictionary
 

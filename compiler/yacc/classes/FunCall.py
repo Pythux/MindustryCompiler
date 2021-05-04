@@ -1,7 +1,8 @@
 
 from compiler import CompilationException
 from ..importsHandling import imports
-from .AsmInst import AsmInst, Value, Variable
+from .AsmInst import AsmInst
+from .ValVarKey import Value, Variable
 from .RefAndJump import Jump
 
 
@@ -30,7 +31,7 @@ class FunCall:
         if len(self.returnTo):
             if len(self.returnTo) != len(fun.returns):
                 raise CompilationException('function “{}” return exactly {} values, {} is receved line {}'
-                                .format(fun.name, len(fun.returns), len(self.returnTo), self.line))
+                                           .format(fun.name, len(fun.returns), len(self.returnTo), self.line))
             lines += setters(self.returnTo, fun.returns)
         return lines
 
@@ -49,6 +50,10 @@ class FunCall:
         for index, arg in enumerate(self.returnTo):
             if isinstance(arg, Variable) and arg == toReplace:
                 self.returnTo[index] = toReplaceBy
+
+    def applyToVariables(self, fun):
+        for arg in self.callArgs + self.returnTo:
+            fun(arg)
 
     def __str__(self) -> str:
         return "<FunCall {}.{}>".format(self.module, self.name)

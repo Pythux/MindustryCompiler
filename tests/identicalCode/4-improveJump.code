@@ -12,7 +12,7 @@ sensor out node1 @powerNetOut
 // get net power produced with:
 // net = in(power produced) - out(power consumed)
 op sub net in out
-op floor net net out // floor the "sometimes" floating number to be always humain readable
+op floor net net // floor the "sometimes" floating number to be always humain readable
 print "power: "
 print net
 printflush message1 // put all printed message ("power: " + net) in message1 (need a message box liked to processor to read it)

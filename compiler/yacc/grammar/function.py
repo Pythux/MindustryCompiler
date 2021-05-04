@@ -1,10 +1,9 @@
 
 from compiler import CompilationException
-from compiler.yacc.classes import Jump, FunCall
 from ._start import grammar, YaccProduction, context
 
 from .. import importsHandling
-from ..classes import AsmInst
+from ..classes import AsmInst, FunDef, ReturnStm, FunCall
 
 
 def getModuleAndFunName(dotted):
@@ -19,83 +18,51 @@ def getModuleAndFunName(dotted):
 
 @grammar
 def runFuncReturnArgs(p: YaccProduction):
-    '''line : affectation dottedID OpenParenthesis arguments CloseParenthesis'''
+    '''ligne : affectation dottedID OpenParenthesis arguments CloseParenthesis'''
     returnTo = p[1]
-    returnTo = handleScopeReturnedVars(returnTo)
     dotted = p[2]
     module, funName = getModuleAndFunName(dotted)
     callArgs = p[4]
-    p[0] = FunCall(module, funName, callArgs, p.lineno(1), returnTo)
-
-
-def handleScopeReturnedVars(liReturn):
-    if context.fun.inFunScope:
-        return [context.fun.scopeId(arg) for arg in liReturn]
-    return liReturn
+    p[0] = FunCall(module, funName, callArgs, p.lineno(3), returnTo)
 
 
 @grammar
 def runFunc(p: YaccProduction):
-    '''line : dottedID OpenParenthesis arguments CloseParenthesis'''
+    '''ligne : dottedID OpenParenthesis arguments CloseParenthesis'''
     dotted = p[1]
     module, funName = getModuleAndFunName(dotted)
     callArgs = p[3]
-    p[0] = FunCall(module, funName, callArgs, p.lineno(1))
+    p[0] = FunCall(module, funName, callArgs, p.lineno(2))
 
 
 @grammar
 def defFun(p: YaccProduction):
-    '''noLine : dottedID OpenParenthesis arguments CloseParenthesis OpenCurlyBracket funScope lines CloseCurlyBracket''' # noqa
+    '''noLine : dottedID OpenParenthesis arguments CloseParenthesis OpenCurlyBracket funDefContext lines CloseCurlyBracket''' # noqa
     if len(p[1]) != 1:
-        raise CompilationException("function definition incorrect: {} is not accepted".format(p[1]))
-    context.fun.name = p[1][0]
+        raise CompilationException(
+            "line {}, function definition incorrect: {} is not accepted"
+            .format(p.lineno(2), p[1]))
+    name = p[1][0]
     args = p[3]
-    addArguments(args)
     content = p[7]
-    context.fun.content = content
-    importsHandling.imports.addFunToModule(context.getDefinedFunction())
-
-
-# register function definition arguments
-def addArguments(args):
-    for arg in args:
-        if arg in context.fun.args:
-            raise CompilationException('Duplicate parameter "{}"'.format(arg))
-        context.fun.args.append(arg)
-        context.fun.scopeId(arg)
+    fundef = FunDef(context, name, args, content)
+    importsHandling.imports.addFunToModule(fundef)
+    context.inFunDefinition = False
 
 
 @grammar
-def funScope(p: YaccProduction):
-    '''funScope : '''
-    if context.fun.inFunScope:
-        raise CompilationException("function definition inside function is not handled line: {}".format(p.lineno(0)))
-    context.fun.inFunScope = True
-
-    context.fun.returnRef = context.genRef()
+def funDefContext(p: YaccProduction):
+    '''funDefContext : '''
+    context.inFunDefinition = True
 
 
 @grammar
 def handleReturn(p: YaccProduction):
-    '''lines : Return arguments'''
-    if not context.fun.inFunScope:
-        raise CompilationException("return keyword only indide function definition, line {}".format(p.lineno(1)))
-    p[0] = funReturn(p[2])
-
-
-def funReturn(args):
-    if context.fun.returns is None:
-        # no return meet before
-        context.fun.returns = [context.fun.genId() for _ in range(len(args))]
-
-    # exact same return quantity
-    if len(args) != len(context.fun.returns):
-        raise CompilationException("function {} must return {} as many values for all it's return"
-                                   .format(context.fun.name, len(context.fun.returns)))
-
-    lines = setters(context.fun.returns, args)
-    lines.append(Jump('return', context.fun.returnRef))
-    return lines
+    '''ligne : Return arguments'''
+    if not context.inFunDefinition:
+        raise CompilationException(
+            "line {}, return statement must be in function definition".format(p.lineno(1)))
+    p[0] = ReturnStm(p[2])
 
 
 # set {liSet} {liVal}
