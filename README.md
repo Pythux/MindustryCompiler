@@ -6,7 +6,9 @@ a langage that compile to mindustry asm code,
 What's mindustry asm ? Here is a nice starting guide with in game screenshots:
 [How To Use Procesors in 6.0](https://steamcommunity.com/sharedfiles/filedetails/?id=2268059244)
 
-The language created here is a superset of what I call mindustry asm code [named Mindustry Logic by it's creator](https://github.com/MindustryGame/wiki/blob/master/docs/logic/0-introduction.md)
+The language created here is a superset of mindustry code
+
+here's the [website](https://pythux.github.io/MindustryCompiler) to show features in actions and compile your code
 
 ## features
 
