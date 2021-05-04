@@ -39,8 +39,14 @@ def maybeNotEnoughtArgs(p, nbArgsReq, line=None):
     nbArgsGiven = len(instrArgs)
     if tokenErr.type in reserved:
         return reservedKeword(p, tokenErr, line=line)
-    assert tokenErr.type == 'EndLine'
-    return notEnoughtArgs(p, nbArgsReq, nbArgsGiven, line=line)
+    elif tokenErr.type == 'EndLine':
+        return notEnoughtArgs(p, nbArgsReq, nbArgsGiven, line=line)
+    elif tokenErr.type == 'OpenParenthesis':
+        return CompilationException(
+            getStartMsg(p, line) +
+            "is a reserved keyword, it can't be use to function name"
+        )
+    raise CompilationException(getStartMsg(p, line) + "error found")
 
 
 def reservedKeword(p, tokenErr, line=None):
