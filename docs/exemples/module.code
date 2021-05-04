@@ -1,8 +1,7 @@
 
-import msg
+import time
 
-set m message1
-
-msg.printAndWait("hey", m)
-msg.printAndWait("yo", m)
-msg.printAndWait("y good ?", m)
+// wait X sec
+time.wait(1)
+time.wait(1.5)
+time.wait(2)

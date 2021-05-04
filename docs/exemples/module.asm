@@ -1,25 +1,15 @@
-set m message1
-set tmp1 "hey"
-set tmp2 m
-op add returnAddress-msg-printAndWait @counter 1
-jump 14 always true true
-set tmp1 "yo"
-set tmp2 m
-op add returnAddress-msg-printAndWait @counter 1
-jump 14 always true true
-set tmp1 "y good ?"
-set tmp2 m
-op add returnAddress-msg-printAndWait @counter 1
-jump 14 always true true
-end
-print tmp1
-printflush tmp2
-set tmp3 2
+set tmp1 1
 op add returnAddress-time-wait @counter 1
-jump 20 always true true
-set @counter returnAddress-msg-printAndWait
-set tmp4 @time
-op mul tmp3 tmp3 1000
-op add tmp5 tmp4 tmp3
-jump 23 greaterThanEq tmp5 @time
+jump 10 always true true
+set tmp1 1.5
+op add returnAddress-time-wait @counter 1
+jump 10 always true true
+set tmp1 2
+op add returnAddress-time-wait @counter 1
+jump 10 always true true
+end
+set tmp2 @time
+op mul tmp1 tmp1 1000
+op add tmp3 tmp2 tmp1
+jump 13 greaterThanEq tmp3 @time
 set @counter returnAddress-time-wait
