@@ -1,7 +1,8 @@
 
 import msg
 
-set message message1
+set m message1
 
-msg.printAndWait("hey !", message)
-msg.printAndWait("do you read this ?", message)
+msg.printAndWait("hey", m)
+msg.printAndWait("yo", m)
+msg.printAndWait("y good ?", m)

@@ -1,37 +1,9 @@
-// a code to fix to a screen, a message box and a power node
-//
-// it will give a color depending of electicity net production
-
-sensor in node1 @powerNetIn
-sensor out node1 @powerNetOut
-
-// get net power produced with:
-op sub net in out
-op floor net net out // floor number to be always humain readable
-print "power: "
-print net
-printflush message1
-// put all printed message ("power: " + net) in message1
-// (need a message box liked to processor to see it)
-
-// color to corresponding power produced:
-
-if net >= 1200
-    // green color
-    draw clear 0 1000 0 0 0 0
-elif net >= 500
-    // yellow
-    draw clear 1000 1000 0 0 0 0
+set x 1
+#ref loop
+if x < 4
+    op add x x 1
+elif x == 4
+    print x
 else
-    // red
-    draw clear 1000 0 0 0 0 0
-
-// draw the choosen color on display1
-drawflush display1
-
-// wait a short time to avoid disturbing blink colors change
-
-set wait 0
-#ref waiting
-op add wait wait 1
-jump waiting wait <= 200
+    end
+jump loop
