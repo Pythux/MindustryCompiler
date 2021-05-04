@@ -139,7 +139,7 @@ instrControl = {
     'control shootp block1 0 0 0 0 6': "line 1, instruction 'control' require 5 arguments, 6 given",
 }
 instrUcontrol = {
-    'ucontrol': "line 1, instruction 'ucontrol', require keyword, must be on of: ['idle', 'stop', 'move', 'approach', 'pathfind', 'target', 'targetp', 'itemdrop', 'itemtake', 'paydrop', 'paytake', 'flag', 'mine', 'build', 'getblock', 'within', 'boost']",
+    'ucontrol': "line 1, instruction 'ucontrol', require keyword, must be on of: ['idle', 'stop', 'move', 'approach', 'pathfind', 'target', 'targetp', 'itemDrop', 'itemTake', 'payDrop', 'payTake', 'flag', 'mine', 'build', 'getBlock', 'within', 'boost']",
     'ucontrol 4': "line 1, instruction 'ucontrol', '4' is not a valide keyword, must be on of:",
     'ucontrol move 0 0 0 0 0 6': "line 1, instruction 'ucontrol' require 5 arguments, 6 given",
 }
