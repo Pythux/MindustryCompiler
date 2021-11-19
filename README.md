@@ -1,18 +1,18 @@
 
 # MindustryCompiler
 
-a langage that compile to mindustry asm code,
+a langage that compile to mindustry asm code know as mindustry-logic,
 
-What's mindustry asm ? Here is a nice starting guide with in game screenshots:
+What's mindustry-logic ? Here is a nice starting guide with in game screenshots:
 [How To Use Procesors in 6.0](https://steamcommunity.com/sharedfiles/filedetails/?id=2268059244)
 
-The language created here is a superset of mindustry code
+The language created here is a superset of mindustry-logic code
 
 here's the [website](https://pythux.github.io/MindustryCompiler) to show features in actions and compile your code
 
 ## features
 
-- all mindustry asm code are valide as it
+- all mindustry-logic code are valide as it
 
 - jump to a reference:
 
@@ -41,7 +41,7 @@ here's the [website](https://pythux.github.io/MindustryCompiler) to show feature
     // ==, ===, !=, >, >=, <, <=, ---> equal, notEqual, greaterThan, ...
     ```
 
-You could check files [here](./tests/identicalCode) to see the difference from the same programme that compile to the same mindustry asm
+You could check files [here](./tests/identicalCode) to see the difference from the same programme that compile to the same mindustry-logic
 
 - if else, else if condition:
 
